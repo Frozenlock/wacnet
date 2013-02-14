@@ -1,13 +1,95 @@
-* wacnet
+#+TITLE: Wacnet
+* About
+  
+  Wacnet is a BACnet webserver. 
+  
+  #+ATTR_HTML: style="width: 30em;"
+  [[./img/wacnet-print-screen.png]]
 
-A Clojure library designed to ... well, that part is up to you.
+  For now it can only be used as a network browser and can't send any
+  commands. In other words, it's /read-only/.
+  
+* Rationale
+  The purpose of BACnet is to provide interoperability between
+  devices from multiple manufacturers. 
+  
+  The idea is that if all devices speak the same language, no one
+  will be 'trapped' with a proprietary protocol, forcing him to
+  always buy at the same place.
+  
+  This common language also have other advantages, such as making it
+  easy to gather data and make advanced analysis. Simply checking the
+  historical data plotted on a graph is enough to find and solve most
+  problem.
+  
+  However, despite all BACnet's promises, the landscape is still
+  mostly occupied by a handful of manufacturers. 
+  
+  In addition, BACnet is pitched as an 'open protocol', but the
+  standards need to be ordered; even [[www.bacnet.org][bacnet.org]] doesn't provide a
+  link to download the specs. This isn't making it easy for
+  newcomers. Want to see and try BACnet? Well, send us money and
+  we'll send you a boring pdf, and maybe, maybe you will stick with
+  us.
+  
+  For the developers, there's some highly cryptic application that
+  will provide some support, but for the newcomer that's simply
+  counterproductive to even try them.
+  
+  This results in an horrible situations for the users. Building
+  managers are often clueless as to what to do with a BACnet network.
+  They don't know what's in it, nor do they know how to browse it.
+  (Of course manufacturers will offer their own software... for a
+  price.) There's nothing wrong with selling software, but for such a
+  basic need, browsing the network, a free software should be
+  available. It's like comparing Notepad and Word. Sure, sell Word,
+  but the user should at least be able to write basic stuff in
+  notepad.
+  
+  *Wacnet* is a humble try to ameliorate the situation. By enabling
+  an /easy/ and almost instantaneous setup, anyone can at least see
+  what's on the network. Newcomers can explore the different
+  properties and learn them.
+  
+  
+* Usage
+** Getting the application
+   If you know Clojure, download the [[https://github.com/Frozenlock/wacnet][source]] and do =lein uberjar=.
+   
+   If you do not, download the pre-packaged version at
+   [[https://bacnethelp.com/how-to/wacnet]].
 
-** Usage
+** Running the application
 
-FIXME
+   No installation necessary and can run from a USB key!
 
-** License
+   The standalone jar file can be started on any computer with Java
+   installed. We recommend starting it from the command line as such:
+:  java -jar <filename>
+   
+   For example:
+:  java -jar wacnet-0.1.0-BETA-standalone.jar
+   
+   You can of course start it by simply double-clicking on the .jar
+   file, but you might have a hard time finding the 'off' switch.
+   (You will have to manually kill it.)
+   
+   Once the application is started, go to [[http://localhost:47800]] and
+   browse your network!
 
-Copyright © 2013 Frozenlock
+* Not yet implemented - Warnings
+  This software isn't polished. You might see errors (in which case
+  please send them to us).
 
-GNU General Public License version 3.0 (GPLv3)
+  There is also no caching, meaning that every time you browse a
+  device, it will re-fetch the data from it.
+
+  For now, the application only check the post 47808. The underlying
+  code permits it to select other ports, but the configuration page
+  isn't completed yet.
+
+* License
+  
+  Copyright (C) 2013 Frozenlock
+  
+  GNU General Public License version 3.0 (GPLv3)
