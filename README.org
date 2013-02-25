@@ -6,7 +6,7 @@
   #+ATTR_HTML: style="width: 30em;"
   [[./img/wacnet-print-screen.png]]
 
-  [[./img/youtube.png][http://youtu.be/oVlNwsU8CIw]]
+  [[http://youtu.be/oVlNwsU8CIw][./img/youtube.png]]
 
 
   The main web interface is /read-only/.
