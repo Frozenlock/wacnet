@@ -6,9 +6,8 @@
   #+ATTR_HTML: style="width: 30em;"
   [[./img/wacnet-print-screen.png]]
 
-#+BEGIN_HTML
-<iframe width="560" height="315" src="https://www.youtube.com/embed/oVlNwsU8CIw?rel=0" frameborder="0" allowfullscreen></iframe>
-#+END_HTML
+  [[http://youtu.be/oVlNwsU8CIw][./img/youtube.png]]
+
 
   The main web interface is /read-only/.
   However, it's possible to send commands via the [[Advanced usage][REPL]].
