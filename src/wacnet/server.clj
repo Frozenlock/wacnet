@@ -1,7 +1,7 @@
 (ns wacnet.server
-  (:require [wacnet.handler :as h]
-            [ring.adapter.jetty :refer [run-jetty]]
-            [wacnet.bacnet-utils :refer [first-boot]])
+  (:require [ring.adapter.jetty :refer [run-jetty]]
+            [wacnet.handler :as h]
+            [bacure.core :as bac])
   (:gen-class :main true))
 
 
@@ -11,5 +11,5 @@
 
 
 (defn -main [& m]
-  (first-boot) ;;start the bacnet device
+  (bac/boot-up) ;;start the bacnet device
   (start-server))

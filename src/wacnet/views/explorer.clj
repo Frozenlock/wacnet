@@ -11,14 +11,24 @@
 (def ^{:dynamic true} *sidebar-device* nil) ;; the current remote device shown.
 (def ^{:dynamic true} *sidebar-object* nil) ;; the current remote object shown.
 
+(defn get-remote-devices-and-names
+  "If any device name is missing, refresh the remote devices table. Give up after 'tries'."
+  ([] (get-remote-devices-and-names 3)) ;;try 3 times
+  ([tries]
+     (let [rd-names (bac/remote-devices-and-names)]
+       (if (and (some #(-> % second nil?) (bac/remote-devices-and-names))
+                (> tries 0))
+         (do (bac/discover-network)
+             (get-remote-devices-and-names (dec tries)));;try again
+         rd-names))))
 
 (defn side-bar-devices
   "Return a list of devices (and their name) as :li elements."[]
-  (let [devices-names (sort-by first (bac/remote-devices-and-names))]
+  (let [devices-names (sort-by first (get-remote-devices-and-names))]
     (into [] (for [[d n] devices-names]
                [:li {:class (when (= *sidebar-device* (str d)) "active")}
                 (he/link-to (str "/explorer/"d)
-                            (str n " (" d ")"))]))))
+                            (str (or n "Uh-oh...") " (" d ")"))]))))
 
 (defn sort-and-partition [coll]
   (->> (sort-by (juxt first last) coll)
@@ -31,10 +41,12 @@
   (let [device-id (Integer/parseInt device-id)
         separated (sort-and-partition (bac/remote-objects device-id))]
     (for [objects-list separated]
-      (into [:div.span3 {:style "border: 1px solid #cecece; border-radius:5px; padding:1em;"}
-             ] (for [[type instance :as object] objects-list]
-                           (let [object-name (:object-name
-                                              (bac/object-properties-values device-id object :object-name))]
+      (into [:div.span3 {:style "border: 1px solid #cecece; border-radius:5px; padding:1em;"}]
+            (for [[type instance :as object] objects-list]
+                           (let [object-name (apply :object-name
+                                                    (bac/remote-object-properties device-id
+                                                                                  object
+                                                                                  [:object-name]))]
                              (he/link-to (str device-id "/" (get obj-int-map type)"/" instance)
                                          [:div.btn (str (name type) " " instance) " - "
                                           object-name])))))))
@@ -58,7 +70,7 @@
   (let [device-id (Integer/parseInt device-id)
         type (Integer/parseInt type)
         instance (Integer/parseInt instance)
-        properties (bac/object-properties-values device-id [type instance] :all)]
+        properties (first (bac/remote-object-properties device-id [type instance] [:all]))]
     (map-to-bootstrap properties)))
 
     

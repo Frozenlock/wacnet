@@ -22,6 +22,8 @@
        (he/link-to {:class "navbar-link"}"https://bacnethelp.com" "BACnetHelp.com")]
       [:ul.nav
        (menu-item "/explorer" "Explorer")
+       (menu-item "/configs" "Configs")
+       (menu-item "/repl" "REPL")
        ;(menu-item "/about" "About")
        ;(menu-item "/contact" "Contact")
        ]]]]])

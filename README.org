@@ -6,8 +6,8 @@
   #+ATTR_HTML: style="width: 30em;"
   [[./img/wacnet-print-screen.png]]
 
-  For now it can only be used as a network browser and can't send any
-  commands. In other words, it's /read-only/.
+  The main web interface is /read-only/.
+  However, it's possible to send commands via the [[Advanced usage][REPL]].
   
 * Rationale
   The purpose of BACnet is to provide interoperability between
@@ -68,7 +68,7 @@
 :  java -jar <filename>
    
    For example:
-:  java -jar wacnet-0.1.0-BETA-standalone.jar
+:  java -jar wacnet-0.1.1-BETA-standalone.jar
    
    You can of course start it by simply double-clicking on the .jar
    file, but you might have a hard time finding the 'off' switch.
@@ -77,16 +77,17 @@
    Once the application is started, go to [[http://localhost:47800]] and
    browse your network!
 
-* Not yet implemented - Warnings
+** Advanced usage (REPL)
+   The REPL is an interactive evaluation environment to enable power
+   users to use tools tailored to their needs. If a feature is
+   lacking, it's even possible to add it on-the-fly!
+   
+* Warnings
   This software isn't polished. You might see errors (in which case
   please send them to us).
 
   There is also no caching, meaning that every time you browse a
   device, it will re-fetch the data from it.
-
-  For now, the application only check the post 47808. The underlying
-  code permits it to select other ports, but the configuration page
-  isn't completed yet.
 
 * License
   
