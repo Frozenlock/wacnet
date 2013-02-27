@@ -29,4 +29,7 @@
           [:div.span8 (he/link-to "/explorer"
                                   [:div.btn.btn-primary
                                    "Understood, show me the network!"])]]
-         [:span.label.label-warning (get-wacnet-version)]])))
+         [:span.label.label-warning (get-wacnet-version)]
+         [:div.row-fluid
+          [:p [:h4 "Messages:"]
+           [:script {:src "https://gist.github.com/Frozenlock/8406e487ecc70ee204d0.js"}]]]])))
