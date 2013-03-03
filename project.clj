@@ -1,15 +1,16 @@
-(defproject wacnet "0.2.0-BETA"
+(defproject wacnet "0.2.3-BETA"
   :description "Webserver to browse a BACnet network"
   :url "https://bacnethelp.com"
   :license {:name "GNU General Public License V3"
             :url "http://www.gnu.org/licenses/gpl-3.0.html"}
-  :dependencies [[org.clojure/clojure "1.5.0-RC16"]
-                 [bacure "0.1.17"]
+  :dependencies [[org.clojure/clojure "1.5.0"]
+                 [bacure "0.3.1"]
                  [ring "1.1.8"]
                  [compojure "1.1.5"]
                  [hiccup "1.0.2"]
-                 [clojail "1.0.3"]
-                 [lib-noir "0.3.5"]]
+                 [lib-noir "0.3.5"]
+                 [org.clojars.frozenlock/logger "2.0.12"] ;;logger plugin
+                 ]
   
   :main wacnet.server)
 

@@ -6,7 +6,8 @@
             [hiccup.element :as he]
             [hiccup.form :as hf]
             [bacure.core :as bac]
-            [bacure.coerce :refer [obj-int-map]]))
+            [bacure.remote-device :as rd]
+            [bacure.coerce :refer [c-object-type]]))
 
 (def ^{:dynamic true} *sidebar-device* nil) ;; the current remote device shown.
 (def ^{:dynamic true} *sidebar-object* nil) ;; the current remote object shown.
@@ -15,10 +16,10 @@
   "If any device name is missing, refresh the remote devices table. Give up after 'tries'."
   ([] (get-remote-devices-and-names 3)) ;;try 3 times
   ([tries]
-     (let [rd-names (bac/remote-devices-and-names)]
-       (if (and (some #(-> % second nil?) (bac/remote-devices-and-names))
+     (let [rd-names (rd/remote-devices-and-names)]
+       (if (and (some #(-> % second nil?) (rd/remote-devices-and-names))
                 (> tries 0))
-         (do (bac/discover-network)
+         (do (rd/discover-network)
              (get-remote-devices-and-names (dec tries)));;try again
          rd-names))))
 
@@ -47,7 +48,7 @@
                                                     (bac/remote-object-properties device-id
                                                                                   object
                                                                                   [:object-name]))]
-                             (he/link-to (str device-id "/" (get obj-int-map type)"/" instance)
+                             (he/link-to (str device-id "/" (.intValue (c-object-type type))"/" instance)
                                          [:div.btn (str (name type) " " instance) " - "
                                           object-name])))))))
 
@@ -91,7 +92,7 @@
        (binding [*sidebar-device* device-id]
          (explorer-layout
           [:div.hero-unit [:h2 (str "Objects for device "device-id)]
-           (for [row (partition 4 (objects-list device-id))]
+           (for [row (partition-all 4 (objects-list device-id))]
              [:div.row-fluid {:style "margin-bottom: 1em;"} row])])))
 
   (GET "/explorer/:device-id/:type/:instance" [device-id type instance]

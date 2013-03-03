@@ -35,7 +35,9 @@
                 :init '(do (require '[clojure.repl :refer [doc source apropos]])
                            (require '[clojure.pprint :refer [pprint print-table]])
                            (require '[bacure.core :refer :all])
-                           (require '[bacure.network :refer :all]))))
+                           (require '[bacure.network :refer :all])
+                           (require '[bacure.remote-device :refer :all])
+                           (require '[bacure.local-device :refer :all]))))
 
 ;; from clojail
 (def ^{:doc "Create a map of pretty keywords to ugly TimeUnits"}

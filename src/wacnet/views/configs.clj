@@ -3,6 +3,7 @@
             [clojure.walk :as walk]
             [wacnet.views.common :refer [layout with-sidebar]]
             [bacure.core :as bac]
+            [bacure.local-device :as ld]
             [bacure.local-save :as save]
             [bacure.network :as net]
             [hiccup.page :as hp]
@@ -26,15 +27,15 @@
 
 (defn reset-with-config
   "Reset the local-device with the new configs."[config]
-  (bac/reset-local-device (read-config config))
-  (bac/save-local-device-backup)
+  (ld/reset-local-device (read-config config))
+  (ld/save-local-device-backup)
   (bac/boot-up))
 
 (defn reset-default
   "Erased any saved config and reset to default."
   []
   (save/delete-configs)
-  (bac/clear-all!)
+  (ld/clear-all!)
   (bac/boot-up))
 
 (defn config-to-bootstrap [config]
@@ -51,7 +52,7 @@
                    (hf/text-field n v)])]])))))
 
 (defn make-configs-forms []
-  (-> (bac/local-device-backup)
+  (-> (ld/local-device-backup)
       (dissoc :objects)
       config-to-bootstrap))
 
@@ -67,10 +68,12 @@
                    (hf/form-to [:post "/configs"]
                                [:p (make-configs-forms)]
                                [:div.btn-toolbar
-                                (hf/submit-button {:class "btn btn-primary"}
+                                (hf/submit-button {:class "btn btn-primary" :style "margin-right: 1em;"}
                                                   "Validate and reinitialize the local device!")
                                 (he/link-to (hiccup.util/url "/configs" {:reset true})
-                                            [:div.btn.btn-danger "Reset default"])])]]}))
+                                            [:div.btn.btn-danger "Reset default"])])]
+                  (when (save/get-configs)
+                    [:div.badge.badge-warning "You are using a saved config file."])]}))
   
 (defroutes configs-routes
   (GET "/configs" [reset]

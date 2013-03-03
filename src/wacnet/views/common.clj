@@ -10,6 +10,14 @@
 (defn menu-item [link content]
   [:li {:class (when (re-find (re-pattern (str "^" link)) *url*) "active")} (he/link-to link content)])
 
+
+;; perhaps the services could be added as a plugin? This way Wacnet
+;; could remain somewhat 'neutral'.
+(def services
+   [:ul.dropdown-menu
+    [:li (he/link-to "/services/logger" "Data logging")]])
+  
+
 (defn menu []
   [:div.navbar.navbar-inverse.navbar-fixed-top
    [:div.navbar-inner
@@ -24,9 +32,9 @@
        (menu-item "/explorer" "Explorer")
        (menu-item "/configs" "Configs")
        (menu-item "/repl" "REPL")
-       ;(menu-item "/about" "About")
-       ;(menu-item "/contact" "Contact")
-       ]]]]])
+       [:li {:class (str "dropdown " (when (re-find (re-pattern "^services") *url*) "active"))}
+        [:a.dropdown-toggle {:href "#" :data-toggle "dropdown"} "Services" [:span.caret]]
+        services]]]]]])
 
 (defn with-sidebar [{:keys [header sidebar body]}]
   `[:div.container-fluid
