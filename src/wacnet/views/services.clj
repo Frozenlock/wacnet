@@ -57,7 +57,7 @@
      [:div.row-fluid
       [:div.span2
        [:p "Last scan duration: "]]
-      [:div.span2 (format "%.2f" (double (/ (or @scan/last-scan-duration 0) 1000))) "s"]
+      [:div.span2 (format "%.1f" (double (/ (or @scan/last-scan-duration 0) 1000 60))) " min"]
       [:div.span8
        [:p "Please don't set a scanning interval smaller than this value. "
        "The time taken to do a scan is determined by your network. An MS/TP network WILL "
