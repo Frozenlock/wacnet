@@ -25,7 +25,8 @@
      [:div.span6
       [:p "Starting the logger will reinitialize the local device with the logger configurations."]
       [:p "Wacnet will start the logger automatically on startup if a "
-       "logger configuration file is found."]]]))
+       "logger configuration file is found."]]
+     [:hr]]))
 
 (defn logger-status []
   (when (scan/get-configs)
@@ -60,8 +61,9 @@
       [:div.span2 (format "%.1f" (double (/ (or @scan/last-scan-duration 0) 1000 60))) " min"]
       [:div.span8
        [:p "Please don't set a scanning interval smaller than this value. "
-       "The time taken to do a scan is determined by your network. An MS/TP network WILL "
-       "take longer than an IP or Ethernet network."]]])))
+        "The time taken to do a scan is determined by your network. An MS/TP network WILL "
+        "take longer than an IP or Ethernet network."]]]
+     [:hr])))
 
 
 (defn config-to-bootstrap-form [config]
@@ -142,9 +144,7 @@
        
        [:p "Never again will you say "[:i "\"Oh gee, if only I had created a trend log for this object...\""]]]]
      (logger-status)
-     [:hr]
      (logger-controls)
-     [:hr]
      (configurations)]]))
 
 (defroutes logger-routes

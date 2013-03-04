@@ -24,8 +24,8 @@
            [:li "Made with bootstrap: tablet and cellphone ready!"]
            [:li (he/link-to "https://github.com/Frozenlock/wacnet" "Free and open source!")]]]
          [:div.row-fluid
-          [:div.span4 "This software is under development. "
-           "You might see some errors. If it's the case, please let us know!"]
+          [:div.span4 "This software is free to use. In exchange, if you see some errors, "
+           "please let us know!"]
           [:div.span8 (he/link-to "/explorer"
                                   [:div.btn.btn-primary
                                    "Understood, show me the network!"])]]
