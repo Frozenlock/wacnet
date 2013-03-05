@@ -13,7 +13,7 @@
   (he/link-to (hiccup.util/url "/services/logger" {param true}) content))
 
 (defn logger-controls []
-  (when (scan/get-configs)
+  (when (scan/get-configs-only)
     [:div.row-fluid
      [:h3 "Logger controls"]
      [:div.span4
@@ -29,7 +29,7 @@
      [:hr]]))
 
 (defn logger-status []
-  (when (scan/get-configs)
+  (when (scan/get-configs-only)
     (list
      [:div.row-fluid
       [:h3 "Logger status"]
@@ -94,7 +94,7 @@
 
 
 (defn configurations []
-  (let [config (scan/get-configs)
+  (let [config (scan/get-configs-only)
         credential (merge {:project-id "" :logger-password ""}
                           (select-keys config [:project-id :logger-password]))]
     (list
