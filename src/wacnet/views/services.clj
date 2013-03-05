@@ -79,18 +79,19 @@
                   [:p {:style "margin-left:1em;"}
                    (hf/text-field n v)])]])))))
 
-(defn map-to-bootstrap [config]
-  (hf/with-group :config
-    (into [:p]
-          (for [m config]
-            (let [n (name (key m))]
-              [:div.row-fluid
-               [:div.span2
-                [:p {:style "margin-left:1em;"} n]]
-               [:div.span10
-                (let [v (val m)]
-                  [:p {:style "margin-left:1em;"}
-                   v])]])))))
+(defn map-to-bootstrap [map]
+  (for [m map]
+    [:div.row-fluid {:style "border: 1px solid #cecece; border-radius:5px;"}
+     [:div.span4
+      [:p {:style "margin-left:1em;"}(name (key m))]]
+     [:div.span8
+      (let [v (val m)]
+        (if (map? v)
+          (map-to-bootstrap v)
+          [:p {:style "margin-left:1em;"}
+           (if (keyword? v) (name v)
+               (str v))]))]]))
+
 
 (defn configurations []
   (let [config (scan/get-configs)

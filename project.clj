@@ -9,7 +9,7 @@
                  [compojure "1.1.5"]
                  [hiccup "1.0.2"]
                  [lib-noir "0.3.5"]
-                 [org.clojars.frozenlock/logger "2.0.14"]]
+                 [org.clojars.frozenlock/logger "2.0.15"]]
   
   :main wacnet.server)
 
