@@ -1,4 +1,4 @@
-(defproject wacnet "1.0.0-RC1"
+(defproject wacnet "1.0.0"
   :description "Webserver to browse a BACnet network"
   :url "https://bacnethelp.com"
   :license {:name "GNU General Public License V3"
@@ -9,7 +9,7 @@
                  [compojure "1.1.5"]
                  [hiccup "1.0.2"]
                  [lib-noir "0.3.5"]
-                 [org.clojars.frozenlock/logger "2.0.21"]]
+                 [org.clojars.frozenlock/logger "2.0.25"]]
   
   :main wacnet.server)
 
