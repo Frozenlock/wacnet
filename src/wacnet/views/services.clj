@@ -43,9 +43,8 @@
        (he/link-to "/services/logger"
                    [:div.btn "Refresh"])]
       [:div.span6
-       [:p "While mapping the network, we wait at least 30s so that all "
-        "remote devices can say: "
-        [:p [:i "\"Hey, I'm here!\""]]]]]
+       [:p "Initial mapping of the network can take longer (minutes) if you have a large network. "
+        "Also note that devices can be discovered after the initial mapping and will be scanned as required." ]]]
      [:div.row-fluid
       [:div.span2
        [:p "Local logs: "]]
