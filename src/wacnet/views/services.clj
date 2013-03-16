@@ -60,7 +60,7 @@
       [:div.span2 (format "%.1f" (double (/ (or @scan/last-scan-duration 0) 1000 60))) " min"]
       [:div.span8
        [:p "Please don't set a scanning interval smaller than this value. "
-        "The time taken to do a scan is determined by your network. An MS/TP network WILL "
+        "The time taken to do a scan is determined by your network. MS/TP networks WILL "
         "take longer than an IP or Ethernet network."]]]
      [:hr])))
 
