@@ -29,8 +29,17 @@
      [:hr]]))
 
 (defn logger-status []
-  (when (scan/get-configs-only)
+  (when-let [configs (scan/get-configs-only)]
     (list
+     [:div.row-fluid
+      [:div.span3]
+      [:div.span6
+       [:span {:style "padding: 5px; border: 1px solid #cecece; border-radius:5px;"}
+        "See the logged data at your "(he/link-to (str "https://bacnethelp.com/project/" 
+                                                       (:project-id configs))
+                                                  "project page")]]
+      [:div.span3]]
+                                               
      [:div.row-fluid
       [:h3 "Logger status"]
       [:div.span2

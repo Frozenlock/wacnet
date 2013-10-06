@@ -52,14 +52,19 @@
                    (hf/text-field n v)])]])))))
 
 (defn make-configs-forms []
-  (-> (ld/local-device-backup)
-      (dissoc :objects)
+  (-> (merge {:device-id 1 :port 47808 
+              :broadcast-address (net/get-broadcast-address (net/get-any-ip))}
+             (ld/local-device-backup))
+      (select-keys [:device-id :port :broadcast-address])
       config-to-bootstrap))
 
 (defn config-page [& msg]
   (with-sidebar {:header "Local interfaces"
                  :sidebar (->> (net/interfaces-and-ips)
-                               (map #(vector :li (:interface %) ": " (clojure.string/join ", " (:ips %)))))
+                               (map #(vector :li [:b (:interface %)] ": " 
+                                             (clojure.string/join ", " 
+                                                                  (:ips %))
+                                             (str "\nBroadcast: " (:broadcast-address %)))))
                  :body
                  [:div.container
                   [:div.hero-unit

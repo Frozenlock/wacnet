@@ -1,8 +1,7 @@
 (ns wacnet.server
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [wacnet.handler :as h]
-            [bacure.core :as bac]
-            [logger.timed :as logger])
+            [wacnet.local-device :as ld])
   (:gen-class :main true))
 
 
@@ -12,6 +11,8 @@
 
 
 (defn -main [& m]
-  (when-not (logger/maybe-start-logging) ;; start logging
-    (bac/boot-up)) ;;start the bacnet device
-  (start-server))
+  (ld/initialize)
+  (start-server)
+  (println (str "\n\n\n"
+                "---> See the web interface at http://localhost:47800.\n\n"
+                "     You can also connect to the nrepl on port 47999.")))

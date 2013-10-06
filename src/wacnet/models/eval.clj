@@ -1,8 +1,13 @@
 (ns wacnet.models.eval
   (:require [clojure.stacktrace :refer [root-cause]]
-            [noir.session :as session])
+            [noir.session :as session]
+            [wacnet.nrepl :as wnrepl])
   (:import java.io.StringWriter
            (java.util.concurrent TimeoutException TimeUnit FutureTask)))
+
+(wnrepl/start-nrepl) ;; start a "true" repl on port 47999
+
+;; Now initialize a poor man's REPL on the web interface
 
 (defn remove-ns-future
   "Unmap a namespace after `delay' in ms."
@@ -32,12 +37,7 @@
 
 (defn make-user-ns []
   (throwable-ns :delay (* 60000 60 24) ;; 24 hours
-                :init '(do (require '[clojure.repl :refer [doc source apropos]])
-                           (require '[clojure.pprint :refer [pprint print-table]])
-                           (require '[bacure.core :refer :all])
-                           (require '[bacure.network :refer :all])
-                           (require '[bacure.remote-device :refer :all])
-                           (require '[bacure.local-device :refer :all]))))
+                :init wnrepl/repl-init))
 
 ;; from clojail
 (def ^{:doc "Create a map of pretty keywords to ugly TimeUnits"}

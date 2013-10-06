@@ -33,7 +33,11 @@
            [:p
             "Try it! Define a new function by typing "[:code "(defn square [x] (* x x))"]
             " and then pressing ENTER. Now use your new function: "
-            [:code "(square 10)"]]]
+            [:code "(square 10)"]]
+
+           [:i
+            "Want a better experience? Use Emacs with nrepl.el (or any other nrepl interface) "
+            "and connect to port 47999!"]]
 
           [:div.span6
            [:h2 "Power user!"]
