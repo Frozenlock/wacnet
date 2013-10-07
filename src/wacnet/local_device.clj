@@ -1,0 +1,23 @@
+(ns wacnet.local-device
+  (:require [bacure.core]
+            [bacure.local-device :as ld]
+            [logger.timed :as logger]))
+
+(defmacro get-wacnet-version []
+  (let [x# (System/getProperty "wacnet.version")]
+    `~x#))
+
+
+(defn initialize
+  "Initialize the local BACnet device." []
+  ;(when-not (logger/maybe-start-logging) ;; start logging
+  (bacure.core/boot-up
+   {:vendor-name "BACnethelp.com"
+    :vendor-identifier 999
+    :model-name "Wacnet"
+    :application-software-version (get-wacnet-version)
+    :description 
+    (str "Wacnet: a BACnet webserver, but also a portable BACnet toolkit! \n"
+         "Access the web interface at \n"
+         "http://"(bacure.network/get-any-ip)":47800, "
+         "or use the Clojure REPL on port " (:port @wacnet.nrepl/server)".")}))
