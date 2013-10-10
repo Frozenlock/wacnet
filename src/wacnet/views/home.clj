@@ -4,11 +4,11 @@
             [hiccup.core :as h]
             [hiccup.page :as hp]
             [hiccup.element :as he]
-            [hiccup.form :as hf]))
+            [hiccup.form :as hf]
+            [trptcolin.versioneer.core :as version]))
 
-(defmacro get-wacnet-version []
-  (let [x# (System/getProperty "wacnet.version")]
-    `~x#))
+(defn get-wacnet-version []
+  (version/get-version "wacnet" "wacnet"))
 
 (def center "float: none; margin-left: auto; margin-right: auto;")
 
