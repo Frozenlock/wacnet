@@ -27,7 +27,7 @@
      (he/link-to "/" [:span.brand "Wacnet"])
      [:div.nav-collapse.collapse
       [:p.navbar-text.pull-right "Powered by "
-       (he/link-to {:class "navbar-link"}"https://bacnethelp.com" "BACnetHelp.com")]
+       (he/link-to {:class "navbar-link" :target "_blank"}"https://bacnethelp.com" "BACnetHelp.com")]
       [:ul.nav
        (menu-item "/explorer" "Explorer")
        (menu-item "/configs" "Configs")

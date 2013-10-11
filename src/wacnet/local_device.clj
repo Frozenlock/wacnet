@@ -9,8 +9,9 @@
   ;(when-not (logger/maybe-start-logging) ;; start logging
   (bacure.core/boot-up
    {:vendor-name "BACnethelp.com"
-    :vendor-identifier 999
+    :vendor-identifier 697
     :model-name "Wacnet"
+    :object-name "Wacnet webserver"
     :application-software-version (version/get-version "wacnet" "wacnet")
     :description 
     (str "Wacnet: a BACnet webserver, but also a portable BACnet toolkit! \n"

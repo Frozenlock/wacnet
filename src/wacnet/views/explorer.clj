@@ -7,10 +7,19 @@
             [hiccup.form :as hf]
             [bacure.core :as bac]
             [bacure.remote-device :as rd]
-            [bacure.coerce :refer [c-object-type]]))
+            [bacure.coerce :refer [c-object-type] :as c]))
 
 (def ^{:dynamic true} *sidebar-device* nil) ;; the current remote device shown.
-(def ^{:dynamic true} *sidebar-object* nil) ;; the current remote object shown.
+;(def ^{:dynamic true} *sidebar-object* nil) ;; the current remote object shown.
+
+(def show-ambiguous
+  "If this is set to true, the user will be able to see the devices'
+ambiguous values. There isn't much to do with them, so we set it to
+false by default."
+  (atom false))
+
+(defn toggle-show-ambiguous []
+  (swap! show-ambiguous not))
 
 (defn get-remote-devices-and-names
   "If any device name is missing, refresh the remote devices table. Give up after 'tries'."
@@ -89,14 +98,16 @@
                          "From here, you can browse the BACnet network and explore your devices."]))
 
   (GET "/explorer/:device-id" [device-id]
-       (binding [*sidebar-device* device-id]
+       (binding [*sidebar-device* device-id
+                 c/*drop-ambiguous* (not @show-ambiguous)]
          (explorer-layout
           [:div.hero-unit [:h2 (str "Objects for device "device-id)]
            (for [row (partition-all 4 (objects-list device-id))]
              [:div.row-fluid {:style "margin-bottom: 1em;"} row])])))
 
   (GET "/explorer/:device-id/:type/:instance" [device-id type instance]
-       (binding [*sidebar-device* device-id]
+       (binding [*sidebar-device* device-id
+                 c/*drop-ambiguous* (not @show-ambiguous)]
          (explorer-layout
           [:div.hero-unit [:h2 (str "Object properties:")]
            (properties-list device-id type instance)]))))

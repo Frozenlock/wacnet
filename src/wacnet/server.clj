@@ -14,5 +14,6 @@
   (ld/initialize)
   (start-server)
   (println (str "\n\n\n"
-                "---> See the web interface at http://localhost:47800.\n\n"
+                "---> \n"
+                "     See the web interface at http://localhost:47800.\n"
                 "     You can also connect to the Clojure nrepl on port 47999.")))
