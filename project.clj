@@ -1,10 +1,10 @@
-(defproject wacnet "1.0.4"
+(defproject wacnet "1.0.5"
   :description "Webserver to browse a BACnet network"
   :url "https://bacnethelp.com"
   :license {:name "GNU General Public License V3"
             :url "http://www.gnu.org/licenses/gpl-3.0.html"}
   :dependencies [[org.clojure/clojure "1.5.0"]
-                 [bacure "0.3.19"] ;; serializeable functions
+                 [bacure "0.3.20"]
                  [ring "1.1.8"]
                  [compojure "1.1.5"]
                  [hiccup "1.0.2"]
