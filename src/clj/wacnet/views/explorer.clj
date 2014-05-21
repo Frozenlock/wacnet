@@ -87,9 +87,18 @@ false by default."
   
 (defn explorer-layout [& body]
   (layout
-   (with-sidebar {:header "Devices"
-                  :sidebar (side-bar-devices)
-                  :body body})))
+   [:div
+    [:div#explorer-app
+     ;;; fallback in case JS isn't active, or if the user has the lame ass IE.
+
+     ;; There is no guarantee we will continue to support pure HTML interface.
+     
+     [:div.container [:span.bg-warning
+                      "You are running a non-JS version of the explorer. You should try to activate javascript in your browser, or use a more recent browser."]]
+     (with-sidebar {:header "Devices"
+                   :sidebar (side-bar-devices)
+                   :body body})]
+    [:script {:type"text/javascript"} "wacnet.client.run();"]]))
 
 (defroutes explorer-routes
 

@@ -4,6 +4,7 @@
             [hiccup.element :as he]
             [hiccup.form :as hf]
             [wacnet.ring-utils :refer [*url*]]
+            [wacnet.views.templates :as tp]
             ))
 
 
@@ -16,25 +17,31 @@
 (def services
    [:ul.dropdown-menu
     [:li (he/link-to "/services/logger" "Data logging")]])
-  
 
-(defn menu []
-  [:div.navbar.navbar-inverse.navbar-fixed-top
-   [:div.navbar-inner
-    [:div.container-fluid
-     [:button.btn.btn-navbar.collapsed {:type "button" :data-toggle "collapse" :data-target ".nav-collapse"}
-      [:span.icon-bar][:span.icon-bar][:span.icon-bar]]
-     (he/link-to "/" [:span.brand "Wacnet"])
-     [:div.nav-collapse.collapse
-      [:p.navbar-text.pull-right "Powered by "
-       (he/link-to {:class "navbar-link" :target "_blank"}"https://bacnethelp.com" "BACnetHelp.com")]
-      [:ul.nav
+
+(defn navbar-header []
+  [:div.navbar-header
+   [:button.navbar-toggle {:type "button" :data-toggle "collapse" :data-target "#main-navbar"}
+    [:span.sr-only "Toggle navigation"]
+    (repeat 3 [:span.icon-bar])]
+   [:a.navbar-brand {:href "/"} "Wacnet"]])
+
+  
+(defn navbar-content []
+  [:div.collapse.navbar-collapse {:id "main-navbar"}
+   [:ul.nav.navbar-nav
        (menu-item "/explorer" "Explorer")
        (menu-item "/configs" "Configs")
        (menu-item "/repl" "REPL")
-       [:li {:class (str "dropdown " (when (re-find (re-pattern "^services") *url*) "active"))}
-        [:a.dropdown-toggle {:href "#" :data-toggle "dropdown"} "Services" [:span.caret]]
-        services]]]]]])
+    [:li [:a [:i.fa.fa-globe]]]]
+   [:ul.nav.navbar-nav.navbar-right]])
+
+(defn menu []
+  [:div.nav.navbar-inverse.navbar-fixed-top {:role "navigation"}
+   [:div.container
+    (navbar-header)
+    (navbar-content)]])
+
 
 (defn with-sidebar [{:keys [header sidebar body]}]
   `[:div.container-fluid
@@ -72,8 +79,11 @@
              [:title "Wacnet - BACnet network explorer"]
              (hp/include-css "/css/bootstrap.min.css")
              (hp/include-css "/css/bootstrap-responsive.min.css")
-             (hp/include-js "/js/jquery-1.9.1.min.js")
+             (hp/include-js "/js/jquery-1.11.0.min.js")
              (hp/include-js "/js/bootstrap.min.js")
+             (hp/include-js "js/cljs.js" 
+                            ;"js/cljs-min.js"
+                            )
              ]
             [:body
              (menu)
