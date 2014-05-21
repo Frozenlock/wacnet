@@ -60,7 +60,7 @@
    If you know Clojure, download the [[https://github.com/Frozenlock/wacnet][source]] and do =lein uberjar=.
    
    If you do not, download the pre-packaged version at
-   [[https://bacnethelp.com/how-to/wacnet]].
+   [[https://hvac.io/docs/wacnet]].
 
 ** Running the application
 
@@ -94,6 +94,6 @@
 
 * License
   
-  Copyright (C) 2013 Frozenlock
+  Copyright (C) 2014 Frozenlock
   
   GNU General Public License version 3.0 (GPLv3)
