@@ -1,7 +1,8 @@
 (ns wacnet.server
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [wacnet.handler :as h]
-            [wacnet.local-device :as ld])
+            ;[wacnet.local-device :as ld]
+            )
   (:gen-class :main true))
 
 

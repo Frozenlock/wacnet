@@ -4,17 +4,26 @@
   :license {:name "GNU General Public License V3"
             :url "http://www.gnu.org/licenses/gpl-3.0.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [bacure "0.3.20"]
-                 [ring "1.1.8"]
-                 [compojure "1.1.5"]
-                 [hiccup "1.0.2"]
-                 [lib-noir "0.3.5"]
-                 [org.clojars.frozenlock/logger "2.0.35"]
+
+                 ;; BACnet
+                 [bacure "0.4.0"]
+
+                 ;; Webserver
+                 [ring "1.2.1"]
+                 [compojure "1.1.6"]
+                 [hiccup "1.0.5"]
+                 [lib-noir "0.8.3"] ;; sessions
+
+                 ;; API
+                 [liberator "0.11.0"]
+                 
+                 ;; REPL
                  [org.clojure/tools.nrepl "0.2.3"]
-                 [clojure-complete "0.2.3"] ;; clojure-complete is necessary for embedded nREPL
+                 [clojure-complete "0.2.3"] ;; necessary for embedded nREPL
+
+                 ;; Misc.
                  [trptcolin/versioneer "0.1.1"]
                  [com.draines/postal "1.11.0"] ;; for email support
-                 [liberator "0.11.0"]
 
 
                  ;;; cljs
@@ -28,9 +37,10 @@
   :min-lein-version "2.0.0"
 
   :plugins [[lein-cljsbuild "1.0.2"]
-            [com.keminglabs/cljx "0.3.2"]]
+            [com.keminglabs/cljx "0.3.2"]
+            [lein-ring "0.8.10"]]
   :hooks [;leiningen.cljsbuild
-                                        ;cljx.hooks
+          ;cljx.hooks
           ]
   :cljx {:builds [{:source-paths ["src/cljx"]
                    :output-path "src-cross/clj"
@@ -66,6 +76,6 @@
                                 :optimizations :whitespace
                                 :pretty-print true}}}}
 
-
+  :ring {:handler wacnet.handler/handler :port 3000}
   :main wacnet.server)
 

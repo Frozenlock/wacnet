@@ -39,17 +39,13 @@
   (bac/boot-up))
 
 (defn config-to-bootstrap [config]
-  (hf/with-group :config
-    (into [:p]
-          (for [m config]
-            (let [n (name (key m))]
-              [:div.row-fluid {:style "border: 1px solid #cecece; border-radius:5px;"}
-               [:div.span4
-                [:p {:style "margin-left:1em;"} n]]
-               [:div.span8
-                (let [v (val m)]
-                  [:p {:style "margin-left:1em;"}
-                   (hf/text-field n v)])]])))))
+  (for [m config]
+    (let [n (name (key m))]
+      [:div.form-group
+       [:label.control-label.col-md-4 n]
+       [:div.col-md-8
+        (let [v (val m)]
+          [:input.form-control {:type :text :name n :value v}])]])))
 
 (defn make-configs-forms []
   (-> (merge {:device-id 1 :port 47808 
@@ -58,27 +54,32 @@
       (select-keys [:device-id :port :broadcast-address])
       config-to-bootstrap))
 
+(defn local-interfaces []
+  [:p {:style "margin-top:2em;"}
+    [:h2 "Local interfaces"]
+    (->> (net/interfaces-and-ips)
+         (map #(vector :li [:b (:interface %)] ": " 
+                       (clojure.string/join ", " 
+                                            (:ips %))
+                       (str "\nBroadcast: " (:broadcast-address %)))))])
+
 (defn config-page [& msg]
-  (with-sidebar {:header "Local interfaces"
-                 :sidebar (->> (net/interfaces-and-ips)
-                               (map #(vector :li [:b (:interface %)] ": " 
-                                             (clojure.string/join ", " 
-                                                                  (:ips %))
-                                             (str "\nBroadcast: " (:broadcast-address %)))))
-                 :body
-                 [:div.container
-                  [:div.hero-unit
-                   [:h1 "Local device configurations"]
-                   (when msg [:span.label.label-success (first msg)])
-                   (hf/form-to [:post "/configs"]
-                               [:p (make-configs-forms)]
-                               [:div.btn-toolbar
-                                (hf/submit-button {:class "btn btn-primary" :style "margin-right: 1em;"}
-                                                  "Validate and reinitialize the local device!")
-                                (he/link-to (hiccup.util/url "/configs" {:reset true})
-                                            [:div.btn.btn-danger "Reset default"])])]
-                  (when (save/get-configs)
-                    [:div.badge.badge-warning "You are using a saved config file."])]}))
+  [:div.container
+   [:div.hero-unit
+    [:h1 "Local device configurations"]
+    (when msg [:span.label.label-success (first msg)])
+    [:form.form-horizontal {:method "POST" :action "" :role "form"}
+     (make-configs-forms)
+     [:div.text-center
+      (hf/submit-button {:class "btn btn-primary" :style "margin-right: 1em;"}
+                        "Validate and reinitialize the local device!")
+      (he/link-to (hiccup.util/url "/configs" {:reset true})
+                  [:div.btn.btn-danger "Reset default"])]]]
+   [:div.text-center {:style "margin-top:2em;"}
+    (when (save/get-configs)
+      [:div.badge.badge-warning "You are using a saved config file."])]
+   [:hr]
+   (local-interfaces)])
   
 (defroutes configs-routes
   (GET "/configs" [reset]
@@ -86,7 +87,7 @@
        (layout
         (config-page (when reset "cleared"))))
        
-  (POST "/configs" [config]
-        (reset-with-config config)
+  (POST "/configs" req
+    (do (reset-with-config (-> req :params (select-keys [:device-id :broadcast-address :port])))        
         (layout
-         (config-page "updated"))))
+         (config-page "updated")))))

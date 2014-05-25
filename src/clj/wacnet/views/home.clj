@@ -27,8 +27,8 @@
           [:div.col-md-4 "This software is free to use. In exchange, if you see some errors, "
            "please let us know!"]
           [:div.col-md-8 (he/link-to "/explorer"
-                                  [:div.btn.btn-primary
-                                   "Understood, show me the network!"])]]
+                                     [:div.btn.btn-primary
+                                      "Understood, show me the network!"])]]
          [:span.label.label-warning (get-wacnet-version)]
          [:div.row
           [:p [:h4 "Messages:"]
