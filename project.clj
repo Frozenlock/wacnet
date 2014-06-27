@@ -1,4 +1,4 @@
-(defproject wacnet "1.1.0"
+(defproject wacnet "1.1.0-BETA"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
 
                  ;; BACnet
-                 [bacure "0.4.0"]
+                 [bacure "0.4.12"]
 
                  ;; Webserver
                  [ring "1.2.1"]
@@ -16,6 +16,7 @@
 
                  ;; API
                  [liberator "0.11.0"]
+                 [org.clojure/data.csv "0.1.2"]
                  
                  ;; REPL
                  [org.clojure/tools.nrepl "0.2.3"]
@@ -25,41 +26,34 @@
                  [trptcolin/versioneer "0.1.1"]
                  [com.draines/postal "1.11.0"] ;; for email support
 
+                 ;; communication with remote servers
+                 [clj-http "0.9.2"]
+                 [org.clojars.frozenlock/gzip64 "1.0.0"]
 
+                 ;; recurring jobs
+                 [overtone/at-at "1.2.0"]]
+
+  :profiles {:dev 
+             {:dependencies
+              [
                  ;;; cljs
-                 [org.clojure/clojurescript "0.0-2156"]
-                 [reagent "0.4.2"]
-                 [org.clojars.frozenlock/query "0.1.1"]
-                 [cljs-ajax "0.2.3"]]
+               [org.clojure/clojurescript "0.0-2173" :scope "provided"]
+               ;[org.clojars.frozenlock/query "0.2.3"]
+               ;; [reagent "0.4.2"]
+               ;; [cljs-ajax "0.2.3"]
+               
+               ;; ;; UI 
+               ;; [hvacio/hvacio-ui "0.1.3" :exclusions [org.clojure/clojure]]
+               ]}}
 
 
-  :uberjar-name "wacnet-webserver.jar"
+;  :uberjar-name "wacnet-webserver.jar"
   :min-lein-version "2.0.0"
 
   :plugins [[lein-cljsbuild "1.0.2"]
-            [com.keminglabs/cljx "0.3.2"]
             [lein-ring "0.8.10"]]
   :hooks [;leiningen.cljsbuild
-          ;cljx.hooks
           ]
-  :cljx {:builds [{:source-paths ["src/cljx"]
-                   :output-path "src-cross/clj"
-                   :rules :clj}
-
-                  {:source-paths ["src/cljx"]
-                   :output-path "src-cross/cljs"
-                   :rules :cljs}
-
-                  ;;; cljs test don't seem to work for now...
-
-                  {:source-paths ["test/cljx"]
-                   :output-path "test-cross/clj"
-                   :rules :clj}
-
-                  {:source-paths ["test/cljx"]
-                   :output-path "test-cross/cljs"
-                   :rules :cljs}]}
-
   :source-paths ["src/clj" "src-cross/clj"]
   :cljsbuild {
               :builds
@@ -70,10 +64,16 @@
                                  :preamble ["reagent/react.min.js"]
                                  :externs ["externs/jquery-1.9.js"]}}
                :dev {
-                     :source-paths ["src/cljs" "src-cross/cljs" "src-cross/clj"]
-                     :compiler {:output-to "resources/public/js/cljs.js"
-                                :preamble ["reagent/react.js"]
-                                :optimizations :whitespace
+                     :source-paths ["src/cljs"]
+                     :compiler {:output-to "resources/public/js/out-dev/cljs.js"
+                                
+                                ;; :output-dir "resources/public/js/out-dev"
+                                ;; ;:source-map-path "js/out-dev"
+                                ;; :source-map "resources/public/js/out-dev/cljs.js.map"
+
+
+                                ;:preamble ["reagent/react.js"]
+                                :optimizations :simple
                                 :pretty-print true}}}}
 
   :ring {:handler wacnet.handler/handler :port 3000}

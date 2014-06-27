@@ -1,8 +1,8 @@
 (ns wacnet.views.services
   (:require [compojure.core :refer [defroutes GET POST]]
             [wacnet.views.common :refer [layout with-sidebar]]
-            [logger.timed :as timed]
-            [logger.scan :as scan]
+            [wacnet.vigilia.logger.timed :as timed]
+            [wacnet.vigilia.logger.scan :as scan]
             [hiccup.page :as hp]
             [hiccup.element :as he]
             [hiccup.form :as hf]
@@ -43,7 +43,7 @@
      [:div.row-fluid
       [:h3 "Logger status"]
       [:div.span2
-       (let [status @logger.timed/logging-state
+       (let [status @timed/logging-state
              class (get {"Mapping network" "badge-warning"
                          "Logging" "badge-success"
                          "Stopped" "badge-important"} status "")]
@@ -126,11 +126,11 @@
               "You should double check the "[:code "project-id"]
               " and the "[:code "logger-password"]"."]
              (map-to-bootstrap config)))]])
-     (when (and config (not= @logger.timed/logging-state "Stopped"))
+     (when (and config (not= @timed/logging-state "Stopped"))
        [:div.row-fluid
         [:div.span12
          [:h4 "Device IDs to scan"]
-         (if (= @logger.timed/logging-state "Mapping network")
+         (if (= @timed/logging-state "Mapping network")
            [:p "Still mapping the network..."]
            [:p (string/join ", "(sort (scan/find-id-to-scan)))"."])]])
      (when config

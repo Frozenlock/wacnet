@@ -1,7 +1,8 @@
 (ns wacnet.server
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [wacnet.handler :as h]
-            ;[wacnet.local-device :as ld]
+            [wacnet.local-device :as ld]
+            [wacnet.nrepl :as wnrepl]
             )
   (:gen-class :main true))
 
@@ -14,6 +15,7 @@
 (defn -main [& m]
   (ld/initialize)
   (start-server)
+  (wnrepl/start-nrepl)
   (println (str "\n\n\n"
                 "---> \n"
                 "     See the web interface at http://localhost:47800.\n"

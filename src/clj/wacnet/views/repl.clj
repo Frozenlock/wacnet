@@ -10,7 +10,7 @@
 (defroutes repl-routes
   (GET "/repl" []
        (layout
-        (hp/include-js "/js/jquery-console/jquery-1.4.2.min.js"
+        (hp/include-js ;"/js/jquery-console/jquery-1.4.2.min.js"
                        "/js/jquery-console/jquery.console.js")
         (hp/include-js "/js/tryclojure.js")
         (hp/include-css "/css/tryclojure.css")
@@ -21,7 +21,8 @@
            [:span.logo-try "REPL"]]]
          [:div#container
           [:pre [:div#console.console]]]
-
+         [:div.alert.alert-warning.alert-dismissable {:style "position: fixes; bottom:1em; left:1em;"}
+          [:div "The REPL functions will expire after 24 hours. Function timeout: 5 minutes."]]
          [:div.row-fluid
           [:div.span6
            [:h2 "REPL?"]
@@ -73,6 +74,4 @@
            [:p
             [:h4 "Export results"]
             "Found something interesting? Easily export it for later analysis: "
-            [:script {:src "https://gist.github.com/Frozenlock/345578e4aecc770482b2.js"}]]]]
-         [:div.navbar.navbar-fixed-bottom {:style "background-color: white;"}
-          [:div "The REPL functions will expire after 24 hours. Function timeout: 5 minutes."]]])))
+            [:script {:src "https://gist.github.com/Frozenlock/345578e4aecc770482b2.js"}]]]]])))

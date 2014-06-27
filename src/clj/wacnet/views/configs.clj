@@ -49,9 +49,10 @@
 
 (defn make-configs-forms []
   (-> (merge {:device-id 1 :port 47808 
-              :broadcast-address (net/get-broadcast-address (net/get-any-ip))}
+              :broadcast-address (net/get-broadcast-address (net/get-any-ip))
+              :local-address "0.0.0.0"}
              (ld/local-device-backup))
-      (select-keys [:device-id :port :broadcast-address])
+      (select-keys [:device-id :port :broadcast-address :local-address :apdu-timeout :apdu-segment-timeout])
       config-to-bootstrap))
 
 (defn local-interfaces []
@@ -75,9 +76,11 @@
                         "Validate and reinitialize the local device!")
       (he/link-to (hiccup.util/url "/configs" {:reset true})
                   [:div.btn.btn-danger "Reset default"])]]]
-   [:div.text-center {:style "margin-top:2em;"}
-    (when (save/get-configs)
-      [:div.badge.badge-warning "You are using a saved config file."])]
+    (when-let [configs (save/get-configs)]
+      [:div.text-center {:style "margin-top:2em;"}
+       [:span.label.label-warning "You are using a saved config file."]
+       (when (not= (:local-address configs) "0.0.0.0")
+         [:div.text-danger "The local address should (almost) always be 0.0.0.0 ."])])
    [:hr]
    (local-interfaces)])
   
@@ -88,6 +91,6 @@
         (config-page (when reset "cleared"))))
        
   (POST "/configs" req
-    (do (reset-with-config (-> req :params (select-keys [:device-id :broadcast-address :port])))        
+    (do (reset-with-config (-> req :params ))
         (layout
          (config-page "updated")))))

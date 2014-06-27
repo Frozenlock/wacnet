@@ -34,10 +34,10 @@ body {
 
 #console div.jquery-console-inner { 
 
- max-height: 40em;
- margin: 10px 10px;
- overflow:auto; 
- text-align:left;
+    height: 40vh;
+    margin: 10px 10px;
+    overflow:auto; 
+    text-align:left;
 }
 #console div.jquery-console-message-value {
   color:#0066FF; 

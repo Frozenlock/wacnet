@@ -4,20 +4,11 @@
             [hiccup.element :as he]
             [hiccup.form :as hf]
             [wacnet.ring-utils :refer [*url*]]
-            [wacnet.views.templates :as tp]
-            ))
+            [wacnet.views.templates :as tp]))
 
 
 (defn menu-item [link content]
   [:li {:class (when (re-find (re-pattern (str "^" link)) *url*) "active")} (he/link-to link content)])
-
-
-;; perhaps the services could be added as a plugin? This way Wacnet
-;; could remain somewhat 'neutral'.
-(def services
-   [:ul.dropdown-menu
-    [:li (he/link-to "/services/logger" "Data logging")]])
-
 
 (defn navbar-header []
   [:div.navbar-header
@@ -30,15 +21,17 @@
 (defn navbar-content []
   [:div.collapse.navbar-collapse {:id "main-navbar"}
    [:ul.nav.navbar-nav
-       (menu-item "/explorer" "Explorer")
-       (menu-item "/configs" "Configs")
-       (menu-item "/repl" "REPL")
-    [:li [:a [:i.fa.fa-globe]]]]
-   [:ul.nav.navbar-nav.navbar-right]])
+    (menu-item "/explorer" "Explorer")
+    (menu-item "/configs" "BACnet Configs")
+    (menu-item "/repl" "REPL")
+    (menu-item "/vigilia/configs" "Vigilia configs")]
+   [:a.navbar-brand.navbar-right {:href "https://hvac.io"}
+    "Powered by "[:img.img-rounded {:src "/img/HVACIO-logo.svg"
+                       :style "height: 23px;"}]]])
 
 (defn menu []
-  [:div.nav.navbar-inverse.navbar-fixed-top {:role "navigation"}
-   [:div.container
+  [:div.nav.navbar-default.navbar-fixed-top {:role "navigation"}
+   [:div
     (navbar-header)
     (navbar-content)]])
 
@@ -55,8 +48,7 @@
 
 (def style
   "  body {
-        padding-top: 60px;
-        padding-bottom: 40px;
+     padding-top: 50px;
       }
       .sidebar-nav {
         padding: 9px 0;
@@ -78,12 +70,13 @@
              [:style style]
              [:title "Wacnet - BACnet network explorer"]
              (hp/include-css "/css/bootstrap.min.css")
-             (hp/include-css "/css/bootstrap-responsive.min.css")
-             (hp/include-js "/js/jquery-1.11.0.min.js")
+             (hp/include-css "/css/font-awesome.min.css")
+             (hp/include-js "/js/jquery-1.11.1.min.js")
              (hp/include-js "/js/bootstrap.min.js")
-             (hp/include-js "js/cljs.js" 
-                            ;"js/cljs-min.js"
+             (hp/include-js "/js/out-dev/cljs.js" 
+                            ;            "js/cljs-min.js"
                             )
+
              ]
             [:body
              (menu)
