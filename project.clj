@@ -31,19 +31,21 @@
                  [org.clojars.frozenlock/gzip64 "1.0.0"]
 
                  ;; recurring jobs
-                 [overtone/at-at "1.2.0"]]
+                 [overtone/at-at "1.2.0"]
+
+                 ;;cljs
+                 [org.clojure/clojurescript "0.0-2173" :scope "provided"]]
 
   :profiles {:dev 
              {:dependencies
               [
                  ;;; cljs
-               [org.clojure/clojurescript "0.0-2173" :scope "provided"]
                ;[org.clojars.frozenlock/query "0.2.3"]
-               ;; [reagent "0.4.2"]
+               [reagent "0.4.2"]
                ;; [cljs-ajax "0.2.3"]
                
                ;; ;; UI 
-               ;; [hvacio/hvacio-ui "0.1.3" :exclusions [org.clojure/clojure]]
+               [hvacio/hvacio-ui "0.1.3" :exclusions [org.clojure/clojure]]
                ]}}
 
 
@@ -67,12 +69,12 @@
                      :source-paths ["src/cljs"]
                      :compiler {:output-to "resources/public/js/out-dev/cljs.js"
                                 
-                                ;; :output-dir "resources/public/js/out-dev"
-                                ;; ;:source-map-path "js/out-dev"
-                                ;; :source-map "resources/public/js/out-dev/cljs.js.map"
+                                :output-dir "resources/public/js/out-dev"
+                                ;:source-map-path "js/out-dev"
+                                :source-map "resources/public/js/out-dev/cljs.js.map"
 
 
-                                ;:preamble ["reagent/react.js"]
+                                :preamble ["reagent/react.js"]
                                 :optimizations :simple
                                 :pretty-print true}}}}
 

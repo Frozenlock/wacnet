@@ -45,17 +45,29 @@
 ;;                      ]])}
 ;;        [:i.fa.fa-bar-chart-o]]))
 
+(defn map-to-bootstrap [map]
+  (for [m map]
+    [:div.row {:style {:background "rgba(0,0,0,0.05)"
+                       :border-radius "3px"
+                       :margin "2px"}}
+     [:div.col-sm-4 [:strong (name (key m))]]
+     [:div.col-sm-8
+      (let [v (val m)]
+        (if (map? v)
+          (map-to-bootstrap v)
+          [:p {:style {:margin-left "1em"}}
+           (cond (keyword? v) (name v)
+                 (and (coll? v) (> (count v) 2)) [:ul
+                                                  (for [i v]
+                                                    [:li (str i)])]
+                 :else (str v))]))]]))
 
 (defn show-properties [properties]
   (let [prop @properties]
-    (for [[k v] prop]
-      ^{:key k}
-      [:div [:strong (name k)] " " (str v)])))
+    [:div.container-fluid (map-to-bootstrap prop)]))
 
-(enable-console-print!)
-
-(defn details-btn [obj]
-  (let [properties (atom {:<loading> "loading"})]
+(defn properties-btn [obj]
+  (let [properties (r/atom nil)]
     [:button.btn.btn-default.btn-sm
      {:on-click (fn [e]
                   (do 
@@ -63,14 +75,18 @@
                                          (:project-id obj)
                                          (:device-id obj)
                                          (:object-id obj))
-                        {:handler #(do (prn %) (reset! properties %))
+                        {:handler #(reset! properties %)
                          :error-handler prn})
-                  (modal/modal
-                   [:div
-                    [:div.modal-header
-                     [:h2 "Details"]]
-                    [:div.modal-body
-                     [show-properties properties]]])))}
+                    (modal/modal
+                     [:div
+                      [:div.modal-header
+                       [:button.close {:type "button" :data-dismiss modal/modal-id}
+                        [:span.glyphicon.glyphicon-remove {:aria-hidden "true"}]
+                        [:span.sr-only "Close"]]
+                       [:h2 "Properties" " "[:small (:name obj)]]]
+                      [:div.modal-body
+                       [show-properties properties]]])
+                    ))}
      [:i.fa.fa-list]]))
 
 (defn trend-log-btn [obj]
@@ -84,7 +100,7 @@
 (defn device-table-btns [obj]
   [:div {:style {:white-space "nowrap"}}
    (chart-btn obj)
-   (details-btn obj)
+   (properties-btn obj)
    (trend-log-btn obj)])
 
 (defn explorer []

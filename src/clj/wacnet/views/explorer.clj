@@ -13,8 +13,7 @@
       [:span.bg-warning
        (str "You are running a non-JS version of the explorer. You should try to activate " 
             "javascript in your browser, or use a more recent browser.")]]]
-    ;[:script {:type"text/javascript"} "wacnet.client.run();"]
-    ]))
+    [:script {:type"text/javascript"} "wacnet.client.run();"]]))
 
 (defroutes explorer-routes
   (GET "/explorer" []

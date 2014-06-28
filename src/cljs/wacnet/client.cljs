@@ -12,15 +12,9 @@
 (defn render []
   (r/render-component
    [:div.container-fluid
-    ;; [modal/modal-window]
-    ;; [exp/explorer]
-    ]
+    [modal/modal-window]
+    [exp/explorer]]
    (by-id "explorer-app")))
 
-(.log js/console "ping")
-
-(defn render []
-  (.log js/console "hello"))
-
 (defn ^:export run []
-  (aset js/window "onload" #(.log js/console "hello")))
+  (aset js/window "onload" render))

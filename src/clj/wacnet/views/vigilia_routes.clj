@@ -7,7 +7,17 @@
             [hiccup.element :as he]
             [hiccup.form :as hf]
             [noir.response :as resp]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clj-http.client :as client]))
+
+;;; First we should validate if the user can see the remote servers
+;;; (is he even on the Internet?)
+
+(def base-url "https://bacnethelp.com") ; this should be changed to
+                                        ; HVAC.IO once clj-http
+                                        ; support NSI
+
+(client/get base-url)
 
 (defn ctrl-btn [param content]
   (he/link-to (hiccup.util/url "/vigilia" {param true}) content))
@@ -22,7 +32,7 @@
                    [:div.btn.btn-danger {:style "margin-left: 1em;"} "Stop"])
        (he/link-to "/vigilia/configs/start-vigilia"
                    [:div.btn.btn-success {:style "margin-left: 1em;"} "Start"])]]
-     [:div.col-md-6
+     [:div.col-sm-6
       [:p "Starting Vigilia will reinitialize the local device with the Vigilia configurations."]
       [:p "Wacnet will start the Vigilia automatically on startup if a "
        "Vigilia configuration file is found."]]
@@ -32,42 +42,42 @@
   (when-let [configs (scan/get-configs-only)]
     (list
      [:div.row
-      [:div.col-md-3]
-      [:div.col-md-6
+      [:div.col-sm-3]
+      [:div.col-sm-6
        [:span {:style "padding: 5px; border: 1px solid #cecece; border-radius:5px;"}
         "See the logged data at your "(he/link-to (str "https://hvac.io/vigilia/v/" 
                                                        (:project-id configs))
                                                   "project page")]]
-      [:div.col-md-3]]
+      [:div.col-sm-3]]
                                                
      [:div.row
       [:h3 "Logger status"]
-      [:div.col-md-2
+      [:div.col-sm-2
        (let [status @timed/logging-state
              class (get {"Mapping network" "badge-warning"
                          "Logging" "badge-success"
                          "Stopped" "badge-important"} status "")]
          [:span {:class (str "badge " class)} status])]
-      [:div.col-md-2
+      [:div.col-sm-2
        (he/link-to "/vigilia/configs"
                    [:div.btn "Refresh"])]
-      [:div.col-md-6
+      [:div.col-sm-6
        [:p "Initial mapping of the network can take longer (minutes) if you have a large network. "
         "Also note that devices can be discovered after the initial mapping and will be scanned as required." ]]]
      [:div.row
-      [:div.col-md-2
+      [:div.col-sm-2
        [:p "Local logs: "]]
-      [:div.col-md-2
+      [:div.col-sm-2
        (str (count (scan/find-unsent-logs)))]
-      [:div.col-md-8
+      [:div.col-sm-8
        [:p "Local logs are logs that weren't sent back (yet) to the remote servers. "
        "Perhaps a connection problem? If they start to accumulate, "
        "you should investigate your Internet access."]]]
      [:div.row
-      [:div.col-md-2
+      [:div.col-sm-2
        [:p "Last scan duration: "]]
-      [:div.col-md-2 (format "%.1f" (double (/ (or @scan/last-scan-duration 0) 1000 60))) " min"]
-      [:div.col-md-8
+      [:div.col-sm-2 (format "%.1f" (double (/ (or @scan/last-scan-duration 0) 1000 60))) " min"]
+      [:div.col-sm-8
        [:p "Please don't set a scanning interval smaller than this value. "
         "The time taken to do a scan is determined by your network. MS/TP networks WILL "
         "take longer than an IP or Ethernet network."]]]
@@ -80,16 +90,16 @@
           (for [m config]
             (let [n (name (key m))]
               [:div.form-group
-               [:label.control-label.col-md-4 n]
-               [:div.col-md-8
+               [:label.control-label.col-sm-4 n]
+               [:div.col-sm-8
                 (let [v (val m)]
                   [:input.form-control {:type :text :name n :value v}])]])))))
 
 
               ;; [:div.row
-              ;;  [:div.col-md-2
+              ;;  [:div.col-sm-2
               ;;   [:p {:style "margin-left:1em;"} n]]
-              ;;  [:div.col-md-10
+              ;;  [:div.col-sm-10
               ;;   (let [v (val m)]
               ;;     [:p {:style "margin-left:1em;"}
               ;;      (hf/text-field n v)])]])))))
@@ -97,9 +107,9 @@
 (defn map-to-bootstrap [map]
   (for [m map]
     [:div.row {:style "border: 1px solid #cecece; border-radius:5px;"}
-     [:div.col-md-4
+     [:div.col-sm-4
       [:p {:style "margin-left:1em;"}(name (key m))]]
-     [:div.col-md-8
+     [:div.col-sm-8
       (let [v (val m)]
         (if (map? v)
           (map-to-bootstrap v)
@@ -114,7 +124,7 @@
                           (select-keys config [:project-id :vigilia-password]))]
     (list
      [:div.row
-      [:div.col-md-12
+      [:div.col-sm-12
        [:h3 "Configurations"]
        [:p "The vigilia configurations are fetched directly from your "
         (he/link-to "https://hvac.io/projects" "project configuration")"."
@@ -126,7 +136,7 @@
                                       "Retrieve the configurations!")])]]
      (when config
        [:div.row
-        [:div.col-md-12
+        [:div.col-sm-12
          [:h4 "Current configurations"]
          (let [config (dissoc config :vigilia-password :project-id)]
            (if (empty? config)
@@ -137,7 +147,7 @@
              (map-to-bootstrap config)))]])
      (when (and config (not= @timed/logging-state "Stopped"))
        [:div.row
-        [:div.col-md-12
+        [:div.col-sm-12
          [:h4 "Device IDs to scan"]
          (if (= @timed/logging-state "Mapping network")
            [:p "Still mapping the network..."]
@@ -145,7 +155,7 @@
      (when config
        [:div.row
         [:hr]
-        [:div.col-md-12
+        [:div.col-sm-12
          (he/link-to "/vigilia/configs/delete-configs"
                      [:div.btn.btn-warning "Delete configs"])
          [:span {:style "margin-left: 1em;"}
