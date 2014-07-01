@@ -1,4 +1,4 @@
-(defproject wacnet "1.1.0-BETA"
+(defproject wacnet "1.1.0"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -31,22 +31,23 @@
                  [org.clojars.frozenlock/gzip64 "1.0.0"]
 
                  ;; recurring jobs
-                 [overtone/at-at "1.2.0"]
-
-                 ;;cljs
-                 [org.clojure/clojurescript "0.0-2173" :scope "provided"]]
+                 [overtone/at-at "1.2.0"]]
 
   :profiles {:dev 
              {:dependencies
               [
                  ;;; cljs
-               ;[org.clojars.frozenlock/query "0.2.3"]
+               [org.clojure/clojurescript "0.0-2173" :scope "provided"]
+
                [reagent "0.4.2"]
-               ;; [cljs-ajax "0.2.3"]
                
+               ;; internationalization
+               [com.taoensso/tower "2.1.0-RC1"]
+
                ;; ;; UI 
-               [hvacio/hvacio-ui "0.1.3" :exclusions [org.clojure/clojure]]
-               ]}}
+               [hvacio/hvacio-ui "0.1.3" :exclusions [org.clojure/clojure]]]}
+
+             :uberjar {:aot :all}}
 
 
 ;  :uberjar-name "wacnet-webserver.jar"

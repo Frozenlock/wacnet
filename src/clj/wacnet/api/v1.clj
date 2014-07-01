@@ -138,6 +138,4 @@
   ;;; Wacnet only API
   (comp/GET "/api/v1/trend-log/:project-id/:device-id/:trend-log-instance/:filename"
       [project-id device-id trend-log-instance]
-    (do (println (str project-id " ---" device-id "-----" trend-log-instance))
          (trend-log device-id trend-log-instance)))
-)

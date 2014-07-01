@@ -1,7 +1,7 @@
 (ns wacnet.local-device
   (:require [bacure.core]
             [bacure.local-device :as ld]
-            ;[logger.timed :as logger]
+            [wacnet.vigilia.logger.timed :as timed]
             [trptcolin.versioneer.core :as version]
             [wacnet.nrepl]))
 
@@ -19,5 +19,4 @@
          "Access the web interface at \n"
          "http://"(bacure.network/get-any-ip)":47800, "
          "or use the Clojure REPL on port " (:port @wacnet.nrepl/server)".")})
-  ;(logger/maybe-start-logging)
-  )
+  (timed/maybe-start-logging))

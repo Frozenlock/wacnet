@@ -5,16 +5,17 @@
             [hvacio-ui.templates.modals :as modal]
             [wacnet.explorer :as exp]))
 
+(enable-console-print!)
 
 (defn by-id [id]
   (dom/getElement id))
 
-(defn render []
+(defn render [project-id]
   (r/render-component
    [:div.container-fluid
     [modal/modal-window]
-    [exp/explorer]]
+    [exp/explorer project-id]]
    (by-id "explorer-app")))
 
-(defn ^:export run []
-  (aset js/window "onload" render))
+(defn ^:export run [project-id]
+  (aset js/window "onload" #(render project-id)))

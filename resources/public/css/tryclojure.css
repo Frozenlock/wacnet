@@ -33,7 +33,7 @@ body {
 }
 
 #console div.jquery-console-inner { 
-
+    height: 20em;
     height: 40vh;
     margin: 10px 10px;
     overflow:auto; 

@@ -1,14 +1,16 @@
 (ns wacnet.views.configs
   (:require [compojure.core :refer [defroutes GET POST]]
             [clojure.walk :as walk]
-            [wacnet.views.common :refer [layout with-sidebar]]
+            [wacnet.views.common :refer [layout]]
+            [wacnet.vigilia.logger.timed :as timed]
             [bacure.core :as bac]
             [bacure.local-device :as ld]
             [bacure.local-save :as save]
             [bacure.network :as net]
             [hiccup.page :as hp]
             [hiccup.element :as he]
-            [hiccup.form :as hf]))
+            [hiccup.form :as hf]
+            [noir.session :as session]))
 
 (defn read-map [m]
   (binding [*read-eval* false]
@@ -27,6 +29,9 @@
 
 (defn reset-with-config
   "Reset the local-device with the new configs."[config]
+  (session/put! :msg (str "Configurations updated. "
+                          (when (timed/is-logging?) "Vigilia logging stopped.")))
+  (timed/stop-logging)
   (ld/reset-local-device (read-config config))
   (ld/save-local-device-backup)
   (bac/boot-up))
@@ -34,6 +39,9 @@
 (defn reset-default
   "Erased any saved config and reset to default."
   []
+  (session/put! :msg (str "Configurations cleared. "
+                          (when (timed/is-logging?) "Vigilia logging stopped.")))
+  (timed/stop-logging)
   (save/delete-configs)
   (ld/clear-all!)
   (bac/boot-up))
@@ -86,9 +94,10 @@
   
 (defroutes configs-routes
   (GET "/configs" [reset]
-       (when reset (reset-default))
-       (layout
-        (config-page (when reset "cleared"))))
+    (when reset
+      (reset-default))
+    (layout
+     (config-page (when reset "cleared"))))
        
   (POST "/configs" req
     (do (reset-with-config (-> req :params ))

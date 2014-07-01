@@ -9,7 +9,15 @@
             [gzip64.core :as g]))
 
 (def ^:dynamic *base-url*
-  "https://hvac.io/api/v1")
+  ;"https://hvac.io/api/v1"
+  "https://bacnethelp.com")
+ ; this should be changed to HVAC.IO once clj-http support NSI
+
+(defn can-connect?
+  "Try to connect to the remote servers." []
+  (-> (try (client/get *base-url*) (catch Exception e))
+      (nil?)
+      (not)))
 
 
 (def logger-version
@@ -20,7 +28,7 @@
 
 (defn- remove-nil-in-maps [m]
   (into {} (remove (comp nil? val) m)))
-  
+
 (defn get-configs-only
   "Get the logger configs. Remove all the `nil' entries."[]
   (try (->> (str path "/configs.cjm")
@@ -37,7 +45,8 @@
 
 (defn save-configs
   "Save data to configs file. Return data." [data]
-  (local/mkdir-spit (str path "/configs.cjm") data) data)
+  (let [pp-data (with-out-str (clojure.pprint/pprint data))]
+    (local/mkdir-spit (str path "/configs.cjm") pp-data) data))
 
 (defn delete-configs
   "Delete the logger configs file, if found." []
@@ -48,6 +57,8 @@
   `(binding [*base-url* "http://192.168.0.3:8081/api/v1"]
      ~@body))
 
+
+;;; This function should disappear once clj-http supports NSI
 (defn project-configs-from-server
   "Retrieve the logger project's config from the remote
    server. `query' is map of this form:
@@ -60,17 +71,14 @@
       :body
       local/safe-read))
 
-(defn update-configs
-  "Get the local configs, fetch them from the server, and merge
-   everything together. Return the configs only if they changed."[]
-   (try (let [local-configs (get-configs-only)
-              remote-configs (-> (project-configs-from-server local-configs)
-                                 remove-nil-in-maps)]
-          (when (not=  (:timestamp remote-configs) (:timestamp local-configs))
-            (save-configs (-> local-configs
-                              (find :logger-password)
-                              ((fn [x] (merge remote-configs x)))))))
-        (catch Exception e)))
+(defn credentials-valid?
+  "Check if the provided credentials (:project-id and :logger-password) are
+  able to access an account." []
+  (when-let [configs (get-configs-only)]
+    (try (project-configs-from-server 
+          (select-keys configs [:logger-password :project-id]))
+         (catch Exception e))))
+
 
 (defn filter-device
   "Test the criteria maps agains a device ID and return :remove if any

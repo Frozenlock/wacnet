@@ -4,7 +4,8 @@
             [hiccup.element :as he]
             [hiccup.form :as hf]
             [wacnet.ring-utils :refer [*url*]]
-            [wacnet.views.templates :as tp]))
+            [wacnet.views.templates :as tp]
+            [noir.session :as session]))
 
 
 (defn menu-item [link content]
@@ -63,6 +64,15 @@
         }
       }")
 
+(defn message
+  "When a message is present in the session, creates a DIV and show it
+  to the user."[]
+  (when-let [mess (session/get :msg)]
+    (session/put! :msg nil)
+    [:div.alert.alert-warning.alert-dismissable.message.text-center
+     [:button {:type "button" :class "close" :data-dismiss "alert" :aria-hidden "true"}"&times;"]
+     [:strong mess]]))
+
 (defn layout [& content]
   (hp/html5 {:lang "en"}
             [:head
@@ -80,4 +90,5 @@
              ]
             [:body
              (menu)
+             (message)
              content]))

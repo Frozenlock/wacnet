@@ -6,44 +6,57 @@
            [wacnet.translation2 :as t2]
            [ajax.core :refer [GET POST]]))
 
-(defn chart-btn [obj]
-  (when (:value obj)
-    [:button.btn.btn-default.btn-sm
-      {:on-click #(modal/modal
-                   [:div {:style { :width "100%"}}
-                    [:div.modal-header
-                     [:button.close {:type "button" :data-dismiss modal/modal-id}
-                      [:span.glyphicon.glyphicon-remove {:aria-hidden "true"}]
-                      [:span.sr-only "Close"]]
-                     [:h2.modal-title "Vigilia" " " [:i.fa.fa-bar-chart-o]]]
-                    [:div.modal-body
-                     [:h3.text-center (t2/t @t2/locale :explorer/not-sub-vigilia)]
-                     [:div.row
-                      [:div.col-sm-6
-                       [:img {:src "/img/graphs-views.png"
-                              :style {:max-height "100%" :max-width "100%"}}]]
-                      [:div.col-sm-6.text-center {:style {:margin-top "5em"}}
-                       [:p (t2/t @t2/locale :explorer/guess)]
-                       [:p (t2/t @t2/locale :explorer/record)]
-                       [:a.btn.btn-primary.btn-lg 
-                        {:href "https://hvac.io"
-                         :target "_blank"
-                         :style {:margin-top "2em"}}
-                        (t2/t @t2/locale :explorer/learn-more)]]]]
-                    [:div.modal-footer ]])}
-       [:i.fa.fa-bar-chart-o]]))
+(def dummy-project-id
+  "A 'fake' project-id for when a project-id isn't provided."
+  "fake-project-id")
 
-;; (defn chart-btn [obj]
-;;   (when (:value obj)
-;;     [:button.btn.btn-default.btn-sm
-;;       {:on-click #(modal/modal
-;;                    [:div 
-;;                     [:div.modal-header [:h2.modal-title "Vigilia" " " [:i.fa.fa-bar-chart-o]]]
-;;                     [:div.modal-body
-;;                      [:iframe {:height "500px" :width "100%" :style {:border "none"}
-;;                                :src "https://hvac.io/vigilia/embed/g/5371147be4b0222b740851a2?tab=%3Atimeseries&bc%5B%5D=%3Aa10122..0.7..0.2..4.1"}]
-;;                      ]])}
-;;        [:i.fa.fa-bar-chart-o]]))
+(defn vigilia-non-active [obj]
+  [:div {:style { :width "100%"}}
+   [:div.modal-header
+    [:button.close {:type "button" :data-dismiss modal/modal-id}
+     [:span.glyphicon.glyphicon-remove {:aria-hidden "true"}]
+     [:span.sr-only "Close"]]
+    [:h2.modal-title "Vigilia" " " [:i.fa.fa-bar-chart-o]]]
+   [:div.modal-body
+    [:h3.text-center (t2/t @t2/locale :explorer/not-sub-vigilia)]
+    [:div.row
+     [:div.col-sm-6
+      [:img {:src "/img/graphs-views.png"
+             :style {:max-height "100%" :max-width "100%"}}]]
+     [:div.col-sm-6.text-center {:style {:margin-top "5em"}}
+      [:p (t2/t @t2/locale :explorer/guess)]
+      [:p (t2/t @t2/locale :explorer/record)]
+      [:a.btn.btn-primary.btn-lg 
+       {:href "https://hvac.io"
+        :target "_blank"
+        :style {:margin-top "2em"}}
+       (t2/t @t2/locale :explorer/learn-more)]]]]
+   [:div.modal-footer ]])
+
+(defn vigilia-active [obj]
+  (let [{:keys [project-id device-id object-id]} obj]
+    [:div 
+     [:div.modal-header 
+      [:h2.modal-title "Vigilia" " " [:i.fa.fa-bar-chart-o]]]
+     [:div.modal-body
+      [:iframe {:height "500px" :width "100%" :style {:border "none"}
+                :src (str "https://hvac.io/vigilia/embed/g/" 
+                          project-id "?tab=%3Atimeseries&bc%5B%5D=%3Aa"
+                          device-id ".."
+                          object-id)}]]]))
+
+
+(defn vigilia-modal [obj]
+  (modal/modal
+   (if-not (= dummy-project-id (:project-id obj))
+     (vigilia-active obj)
+     (vigilia-non-active obj))))
+
+(defn chart-btn [obj]
+  (when (number? (:value obj))
+    [:button.btn.btn-default.btn-sm
+      {:on-click #(vigilia-modal obj)}
+       [:i.fa.fa-bar-chart-o]]))
 
 (defn map-to-bootstrap [map]
   (for [m map]
@@ -103,5 +116,5 @@
    (properties-btn obj)
    (trend-log-btn obj)])
 
-(defn explorer []
-  [ctrls/controllers-view "<not-provided>" {:device-table-btns device-table-btns}])
+(defn explorer [project-id]
+  [ctrls/controllers-view (or project-id dummy-project-id) {:device-table-btns device-table-btns}])
