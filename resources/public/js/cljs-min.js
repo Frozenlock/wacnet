@@ -108,7 +108,7 @@ function pa(a, b) {
   function c() {
   }
   c.prototype = b.prototype;
-  a.Kd = b.prototype;
+  a.Jd = b.prototype;
   a.prototype = new c;
   a.prototype.constructor = a;
 }
@@ -274,11 +274,11 @@ function cb(a) {
   return null == a ? null : a.constructor;
 }
 function u(a, b) {
-  var c = cb(b), c = r(r(c) ? c.Uc : c) ? c.Tc : k(b);
+  var c = cb(b), c = r(r(c) ? c.Tc : c) ? c.Sc : k(b);
   return Error(["No protocol method ", a, " defined for type ", c, ": ", b].join(""));
 }
 function db(a) {
-  var b = a.Tc;
+  var b = a.Sc;
   return r(b) ? b : "" + w(a);
 }
 function eb(a) {
@@ -495,8 +495,8 @@ function Bb(a) {
   return b.call(null, a);
 }
 function Cb(a) {
-  if (a ? a.Pc : a) {
-    return a.Pc();
+  if (a ? a.Oc : a) {
+    return a.Oc();
   }
   var b;
   b = Cb[k(null == a ? null : a)];
@@ -669,8 +669,8 @@ function Vb(a) {
   return b.call(null, a);
 }
 function B(a, b) {
-  if (a ? a.Sc : a) {
-    return a.Sc(0, b);
+  if (a ? a.Rc : a) {
+    return a.Rc(0, b);
   }
   var c;
   c = B[k(null == a ? null : a)];
@@ -769,8 +769,8 @@ function dc(a, b, c) {
   return d.call(null, a, b, c);
 }
 function ec(a, b, c) {
-  if (a ? a.Rc : a) {
-    return a.Rc(0, b, c);
+  if (a ? a.Qc : a) {
+    return a.Qc(0, b, c);
   }
   var d;
   d = ec[k(null == a ? null : a)];
@@ -780,8 +780,8 @@ function ec(a, b, c) {
   return d.call(null, a, b, c);
 }
 function fc(a) {
-  if (a ? a.Mc : a) {
-    return a.Mc();
+  if (a ? a.Lc : a) {
+    return a.Lc();
   }
   var b;
   b = fc[k(null == a ? null : a)];
@@ -824,12 +824,12 @@ function ic(a) {
   return b.call(null, a);
 }
 function jc(a) {
-  this.Jd = a;
+  this.Id = a;
   this.r = 0;
   this.j = 1073741824;
 }
-jc.prototype.Sc = function(a, b) {
-  return this.Jd.append(b);
+jc.prototype.Rc = function(a, b) {
+  return this.Id.append(b);
 };
 function kc(a) {
   var b = new Qa;
@@ -928,7 +928,7 @@ function G(a) {
   if (null == a) {
     return null;
   }
-  if (a && (a.j & 8388608 || a.Yd)) {
+  if (a && (a.j & 8388608 || a.Xd)) {
     return a.M(null);
   }
   if (a instanceof Array || "string" === typeof a) {
@@ -956,7 +956,7 @@ function I(a) {
   return null != a ? a && (a.j & 64 || a.kb) ? a.aa(null) : (a = G(a)) ? sb(a) : m(J, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/core.cljs"], null)) : m(J, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/core.cljs"], null));
 }
 function K(a) {
-  return null == a ? null : a && (a.j & 128 || a.Qc) ? a.ga(null) : G(I(a));
+  return null == a ? null : a && (a.j & 128 || a.Pc) ? a.ga(null) : G(I(a));
 }
 var C = function() {
   function a(a, b) {
@@ -1163,10 +1163,10 @@ var uc = function() {
   return d;
 }();
 function wc(a) {
-  return a ? a.j & 2 || a.sd ? !0 : a.j ? !1 : s(kb, a) : s(kb, a);
+  return a ? a.j & 2 || a.rd ? !0 : a.j ? !1 : s(kb, a) : s(kb, a);
 }
 function xc(a) {
-  return a ? a.j & 16 || a.Nc ? !0 : a.j ? !1 : s(pb, a) : s(pb, a);
+  return a ? a.j & 16 || a.Mc ? !0 : a.j ? !1 : s(pb, a) : s(pb, a);
 }
 function qc(a, b) {
   this.g = a;
@@ -1361,7 +1361,7 @@ var Ec = function() {
 }();
 function O(a) {
   if (null != a) {
-    if (a && (a.j & 2 || a.sd)) {
+    if (a && (a.j & 2 || a.rd)) {
       a = a.S(null);
     } else {
       if (a instanceof Array) {
@@ -1458,7 +1458,7 @@ var Fc = function() {
 }(), Q = function() {
   function a(a, b, c) {
     if (null != a) {
-      if (a && (a.j & 16 || a.Nc)) {
+      if (a && (a.j & 16 || a.Mc)) {
         return a.pa(null, b, c);
       }
       if (a instanceof Array || "string" === typeof a) {
@@ -1481,7 +1481,7 @@ var Fc = function() {
     if (null == a) {
       return null;
     }
-    if (a && (a.j & 16 || a.Nc)) {
+    if (a && (a.j & 16 || a.Mc)) {
       return a.L(null, b);
     }
     if (a instanceof Array || "string" === typeof a) {
@@ -1512,10 +1512,10 @@ var Fc = function() {
   return c;
 }(), R = function() {
   function a(a, b, c) {
-    return null != a ? a && (a.j & 256 || a.Oc) ? a.U(null, b, c) : a instanceof Array ? b < a.length ? a[b] : c : "string" === typeof a ? b < a.length ? a[b] : c : s(ub, a) ? vb.c(a, b, c) : t ? c : null : c;
+    return null != a ? a && (a.j & 256 || a.Nc) ? a.U(null, b, c) : a instanceof Array ? b < a.length ? a[b] : c : "string" === typeof a ? b < a.length ? a[b] : c : s(ub, a) ? vb.c(a, b, c) : t ? c : null : c;
   }
   function b(a, b) {
-    return null == a ? null : a && (a.j & 256 || a.Oc) ? a.T(null, b) : a instanceof Array ? b < a.length ? a[b] : null : "string" === typeof a ? b < a.length ? a[b] : null : s(ub, a) ? vb.a(a, b) : null;
+    return null == a ? null : a && (a.j & 256 || a.Nc) ? a.T(null, b) : a instanceof Array ? b < a.length ? a[b] : null : "string" === typeof a ? b < a.length ? a[b] : null : s(ub, a) ? vb.a(a, b) : null;
   }
   var c = null, c = function(c, e, f) {
     switch(arguments.length) {
@@ -1629,18 +1629,18 @@ var Fc = function() {
 }();
 function Jc(a) {
   var b = ha(a);
-  return b ? b : a ? r(r(null) ? null : a.rd) ? !0 : a.Ac ? !1 : s(ib, a) : s(ib, a);
+  return b ? b : a ? r(r(null) ? null : a.qd) ? !0 : a.Ac ? !1 : s(ib, a) : s(ib, a);
 }
 var m = function Kc(b, c) {
-  return Jc(b) && !(b ? b.j & 262144 || b.Ad || (b.j ? 0 : s(Kb, b)) : s(Kb, b)) ? Kc(function() {
+  return Jc(b) && !(b ? b.j & 262144 || b.zd || (b.j ? 0 : s(Kb, b)) : s(Kb, b)) ? Kc(function() {
     "undefined" === typeof Ra && (Ra = function(b, c, f, g) {
       this.m = b;
       this.xb = c;
-      this.Od = f;
-      this.Fd = g;
+      this.Nd = f;
+      this.Ed = g;
       this.r = 0;
       this.j = 393217;
-    }, Ra.Uc = !0, Ra.Tc = "cljs.core/t7295", Ra.Bd = function(b) {
+    }, Ra.Tc = !0, Ra.Sc = "cljs.core/t7295", Ra.Ad = function(b) {
       return B(b, "cljs.core/t7295");
     }, Ra.prototype.call = function() {
       function b(d, g) {
@@ -1678,21 +1678,21 @@ var m = function Kc(b, c) {
       };
       b.e = c;
       return b;
-    }(), Ra.prototype.rd = !0, Ra.prototype.J = function() {
-      return this.Fd;
+    }(), Ra.prototype.qd = !0, Ra.prototype.J = function() {
+      return this.Ed;
     }, Ra.prototype.N = function(b, c) {
-      return new Ra(this.m, this.xb, this.Od, c);
+      return new Ra(this.m, this.xb, this.Nd, c);
     });
     return new Ra(c, b, Kc, null);
   }(), c) : null == b ? null : Lb(b, c);
 };
 function Lc(a) {
   var b = null != a;
-  return(b ? a ? a.j & 131072 || a.xd || (a.j ? 0 : s(Ib, a)) : s(Ib, a) : b) ? Jb(a) : null;
+  return(b ? a ? a.j & 131072 || a.wd || (a.j ? 0 : s(Ib, a)) : s(Ib, a) : b) ? Jb(a) : null;
 }
 var Mc = {}, Nc = 0;
 function F(a) {
-  if (a && (a.j & 4194304 || a.Ud)) {
+  if (a && (a.j & 4194304 || a.Td)) {
     a = a.C(null);
   } else {
     if ("number" === typeof a) {
@@ -1722,16 +1722,16 @@ function Oc(a) {
   return null == a || bb(G(a));
 }
 function Qc(a) {
-  return null == a ? !1 : a ? a.j & 8 || a.Qd ? !0 : a.j ? !1 : s(nb, a) : s(nb, a);
+  return null == a ? !1 : a ? a.j & 8 || a.Pd ? !0 : a.j ? !1 : s(nb, a) : s(nb, a);
 }
 function Rc(a) {
-  return null == a ? !1 : a ? a.j & 1024 || a.Vd ? !0 : a.j ? !1 : s(yb, a) : s(yb, a);
+  return null == a ? !1 : a ? a.j & 1024 || a.Ud ? !0 : a.j ? !1 : s(yb, a) : s(yb, a);
 }
 function Sc(a) {
-  return a ? a.j & 16384 || a.ae ? !0 : a.j ? !1 : s(Gb, a) : s(Gb, a);
+  return a ? a.j & 16384 || a.$d ? !0 : a.j ? !1 : s(Gb, a) : s(Gb, a);
 }
 function Tc(a) {
-  return a ? a.r & 512 || a.Pd ? !0 : !1 : !1;
+  return a ? a.r & 512 || a.Od ? !0 : !1 : !1;
 }
 function Uc(a) {
   var b = [];
@@ -1754,7 +1754,7 @@ function Yc(a) {
 }
 function Zc(a) {
   var b = Jc(a);
-  return b ? b : a ? a.j & 1 || a.Td ? !0 : a.j ? !1 : s(jb, a) : s(jb, a);
+  return b ? b : a ? a.j & 1 || a.Sd ? !0 : a.j ? !1 : s(jb, a) : s(jb, a);
 }
 function $c(a, b) {
   return R.c(a, b, Wc) === Wc ? !1 : !0;
@@ -1888,10 +1888,10 @@ var dd = function() {
   return c;
 }(), gb = function() {
   function a(a, b, c) {
-    return c && (c.j & 524288 || c.zd) ? c.$(null, a, b) : c instanceof Array ? vc.c(c, a, b) : "string" === typeof c ? vc.c(c, a, b) : s(Mb, c) ? Nb.c(c, a, b) : t ? Cc.c(a, b, c) : null;
+    return c && (c.j & 524288 || c.yd) ? c.$(null, a, b) : c instanceof Array ? vc.c(c, a, b) : "string" === typeof c ? vc.c(c, a, b) : s(Mb, c) ? Nb.c(c, a, b) : t ? Cc.c(a, b, c) : null;
   }
   function b(a, b) {
-    return b && (b.j & 524288 || b.zd) ? b.Z(null, a) : b instanceof Array ? vc.a(b, a) : "string" === typeof b ? vc.a(b, a) : s(Mb, b) ? Nb.a(b, a) : t ? Cc.a(a, b) : null;
+    return b && (b.j & 524288 || b.yd) ? b.Z(null, a) : b instanceof Array ? vc.a(b, a) : "string" === typeof b ? vc.a(b, a) : s(Mb, b) ? Nb.a(b, a) : t ? Cc.a(a, b) : null;
   }
   var c = null, c = function(c, e, f) {
     switch(arguments.length) {
@@ -1998,7 +1998,7 @@ var w = function() {
   return a;
 }();
 function Ac(a, b) {
-  return Yc((b ? b.j & 16777216 || b.Zd || (b.j ? 0 : s(Tb, b)) : s(Tb, b)) ? function() {
+  return Yc((b ? b.j & 16777216 || b.Yd || (b.j ? 0 : s(Tb, b)) : s(Tb, b)) ? function() {
     for (var c = G(a), d = G(b);;) {
       if (null == c) {
         return null == d;
@@ -2157,7 +2157,7 @@ h.Q = function() {
 };
 var J = new qd(null);
 function rd(a) {
-  return(a ? a.j & 134217728 || a.Xd || (a.j ? 0 : s(Ub, a)) : s(Ub, a)) ? Vb(a) : gb.c(Ec, m(J, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/core.cljs"], null)), a);
+  return(a ? a.j & 134217728 || a.Wd || (a.j ? 0 : s(Ub, a)) : s(Ub, a)) ? Vb(a) : gb.c(Ec, m(J, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/core.cljs"], null)), a);
 }
 var sd = function() {
   function a(a) {
@@ -2302,7 +2302,7 @@ function vd(a, b) {
   return a === b ? !0 : a instanceof V && b instanceof V ? a.Ca === b.Ca : !1;
 }
 function wd(a) {
-  if (a && (a.r & 4096 || a.yd)) {
+  if (a && (a.r & 4096 || a.xd)) {
     return a.ba;
   }
   throw Error([w("Doesn't support namespace: "), w(a)].join(""));
@@ -2438,7 +2438,7 @@ h.Z = function(a, b) {
 h.$ = function(a, b, c) {
   return vc.n(this.g, b, c, this.I);
 };
-h.Mc = function() {
+h.Lc = function() {
   if (this.I === this.end) {
     throw Error("-drop-first of empty chunk");
   }
@@ -3507,7 +3507,7 @@ var be = function() {
   }, null, null);
 };
 function he(a, b) {
-  return null != a ? a && (a.r & 4 || a.Rd) ? Od(gb.c(bc, ac(a), b)) : gb.c(ob, a, b) : gb.c(Ec, m(J, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/core.cljs"], null)), b);
+  return null != a ? a && (a.r & 4 || a.Qd) ? Od(gb.c(bc, ac(a), b)) : gb.c(ob, a, b) : gb.c(Ec, m(J, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/core.cljs"], null)), b);
 }
 var je = function() {
   function a(a, b, c, d) {
@@ -3576,7 +3576,7 @@ var le = function() {
     for (b = G(b);;) {
       if (b) {
         var l = a;
-        if (l ? l.j & 256 || l.Oc || (l.j ? 0 : s(ub, l)) : s(ub, l)) {
+        if (l ? l.j & 256 || l.Nc || (l.j ? 0 : s(ub, l)) : s(ub, l)) {
           a = R.c(a, H(b), g);
           if (g === a) {
             return c;
@@ -3850,7 +3850,7 @@ h.Db = function() {
 h.tc = function() {
   return x.a(this, 0);
 };
-h.Pc = function() {
+h.Oc = function() {
   return x.a(this, 1);
 };
 h.toString = function() {
@@ -4258,7 +4258,7 @@ h.S = function() {
   }
   throw Error("count after persistent!");
 };
-h.Rc = function(a, b, c) {
+h.Qc = function(a, b, c) {
   var d = this;
   if (d.root.v) {
     if (0 <= b && b < d.k) {
@@ -4764,7 +4764,7 @@ h.lb = function(a, b, c) {
 };
 h.Ja = function(a, b) {
   if (r(this.Xa)) {
-    if (b ? b.j & 2048 || b.wd || (b.j ? 0 : s(Ab, b)) : s(Ab, b)) {
+    if (b ? b.j & 2048 || b.vd || (b.j ? 0 : s(Ab, b)) : s(Ab, b)) {
       return dc(this, nd.b ? nd.b(b) : nd.call(null, b), od.b ? od.b(b) : od.call(null, b));
     }
     for (var c = G(b), d = this;;) {
@@ -5461,7 +5461,7 @@ h.Ja = function(a, b) {
   var c;
   a: {
     if (this.v) {
-      if (b ? b.j & 2048 || b.wd || (b.j ? 0 : s(Ab, b)) : s(Ab, b)) {
+      if (b ? b.j & 2048 || b.vd || (b.j ? 0 : s(Ab, b)) : s(Ab, b)) {
         c = tf(this, nd.b ? nd.b(b) : nd.call(null, b), od.b ? od.b(b) : od.call(null, b));
         break a;
       }
@@ -5569,7 +5569,7 @@ h.C = function() {
   return yc(this);
 };
 h.ga = function() {
-  var a = this.Fa, a = (a ? a.j & 128 || a.Qc || (a.j ? 0 : s(tb, a)) : s(tb, a)) ? this.Fa.ga(null) : K(this.Fa);
+  var a = this.Fa, a = (a ? a.j & 128 || a.Pc || (a.j ? 0 : s(tb, a)) : s(tb, a)) ? this.Fa.ga(null) : K(this.Fa);
   return null == a ? null : new wf(a, this.na);
 };
 h.K = function(a, b) {
@@ -5591,7 +5591,7 @@ h.W = function() {
   return this.Fa.W(null).tc();
 };
 h.aa = function() {
-  var a = this.Fa, a = (a ? a.j & 128 || a.Qc || (a.j ? 0 : s(tb, a)) : s(tb, a)) ? this.Fa.ga(null) : K(this.Fa);
+  var a = this.Fa, a = (a ? a.j & 128 || a.Pc || (a.j ? 0 : s(tb, a)) : s(tb, a)) ? this.Fa.ga(null) : K(this.Fa);
   return null != a ? new wf(a, this.na) : m(J, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/core.cljs"], null));
 };
 h.w = function(a, b) {
@@ -5727,7 +5727,7 @@ h.S = function() {
 };
 h.w = function(a, b) {
   var c = this;
-  return(null == b ? !1 : b ? b.j & 4096 || b.$d ? !0 : b.j ? !1 : s(Db, b) : s(Db, b)) && O(c) === O(b) && Td(function(a) {
+  return(null == b ? !1 : b ? b.j & 4096 || b.Zd ? !0 : b.j ? !1 : s(Db, b) : s(Db, b)) && O(c) === O(b) && Td(function(a) {
     return $c(c, a);
   }, b);
 };
@@ -5866,7 +5866,7 @@ function Gf(a) {
   }
 }
 function yd(a) {
-  if (a && (a.r & 4096 || a.yd)) {
+  if (a && (a.r & 4096 || a.xd)) {
     return a.name;
   }
   if ("string" === typeof a) {
@@ -6017,13 +6017,13 @@ var Uf = function Sf(b, c, d) {
   if (t) {
     r(function() {
       var c = R.a(d, Ya);
-      return r(c) ? (c = b ? b.j & 131072 || b.xd ? !0 : b.j ? !1 : s(Ib, b) : s(Ib, b)) ? Lc(b) : c : c;
+      return r(c) ? (c = b ? b.j & 131072 || b.wd ? !0 : b.j ? !1 : s(Ib, b) : s(Ib, b)) ? Lc(b) : c : c;
     }()) && (B(c, "^"), Sf(Lc(b), c, d), B(c, " "));
     if (null == b) {
       return B(c, "nil");
     }
-    if (b.Uc) {
-      return b.Bd(c);
+    if (b.Tc) {
+      return b.Ad(c);
     }
     if (b && (b.j & 2147483648 || b.V)) {
       return b.D(null, c, d);
@@ -6475,8 +6475,8 @@ var cg = function() {
   return c;
 }(), fg = {};
 function gg(a) {
-  if (a ? a.vd : a) {
-    return a.vd(a);
+  if (a ? a.ud : a) {
+    return a.ud(a);
   }
   var b;
   b = gg[k(null == a ? null : a)];
@@ -6486,13 +6486,13 @@ function gg(a) {
   return b.call(null, a);
 }
 function hg(a) {
-  return(a ? r(r(null) ? null : a.ud) || (a.Ac ? 0 : s(fg, a)) : s(fg, a)) ? gg(a) : "string" === typeof a || "number" === typeof a || a instanceof V || a instanceof E ? ig.b ? ig.b(a) : ig.call(null, a) : Z.e(L([a], 0));
+  return(a ? r(r(null) ? null : a.td) || (a.Ac ? 0 : s(fg, a)) : s(fg, a)) ? gg(a) : "string" === typeof a || "number" === typeof a || a instanceof V || a instanceof E ? ig.b ? ig.b(a) : ig.call(null, a) : Z.e(L([a], 0));
 }
 var ig = function jg(b) {
   if (null == b) {
     return null;
   }
-  if (b ? r(r(null) ? null : b.ud) || (b.Ac ? 0 : s(fg, b)) : s(fg, b)) {
+  if (b ? r(r(null) ? null : b.td) || (b.Ac ? 0 : s(fg, b)) : s(fg, b)) {
     return gg(b);
   }
   if (b instanceof V) {
@@ -6539,8 +6539,8 @@ var ig = function jg(b) {
   return t ? b : null;
 }, kg = {};
 function lg(a, b) {
-  if (a ? a.td : a) {
-    return a.td(a, b);
+  if (a ? a.sd : a) {
+    return a.sd(a, b);
   }
   var c;
   c = lg[k(null == a ? null : a)];
@@ -6560,7 +6560,7 @@ var ng = function() {
       return b.call(this, c, l);
     }
     function b(a, c) {
-      if (a ? r(r(null) ? null : a.Sd) || (a.Ac ? 0 : s(kg, a)) : s(kg, a)) {
+      if (a ? r(r(null) ? null : a.Rd) || (a.Ac ? 0 : s(kg, a)) : s(kg, a)) {
         return lg(a, U.a(vf, c));
       }
       if (G(c)) {
@@ -6658,7 +6658,7 @@ function og(a) {
 }
 var pg = {};
 function qg(a) {
-  this.Jc = a;
+  this.Ic = a;
   this.r = 0;
   this.j = 2153775104;
 }
@@ -6666,10 +6666,10 @@ qg.prototype.C = function() {
   return xa(Z.e(L([this], 0)));
 };
 qg.prototype.D = function(a, b) {
-  return B(b, [w('#uuid "'), w(this.Jc), w('"')].join(""));
+  return B(b, [w('#uuid "'), w(this.Ic), w('"')].join(""));
 };
 qg.prototype.w = function(a, b) {
-  return b instanceof qg && this.Jc === b.Jc;
+  return b instanceof qg && this.Ic === b.Ic;
 };
 function rg(a, b) {
   this.message = a;
@@ -6697,7 +6697,27 @@ var sg = function() {
   c.c = a;
   return c;
 }();
-function tg(a) {
+var tg = new V(null, "getDefaultProps", "getDefaultProps"), $a = new V(null, "dup", "dup"), ug = new V(null, "componentWillUpdate", "componentWillUpdate"), vg = new V(null, "weeks", "weeks"), wg = new V(null, "div.text-center", "div.text-center"), xg = new V(null, "fallback-locale", "fallback-locale"), yg = new V("controllers", "objects-visible", "controllers/objects-visible"), zg = new V(null, "device-id", "device-id"), Ag = new V(null, "status", "status"), Bg = new V(null, "componentDidUpdate", 
+"componentDidUpdate"), Cg = new V(null, "tbody", "tbody"), Dg = new V(null, "response", "response"), Eg = new V(null, "href", "href"), Fg = new V("controllers", "scantime", "controllers/scantime"), Gg = new V(null, "dictionary", "dictionary"), Hg = new V(null, "read", "read"), Ig = new V(null, "trunc", "trunc"), nc = new V(null, "default", "default"), Jg = new V(null, "border", "border"), Kg = new V(null, "render", "render"), Lg = new V(null, "i.fa.fa-refresh", "i.fa.fa-refresh"), Mg = new V(null, 
+"strong", "strong"), Ng = new V("controllers", "list", "controllers/list"), Og = new V(null, "ul", "ul"), Pg = new V(null, "original-text", "original-text"), Qg = new V(null, "h2.modal-title", "h2.modal-title"), Rg = new V(null, "margin", "margin"), Sg = new V(null, "en", "en"), Tg = new V(null, "background", "background"), Ug = new V(null, "img", "img"), Vg = new V(null, "cljsRender", "cljsRender"), Wg = new V(null, "secs", "secs"), Xg = new V(null, "component-function", "component-function"), Yg = 
+new V(null, "edn", "edn"), Zg = new V(null, "status-text", "status-text"), $g = new V(null, "msecs", "msecs"), ah = new V(null, "i.fa.fa-bar-chart-o", "i.fa.fa-bar-chart-o"), bh = new V(null, "raw", "raw"), ch = new V(null, "pass", "pass"), dh = new V(null, "width", "width"), eh = new V(null, "componentWillReceiveProps", "componentWillReceiveProps"), fh = new V(null, "div", "div"), gh = new V(null, "target", "target"), hh = new V(null, "derefed", "derefed"), ih = new V(null, "component-did-mount", 
+"component-did-mount"), jh = new V("controllers", "graphs", "controllers/graphs"), kh = new V(null, "margin-left", "margin-left"), lh = new V(null, "div.modal-dialog.modal-lg", "div.modal-dialog.modal-lg"), mh = new V(null, "span.glyphicon.glyphicon-remove", "span.glyphicon.glyphicon-remove"), nh = new V(null, "on-change", "on-change"), oh = new V(null, "a.btn.btn-default.visible-xs", "a.btn.btn-default.visible-xs"), ph = new V(null, "content", "content"), qh = new V(null, "dev-mode?", "dev-mode?"), 
+rh = new V(null, "div.modal-footer", "div.modal-footer"), sh = new V(null, "key", "key"), th = new V(null, "class", "class"), uh = new V(null, "prefix", "prefix"), vh = new V(null, "div.input-group", "div.input-group"), wh = new V(null, "write", "write"), xh = new V(null, "table.table.table-striped", "table.table.table-striped"), yh = new V(null, "mins", "mins"), zh = new V(null, "span.sr-only", "span.sr-only"), Ah = new V(null, "timeout", "timeout"), mg = new V(null, "keywordize-keys", "keywordize-keys"), 
+Bh = new V(null, "margin-top", "margin-top"), Ch = new V(null, "scope-fn", "scope-fn"), Dh = new V(null, "name", "name"), Eh = new V(null, "floor", "floor"), Fh = new V(null, "padding-right", "padding-right"), Gh = new V(null, "div.btn-group-vertical.btn-group.btn-block", "div.btn-group-vertical.btn-group.btn-block"), Hh = new V("controllers", "last-scan", "controllers/last-scan"), Ih = new V(null, "device-table-btns", "device-table-btns"), Jh = new V(null, "div.text-left", "div.text-left"), Kh = 
+new V("controllers", "nothing-found", "controllers/nothing-found"), Lh = new V(null, "round", "round"), Mh = new V("explorer", "not-sub-vigilia", "explorer/not-sub-vigilia"), Nh = new V(null, "content-type", "content-type"), Oh = new V(null, "object-instance", "object-instance"), Ph = new V(null, "not-found", "not-found"), Qh = new V(null, "a.btn.btn-primary.btn-lg", "a.btn.btn-primary.btn-lg"), Rh = new V(null, "white-space", "white-space"), Sh = new V("controllers", "loading-objects", "controllers/loading-objects"), 
+Wa = new V(null, "flush-on-newline", "flush-on-newline"), Th = new V(null, "object-type", "object-type"), Uh = new V(null, "div.jumbotron", "div.jumbotron"), Vh = new V(null, "hours", "hours"), Wh = new V(null, "i.fa.fa-list", "i.fa.fa-list"), Xh = new V(null, "api-root", "api-root"), Yh = new V("controllers", "description", "controllers/description"), Zh = new V(null, "fmt-fn", "fmt-fn"), $h = new V(null, "missing", "missing"), ai = new V(null, "i.fa.fa-briefcase", "i.fa.fa-briefcase"), bi = new V(null, 
+"div.modal-content", "div.modal-content"), ci = new V(null, "on-dispose", "on-dispose"), di = new V(null, "componentWillUnmount", "componentWillUnmount"), ei = new V(null, "style", "style"), fi = new V(null, "button.close", "button.close"), gi = new V(null, "max-height", "max-height"), hi = new V("controllers", "unit", "controllers/unit"), ii = new V(null, "data-dismiss", "data-dismiss"), ji = new V(null, "locale", "locale"), ki = new V(null, "get-default-format", "get-default-format"), li = new V(null, 
+"src", "src"), mi = new V(null, "title", "title"), ni = new V(null, "div.modal-body", "div.modal-body"), oi = new V(null, "cursor", "cursor"), pi = new V(null, "shown-callback", "shown-callback"), qi = new V(null, "div.col-sm-4", "div.col-sm-4"), ri = new V(null, "device", "device"), si = new V(null, "years", "years"), ti = new V(null, "button.btn.btn-default.btn-sm", "button.btn.btn-default.btn-sm"), ui = new V("explorer", "learn-more", "explorer/learn-more"), vi = new V(null, "div.modal-header", 
+"div.modal-header"), wi = new V(null, "days", "days"), xi = new V(null, "displayName", "displayName"), yi = new V(null, "div.col-sm-6", "div.col-sm-6"), zi = new V(null, "auto-run", "auto-run"), Ai = new V("controllers", "name", "controllers/name"), Bi = new V(null, "parse-error", "parse-error"), Ci = new V("explorer", "guess", "explorer/guess"), Di = new V(null, "log-missing-translation-fn", "log-missing-translation-fn"), Ei = new V(null, "thead", "thead"), Fi = new V(null, "div.col-sm-2", "div.col-sm-2"), 
+Gi = new V(null, "object-id", "object-id"), Hi = new V(null, "scope", "scope"), Ii = new V(null, "response-format", "response-format"), Ji = new V("controllers", "devices", "controllers/devices"), Ki = new V(null, "overflow-y", "overflow-y"), Li = new V(null, "aria-hidden", "aria-hidden"), Mi = new V(null, "finally", "finally"), Ni = new V(null, "ks", "ks"), Oi = new V(null, "url", "url"), Pi = new V(null, "done", "done"), Qi = new V(null, "button.btn.btn-default", "button.btn.btn-default"), Ri = 
+new V(null, "div.col-sm-8", "div.col-sm-8"), Si = new V(null, "keywords?", "keywords?"), Ti = new V(null, "json", "json"), ab = new V(null, "print-length", "print-length"), Ui = new V(null, "params", "params"), Vi = new V(null, "headers", "headers"), Wi = new V(null, "type", "type"), Xi = new V("controllers", "refresh", "controllers/refresh"), Yi = new V("briefcase", "delete-all", "briefcase/delete-all"), Zi = new V("controllers", "value", "controllers/value"), aj = new V(null, "max-width", "max-width"), 
+bj = new V("explorer", "record", "explorer/record"), cj = new V(null, "span.glyphicon.glyphicon-search", "span.glyphicon.glyphicon-search"), dj = new V(null, "small", "small"), t = new V(null, "else", "else"), Xa = new V(null, "readably", "readably"), ej = new V(null, "unit", "unit"), fj = new V(null, "border-radius", "border-radius"), gj = new V(null, "compiled-dictionary", "compiled-dictionary"), $f = new V(null, "validator", "validator"), Ya = new V(null, "meta", "meta"), hj = new V(null, "ceil", 
+"ceil"), ij = new V(null, "error-handler", "error-handler"), jj = new V(null, "h3.text-center", "h3.text-center"), kj = new V(null, "fr", "fr"), lj = new V(null, "h4", "h4"), mj = new V(null, "i.fa.fa-download", "i.fa.fa-download"), nj = new V(null, "role", "role"), oj = new V(null, "h3", "h3"), pj = new V(null, "span.input-group-addon", "span.input-group-addon"), qj = new V(null, "charset", "charset"), rj = new V(null, "div.container-fluid", "div.container-fluid"), sj = new V(null, "is-parse-error", 
+"is-parse-error"), tj = new V(null, "format", "format"), uj = new V(null, "h2", "h2"), vj = new V(null, "handler", "handler"), wj = new V(null, "input", "input"), xj = new V(null, "div.col-sm-6.text-center", "div.col-sm-6.text-center"), yj = new V(null, "getInitialState", "getInitialState"), zj = new V(null, "on-set", "on-set"), Aj = new V(null, "for", "for"), Bj = new V(null, "th", "th"), Cj = new V("controllers", "no-name", "controllers/no-name"), Dj = new V(null, "componentFunction", "componentFunction"), 
+Ej = new V(null, "div.col-sm-10", "div.col-sm-10"), Fj = new V(null, "project-id", "project-id"), Gj = new V(null, "a.btn.btn-default.btn-sm", "a.btn.btn-default.btn-sm"), Hj = new V("briefcase", "change-colors", "briefcase/change-colors"), Ij = new V("controllers", "search-name", "controllers/search-name"), Jj = new V(null, "id", "id"), Kj = new V(null, "ms", "ms"), Lj = new V(null, "value", "value"), q = new V(null, "file", "file"), Mj = new V(null, "top-margin", "top-margin"), Nj = new V(null, 
+"description", "description"), Oj = new V(null, "tab-index", "tab-index"), Pj = new V(null, "height", "height"), Qj = new V(null, "td", "td"), Rj = new V(null, "tag", "tag"), Sj = new V(null, "div.col-sm-2.text-center", "div.col-sm-2.text-center"), Tj = new V(null, "div.row", "div.row"), Uj = new V(null, "on-click", "on-click"), Vj = new V(null, "li", "li"), Wj = new V(null, "div.modal.fade", "div.modal.fade"), Xj = new V(null, "p", "p"), Yj = new V(null, "tr", "tr"), Zj = new V(null, "placeholder", 
+"placeholder"), ak = new V(null, "months", "months"), bk = new V(null, "padding-top", "padding-top"), ck = new V(null, "iframe", "iframe"), dk = new V(null, "shouldComponentUpdate", "shouldComponentUpdate");
+function ek(a) {
   if ("function" == typeof a.qa) {
     return a.qa();
   }
@@ -6712,7 +6732,7 @@ function tg(a) {
   }
   return Ma(a);
 }
-function ug(a) {
+function fk(a) {
   if ("function" == typeof a.Ma) {
     return a.Ma();
   }
@@ -6728,20 +6748,20 @@ function ug(a) {
     return Na(a);
   }
 }
-function vg(a, b, c) {
+function gk(a, b, c) {
   if ("function" == typeof a.forEach) {
     a.forEach(b, c);
   } else {
     if (fa(a) || ga(a)) {
       Ea(a, b, c);
     } else {
-      for (var d = ug(a), e = tg(a), f = e.length, g = 0;g < f;g++) {
+      for (var d = fk(a), e = ek(a), f = e.length, g = 0;g < f;g++) {
         b.call(c, e[g], d && d[g], a);
       }
     }
   }
 }
-;function wg(a, b) {
+;function hk(a, b) {
   this.ya = {};
   this.ca = [];
   var c = arguments.length;
@@ -6753,107 +6773,107 @@ function vg(a, b, c) {
       this.set(arguments[d], arguments[d + 1]);
     }
   } else {
-    a && this.pd(a);
+    a && this.od(a);
   }
 }
-h = wg.prototype;
+h = hk.prototype;
 h.A = 0;
 h.qa = function() {
-  xg(this);
+  ik(this);
   for (var a = [], b = 0;b < this.ca.length;b++) {
     a.push(this.ya[this.ca[b]]);
   }
   return a;
 };
 h.Ma = function() {
-  xg(this);
+  ik(this);
   return this.ca.concat();
 };
 h.Wa = function(a) {
-  return yg(this.ya, a);
+  return jk(this.ya, a);
 };
 h.remove = function(a) {
-  return yg(this.ya, a) ? (delete this.ya[a], this.A--, this.ca.length > 2 * this.A && xg(this), !0) : !1;
+  return jk(this.ya, a) ? (delete this.ya[a], this.A--, this.ca.length > 2 * this.A && ik(this), !0) : !1;
 };
-function xg(a) {
+function ik(a) {
   if (a.A != a.ca.length) {
     for (var b = 0, c = 0;b < a.ca.length;) {
       var d = a.ca[b];
-      yg(a.ya, d) && (a.ca[c++] = d);
+      jk(a.ya, d) && (a.ca[c++] = d);
       b++;
     }
     a.ca.length = c;
   }
   if (a.A != a.ca.length) {
     for (var e = {}, c = b = 0;b < a.ca.length;) {
-      d = a.ca[b], yg(e, d) || (a.ca[c++] = d, e[d] = 1), b++;
+      d = a.ca[b], jk(e, d) || (a.ca[c++] = d, e[d] = 1), b++;
     }
     a.ca.length = c;
   }
 }
 h.get = function(a, b) {
-  return yg(this.ya, a) ? this.ya[a] : b;
+  return jk(this.ya, a) ? this.ya[a] : b;
 };
 h.set = function(a, b) {
-  yg(this.ya, a) || (this.A++, this.ca.push(a));
+  jk(this.ya, a) || (this.A++, this.ca.push(a));
   this.ya[a] = b;
 };
-h.pd = function(a) {
+h.od = function(a) {
   var b;
-  a instanceof wg ? (b = a.Ma(), a = a.qa()) : (b = Na(a), a = Ma(a));
+  a instanceof hk ? (b = a.Ma(), a = a.qa()) : (b = Na(a), a = Ma(a));
   for (var c = 0;c < b.length;c++) {
     this.set(b[c], a[c]);
   }
 };
 h.nb = function() {
-  return new wg(this);
+  return new hk(this);
 };
-function yg(a, b) {
+function jk(a, b) {
   return Object.prototype.hasOwnProperty.call(a, b);
 }
-;var zg, Ag, Bg, Cg;
-function Dg() {
+;var kk, lk, mk, nk;
+function ok() {
   return ba.navigator ? ba.navigator.userAgent : null;
 }
-Cg = Bg = Ag = zg = !1;
-var Eg;
-if (Eg = Dg()) {
-  var Fg = ba.navigator;
-  zg = 0 == Eg.indexOf("Opera");
-  Ag = !zg && -1 != Eg.indexOf("MSIE");
-  Bg = !zg && -1 != Eg.indexOf("WebKit");
-  Cg = !zg && !Bg && "Gecko" == Fg.product;
+nk = mk = lk = kk = !1;
+var pk;
+if (pk = ok()) {
+  var qk = ba.navigator;
+  kk = 0 == pk.indexOf("Opera");
+  lk = !kk && -1 != pk.indexOf("MSIE");
+  mk = !kk && -1 != pk.indexOf("WebKit");
+  nk = !kk && !mk && "Gecko" == qk.product;
 }
-var Gg = zg, Hg = Ag, Ig = Cg, Jg = Bg;
-function Kg() {
+var rk = kk, sk = lk, tk = nk, uk = mk;
+function vk() {
   var a = ba.document;
   return a ? a.documentMode : void 0;
 }
-var Lg;
+var wk;
 a: {
-  var Mg = "", Ng;
-  if (Gg && ba.opera) {
-    var Og = ba.opera.version, Mg = "function" == typeof Og ? Og() : Og
+  var xk = "", yk;
+  if (rk && ba.opera) {
+    var zk = ba.opera.version, xk = "function" == typeof zk ? zk() : zk
   } else {
-    if (Ig ? Ng = /rv\:([^\);]+)(\)|;)/ : Hg ? Ng = /MSIE\s+([^\);]+)(\)|;)/ : Jg && (Ng = /WebKit\/(\S+)/), Ng) {
-      var Pg = Ng.exec(Dg()), Mg = Pg ? Pg[1] : ""
+    if (tk ? yk = /rv\:([^\);]+)(\)|;)/ : sk ? yk = /MSIE\s+([^\);]+)(\)|;)/ : uk && (yk = /WebKit\/(\S+)/), yk) {
+      var Ak = yk.exec(ok()), xk = Ak ? Ak[1] : ""
     }
   }
-  if (Hg) {
-    var Qg = Kg();
-    if (Qg > parseFloat(Mg)) {
-      Lg = String(Qg);
+  if (sk) {
+    var Bk = vk();
+    if (Bk > parseFloat(xk)) {
+      wk = String(Bk);
       break a;
     }
   }
-  Lg = Mg;
+  wk = xk;
 }
-var Rg = {};
-function Sg(a) {
+var Ck = {};
+function Dk(a) {
   var b;
-  if (!(b = Rg[a])) {
+  if (!(b = Ck[a])) {
     b = 0;
-    for (var c = String(Lg).replace(/^[\s\xa0]+|[\s\xa0]+$/g, "").split("."), d = String(a).replace(/^[\s\xa0]+|[\s\xa0]+$/g, "").split("."), e = Math.max(c.length, d.length), f = 0;0 == b && f < e;f++) {
+    for (var c = String(wk).replace(/^[\s\xa0]+|[\s\xa0]+$/g, "").split("."), d = String(a).replace(/^[\s\xa0]+|[\s\xa0]+$/g, "").split("."), e = Math.max(c.length, d.length), f = 0;0 == b && f < e;f++) {
       var g = c[f] || "", l = d[f] || "", n = RegExp("(\\d*)(\\D*)", "g"), y = RegExp("(\\d*)(\\D*)", "g");
       do {
         var v = n.exec(g) || ["", "", ""], z = y.exec(l) || ["", "", ""];
@@ -6863,76 +6883,76 @@ function Sg(a) {
         b = ((0 == v[1].length ? 0 : parseInt(v[1], 10)) < (0 == z[1].length ? 0 : parseInt(z[1], 10)) ? -1 : (0 == v[1].length ? 0 : parseInt(v[1], 10)) > (0 == z[1].length ? 0 : parseInt(z[1], 10)) ? 1 : 0) || ((0 == v[2].length) < (0 == z[2].length) ? -1 : (0 == v[2].length) > (0 == z[2].length) ? 1 : 0) || (v[2] < z[2] ? -1 : v[2] > z[2] ? 1 : 0);
       } while (0 == b);
     }
-    b = Rg[a] = 0 <= b;
+    b = Ck[a] = 0 <= b;
   }
   return b;
 }
-var Tg = ba.document, Ug = Tg && Hg ? Kg() || ("CSS1Compat" == Tg.compatMode ? parseInt(Lg, 10) : 5) : void 0;
-var Vg = RegExp("^(?:([^:/?#.]+):)?(?://(?:([^/?#]*)@)?([^/#?]*?)(?::([0-9]+))?(?\x3d[/#?]|$))?([^?#]+)?(?:\\?([^#]*))?(?:#(.*))?$");
-function Wg(a, b) {
+var Ek = ba.document, Fk = Ek && sk ? vk() || ("CSS1Compat" == Ek.compatMode ? parseInt(wk, 10) : 5) : void 0;
+var Gk = RegExp("^(?:([^:/?#.]+):)?(?://(?:([^/?#]*)@)?([^/#?]*?)(?::([0-9]+))?(?\x3d[/#?]|$))?([^?#]+)?(?:\\?([^#]*))?(?:#(.*))?$");
+function Hk(a, b) {
   var c;
-  if (a instanceof Wg) {
-    this.ka = void 0 !== b ? b : a.ka, Xg(this, a.eb), c = a.Wb, Yg(this), this.Wb = c, c = a.pb, Yg(this), this.pb = c, Zg(this, a.Sb), c = a.Rb, Yg(this), this.Rb = c, $g(this, a.za.nb()), c = a.Jb, Yg(this), this.Jb = c;
+  if (a instanceof Hk) {
+    this.ka = void 0 !== b ? b : a.ka, Ik(this, a.eb), c = a.Wb, Jk(this), this.Wb = c, c = a.pb, Jk(this), this.pb = c, Kk(this, a.Sb), c = a.Rb, Jk(this), this.Rb = c, Lk(this, a.za.nb()), c = a.Jb, Jk(this), this.Jb = c;
   } else {
-    if (a && (c = String(a).match(Vg))) {
+    if (a && (c = String(a).match(Gk))) {
       this.ka = !!b;
-      Xg(this, c[1] || "", !0);
+      Ik(this, c[1] || "", !0);
       var d = c[2] || "";
-      Yg(this);
+      Jk(this);
       this.Wb = d ? decodeURIComponent(d) : "";
       d = c[3] || "";
-      Yg(this);
+      Jk(this);
       this.pb = d ? decodeURIComponent(d) : "";
-      Zg(this, c[4]);
+      Kk(this, c[4]);
       d = c[5] || "";
-      Yg(this);
+      Jk(this);
       this.Rb = d ? decodeURIComponent(d) : "";
-      $g(this, c[6] || "", !0);
+      Lk(this, c[6] || "", !0);
       c = c[7] || "";
-      Yg(this);
+      Jk(this);
       this.Jb = c ? decodeURIComponent(c) : "";
     } else {
-      this.ka = !!b, this.za = new ah(null, 0, this.ka);
+      this.ka = !!b, this.za = new Mk(null, 0, this.ka);
     }
   }
 }
-h = Wg.prototype;
+h = Hk.prototype;
 h.eb = "";
 h.Wb = "";
 h.pb = "";
 h.Sb = null;
 h.Rb = "";
 h.Jb = "";
-h.Ed = !1;
+h.Dd = !1;
 h.ka = !1;
 h.toString = function() {
   var a = [], b = this.eb;
-  b && a.push(bh(b, ch), ":");
+  b && a.push(Nk(b, Ok), ":");
   if (b = this.pb) {
     a.push("//");
     var c = this.Wb;
-    c && a.push(bh(c, ch), "@");
+    c && a.push(Nk(c, Ok), "@");
     a.push(encodeURIComponent(String(b)));
     b = this.Sb;
     null != b && a.push(":", String(b));
   }
   if (b = this.Rb) {
-    this.pb && "/" != b.charAt(0) && a.push("/"), a.push(bh(b, "/" == b.charAt(0) ? dh : eh));
+    this.pb && "/" != b.charAt(0) && a.push("/"), a.push(Nk(b, "/" == b.charAt(0) ? Pk : Qk));
   }
   (b = this.za.toString()) && a.push("?", b);
-  (b = this.Jb) && a.push("#", bh(b, fh));
+  (b = this.Jb) && a.push("#", Nk(b, Rk));
   return a.join("");
 };
 h.nb = function() {
-  return new Wg(this);
+  return new Hk(this);
 };
-function Xg(a, b, c) {
-  Yg(a);
+function Ik(a, b, c) {
+  Jk(a);
   a.eb = c ? b ? decodeURIComponent(b) : "" : b;
   a.eb && (a.eb = a.eb.replace(/:$/, ""));
 }
-function Zg(a, b) {
-  Yg(a);
+function Kk(a, b) {
+  Jk(a);
   if (b) {
     b = Number(b);
     if (isNaN(b) || 0 > b) {
@@ -6943,64 +6963,64 @@ function Zg(a, b) {
     a.Sb = null;
   }
 }
-function $g(a, b, c) {
-  Yg(a);
-  b instanceof ah ? (a.za = b, a.za.Ic(a.ka)) : (c || (b = bh(b, gh)), a.za = new ah(b, 0, a.ka));
+function Lk(a, b, c) {
+  Jk(a);
+  b instanceof Mk ? (a.za = b, a.za.Hc(a.ka)) : (c || (b = Nk(b, Sk)), a.za = new Mk(b, 0, a.ka));
   return a;
 }
-function Yg(a) {
-  if (a.Ed) {
+function Jk(a) {
+  if (a.Dd) {
     throw Error("Tried to modify a read-only Uri");
   }
 }
-h.Ic = function(a) {
+h.Hc = function(a) {
   this.ka = a;
-  this.za && this.za.Ic(a);
+  this.za && this.za.Hc(a);
   return this;
 };
-function bh(a, b) {
-  return ga(a) ? encodeURI(a).replace(b, hh) : null;
+function Nk(a, b) {
+  return ga(a) ? encodeURI(a).replace(b, Tk) : null;
 }
-function hh(a) {
+function Tk(a) {
   a = a.charCodeAt(0);
   return "%" + (a >> 4 & 15).toString(16) + (a & 15).toString(16);
 }
-var ch = /[#\/\?@]/g, eh = /[\#\?:]/g, dh = /[\#\?]/g, gh = /[\#\?@]/g, fh = /#/g;
-function ah(a, b, c) {
+var Ok = /[#\/\?@]/g, Qk = /[\#\?:]/g, Pk = /[\#\?]/g, Sk = /[\#\?@]/g, Rk = /#/g;
+function Mk(a, b, c) {
   this.ja = a || null;
   this.ka = !!c;
 }
-function ih(a) {
-  if (!a.O && (a.O = new wg, a.A = 0, a.ja)) {
+function Uk(a) {
+  if (!a.O && (a.O = new hk, a.A = 0, a.ja)) {
     for (var b = a.ja.split("\x26"), c = 0;c < b.length;c++) {
       var d = b[c].indexOf("\x3d"), e = null, f = null;
       0 <= d ? (e = b[c].substring(0, d), f = b[c].substring(d + 1)) : e = b[c];
       e = decodeURIComponent(e.replace(/\+/g, " "));
-      e = jh(a, e);
+      e = Vk(a, e);
       a.add(e, f ? decodeURIComponent(f.replace(/\+/g, " ")) : "");
     }
   }
 }
-function kh(a) {
-  var b = ug(a);
+function Wk(a) {
+  var b = fk(a);
   if ("undefined" == typeof b) {
     throw Error("Keys are undefined");
   }
-  var c = new ah(null, 0, void 0);
-  a = tg(a);
+  var c = new Mk(null, 0, void 0);
+  a = ek(a);
   for (var d = 0;d < b.length;d++) {
     var e = b[d], f = a[d];
-    "array" == k(f) ? lh(c, e, f) : c.add(e, f);
+    "array" == k(f) ? Xk(c, e, f) : c.add(e, f);
   }
   return c;
 }
-h = ah.prototype;
+h = Mk.prototype;
 h.O = null;
 h.A = null;
 h.add = function(a, b) {
-  ih(this);
+  Uk(this);
   this.ja = null;
-  a = jh(this, a);
+  a = Vk(this, a);
   var c = this.O.get(a);
   c || this.O.set(a, c = []);
   c.push(b);
@@ -7008,17 +7028,17 @@ h.add = function(a, b) {
   return this;
 };
 h.remove = function(a) {
-  ih(this);
-  a = jh(this, a);
+  Uk(this);
+  a = Vk(this, a);
   return this.O.Wa(a) ? (this.ja = null, this.A -= this.O.get(a).length, this.O.remove(a)) : !1;
 };
 h.Wa = function(a) {
-  ih(this);
-  a = jh(this, a);
+  Uk(this);
+  a = Vk(this, a);
   return this.O.Wa(a);
 };
 h.Ma = function() {
-  ih(this);
+  Uk(this);
   for (var a = this.O.qa(), b = this.O.Ma(), c = [], d = 0;d < b.length;d++) {
     for (var e = a[d], f = 0;f < e.length;f++) {
       c.push(b[d]);
@@ -7027,10 +7047,10 @@ h.Ma = function() {
   return c;
 };
 h.qa = function(a) {
-  ih(this);
+  Uk(this);
   var b = [];
   if (a) {
-    this.Wa(a) && (b = Fa(b, this.O.get(jh(this, a))));
+    this.Wa(a) && (b = Fa(b, this.O.get(Vk(this, a))));
   } else {
     a = this.O.qa();
     for (var c = 0;c < a.length;c++) {
@@ -7040,9 +7060,9 @@ h.qa = function(a) {
   return b;
 };
 h.set = function(a, b) {
-  ih(this);
+  Uk(this);
   this.ja = null;
-  a = jh(this, a);
+  a = Vk(this, a);
   this.Wa(a) && (this.A -= this.O.get(a).length);
   this.O.set(a, [b]);
   this.A++;
@@ -7052,9 +7072,9 @@ h.get = function(a, b) {
   var c = a ? this.qa(a) : [];
   return 0 < c.length ? String(c[0]) : b;
 };
-function lh(a, b, c) {
+function Xk(a, b, c) {
   a.remove(b);
-  0 < c.length && (a.ja = null, a.O.set(jh(a, b), Ha(c)), a.A += c.length);
+  0 < c.length && (a.ja = null, a.O.set(Vk(a, b), Ha(c)), a.A += c.length);
 }
 h.toString = function() {
   if (this.ja) {
@@ -7073,52 +7093,52 @@ h.toString = function() {
   return this.ja = a.join("\x26");
 };
 h.nb = function() {
-  var a = new ah;
+  var a = new Mk;
   a.ja = this.ja;
   this.O && (a.O = this.O.nb(), a.A = this.A);
   return a;
 };
-function jh(a, b) {
+function Vk(a, b) {
   var c = String(b);
   a.ka && (c = c.toLowerCase());
   return c;
 }
-h.Ic = function(a) {
-  a && !this.ka && (ih(this), this.ja = null, vg(this.O, function(a, c) {
+h.Hc = function(a) {
+  a && !this.ka && (Uk(this), this.ja = null, gk(this.O, function(a, c) {
     var d = c.toLowerCase();
-    c != d && (this.remove(c), lh(this, d, a));
+    c != d && (this.remove(c), Xk(this, d, a));
   }, this));
   this.ka = a;
 };
-function mh() {
-  0 != nh && ia(this);
+function Yk() {
+  0 != Zk && ia(this);
 }
-var nh = 0;
-var oh = !Hg || Hg && 9 <= Ug, ph = Hg && !Sg("9");
-!Jg || Sg("528");
-Ig && Sg("1.9b") || Hg && Sg("8") || Gg && Sg("9.5") || Jg && Sg("528");
-Ig && !Sg("8") || Hg && Sg("9");
-function qh(a, b) {
+var Zk = 0;
+var $k = !sk || sk && 9 <= Fk, al = sk && !Dk("9");
+!uk || Dk("528");
+tk && Dk("1.9b") || sk && Dk("8") || rk && Dk("9.5") || uk && Dk("528");
+tk && !Dk("8") || sk && Dk("9");
+function bl(a, b) {
   this.type = a;
   this.currentTarget = this.target = b;
 }
-qh.prototype.cb = !1;
-qh.prototype.defaultPrevented = !1;
-qh.prototype.Ub = !0;
-qh.prototype.preventDefault = function() {
+bl.prototype.cb = !1;
+bl.prototype.defaultPrevented = !1;
+bl.prototype.Ub = !0;
+bl.prototype.preventDefault = function() {
   this.defaultPrevented = !0;
   this.Ub = !1;
 };
-function rh(a) {
-  rh[" "](a);
+function cl(a) {
+  cl[" "](a);
   return a;
 }
-rh[" "] = ea;
-function sh(a, b) {
+cl[" "] = ea;
+function dl(a, b) {
   a && this.Lb(a, b);
 }
-pa(sh, qh);
-h = sh.prototype;
+pa(dl, bl);
+h = dl.prototype;
 h.target = null;
 h.relatedTarget = null;
 h.offsetX = 0;
@@ -7134,19 +7154,19 @@ h.ctrlKey = !1;
 h.altKey = !1;
 h.shiftKey = !1;
 h.metaKey = !1;
-h.Zc = null;
+h.Yc = null;
 h.Lb = function(a, b) {
   var c = this.type = a.type;
-  qh.call(this, c);
+  bl.call(this, c);
   this.target = a.target || a.srcElement;
   this.currentTarget = b;
   var d = a.relatedTarget;
   if (d) {
-    if (Ig) {
+    if (tk) {
       var e;
       a: {
         try {
-          rh(d.nodeName);
+          cl(d.nodeName);
           e = !0;
           break a;
         } catch (f) {
@@ -7159,8 +7179,8 @@ h.Lb = function(a, b) {
     "mouseover" == c ? d = a.fromElement : "mouseout" == c && (d = a.toElement);
   }
   this.relatedTarget = d;
-  this.offsetX = Jg || void 0 !== a.offsetX ? a.offsetX : a.layerX;
-  this.offsetY = Jg || void 0 !== a.offsetY ? a.offsetY : a.layerY;
+  this.offsetX = uk || void 0 !== a.offsetX ? a.offsetX : a.layerX;
+  this.offsetY = uk || void 0 !== a.offsetY ? a.offsetY : a.layerY;
   this.clientX = void 0 !== a.clientX ? a.clientX : a.pageX;
   this.clientY = void 0 !== a.clientY ? a.clientY : a.pageY;
   this.screenX = a.screenX || 0;
@@ -7173,17 +7193,17 @@ h.Lb = function(a, b) {
   this.shiftKey = a.shiftKey;
   this.metaKey = a.metaKey;
   this.state = a.state;
-  this.Zc = a;
+  this.Yc = a;
   a.defaultPrevented && this.preventDefault();
   delete this.cb;
 };
 h.preventDefault = function() {
-  sh.Kd.preventDefault.call(this);
-  var a = this.Zc;
+  dl.Jd.preventDefault.call(this);
+  var a = this.Yc;
   if (a.preventDefault) {
     a.preventDefault();
   } else {
-    if (a.returnValue = !1, ph) {
+    if (a.returnValue = !1, al) {
       try {
         if (a.ctrlKey || 112 <= a.keyCode && 123 >= a.keyCode) {
           a.keyCode = -1;
@@ -7193,41 +7213,41 @@ h.preventDefault = function() {
     }
   }
 };
-var th = 0;
-function uh() {
+var el = 0;
+function fl() {
 }
-h = uh.prototype;
+h = fl.prototype;
 h.key = 0;
 h.Oa = !1;
 h.zb = !1;
 h.Lb = function(a, b, c, d, e, f) {
   if (ha(a)) {
-    this.dd = !0;
+    this.cd = !0;
   } else {
     if (a && a.handleEvent && ha(a.handleEvent)) {
-      this.dd = !1;
+      this.cd = !1;
     } else {
       throw Error("Invalid listener argument");
     }
   }
   this.Ea = a;
-  this.jd = b;
+  this.hd = b;
   this.src = c;
   this.type = d;
   this.capture = !!e;
   this.Cc = f;
   this.zb = !1;
-  this.key = ++th;
+  this.key = ++el;
   this.Oa = !1;
 };
 h.handleEvent = function(a) {
-  return this.dd ? this.Ea.call(this.Cc || this.src, a) : this.Ea.handleEvent.call(this.Ea, a);
+  return this.cd ? this.Ea.call(this.Cc || this.src, a) : this.Ea.handleEvent.call(this.Ea, a);
 };
-var vh = {}, wh = {}, xh = {}, yh = {};
-function zh(a, b, c, d, e) {
+var gl = {}, hl = {}, il = {}, jl = {};
+function kl(a, b, c, d, e) {
   if ("array" == k(b)) {
     for (var f = 0;f < b.length;f++) {
-      zh(a, b[f], c, d, e);
+      kl(a, b[f], c, d, e);
     }
   } else {
     a: {
@@ -7235,7 +7255,7 @@ function zh(a, b, c, d, e) {
         throw Error("Invalid event type");
       }
       d = !!d;
-      var g = wh;
+      var g = hl;
       b in g || (g[b] = {A:0, fa:0});
       g = g[b];
       d in g || (g[d] = {A:0, fa:0}, g.A++);
@@ -7256,23 +7276,23 @@ function zh(a, b, c, d, e) {
       } else {
         l = g[f] = [], g.A++;
       }
-      n = Ah();
-      g = new uh;
+      n = ll();
+      g = new fl;
       g.Lb(c, n, a, b, d, e);
       g.zb = !1;
       n.src = a;
       n.Ea = g;
       l.push(g);
-      xh[f] || (xh[f] = []);
-      xh[f].push(g);
-      a.addEventListener ? a != ba && a.Yc || a.addEventListener(b, n, d) : a.attachEvent(b in yh ? yh[b] : yh[b] = "on" + b, n);
+      il[f] || (il[f] = []);
+      il[f].push(g);
+      a.addEventListener ? a != ba && a.Xc || a.addEventListener(b, n, d) : a.attachEvent(b in jl ? jl[b] : jl[b] = "on" + b, n);
       a = g;
     }
-    vh[a.key] = a;
+    gl[a.key] = a;
   }
 }
-function Ah() {
-  var a = Bh, b = oh ? function(c) {
+function ll() {
+  var a = ml, b = $k ? function(c) {
     return a.call(b.src, b.Ea, c);
   } : function(c) {
     c = a.call(b.src, b.Ea, c);
@@ -7282,15 +7302,15 @@ function Ah() {
   };
   return b;
 }
-function Ch(a, b, c, d, e) {
+function nl(a, b, c, d, e) {
   if ("array" == k(b)) {
     for (var f = 0;f < b.length;f++) {
-      Ch(a, b[f], c, d, e);
+      nl(a, b[f], c, d, e);
     }
   } else {
     d = !!d;
     a: {
-      f = wh;
+      f = hl;
       if (b in f && (f = f[b], d in f && (f = f[d], a = ia(a), f[a]))) {
         a = f[a];
         break a;
@@ -7300,42 +7320,42 @@ function Ch(a, b, c, d, e) {
     if (a) {
       for (f = 0;f < a.length;f++) {
         if (a[f].Ea == c && a[f].capture == d && a[f].Cc == e) {
-          Dh(a[f].key);
+          ol(a[f].key);
           break;
         }
       }
     }
   }
 }
-function Dh(a) {
-  var b = vh[a];
+function ol(a) {
+  var b = gl[a];
   if (b && !b.Oa) {
-    var c = b.src, d = b.type, e = b.jd, f = b.capture;
-    c.removeEventListener ? c != ba && c.Yc || c.removeEventListener(d, e, f) : c.detachEvent && c.detachEvent(d in yh ? yh[d] : yh[d] = "on" + d, e);
+    var c = b.src, d = b.type, e = b.hd, f = b.capture;
+    c.removeEventListener ? c != ba && c.Xc || c.removeEventListener(d, e, f) : c.detachEvent && c.detachEvent(d in jl ? jl[d] : jl[d] = "on" + d, e);
     c = ia(c);
-    if (xh[c]) {
-      var e = xh[c], g = Ca(e, b);
+    if (il[c]) {
+      var e = il[c], g = Ca(e, b);
       0 <= g && Ba.splice.call(e, g, 1);
-      0 == e.length && delete xh[c];
+      0 == e.length && delete il[c];
     }
     b.Oa = !0;
-    if (b = wh[d][f][c]) {
-      b.fd = !0, Eh(d, f, c, b);
+    if (b = hl[d][f][c]) {
+      b.ed = !0, pl(d, f, c, b);
     }
-    delete vh[a];
+    delete gl[a];
   }
 }
-function Eh(a, b, c, d) {
-  if (!d.Nb && d.fd) {
+function pl(a, b, c, d) {
+  if (!d.Nb && d.ed) {
     for (var e = 0, f = 0;e < d.length;e++) {
-      d[e].Oa ? d[e].jd.src = null : (e != f && (d[f] = d[e]), f++);
+      d[e].Oa ? d[e].hd.src = null : (e != f && (d[f] = d[e]), f++);
     }
     d.length = f;
-    d.fd = !1;
-    0 == f && (delete wh[a][b][c], wh[a][b].A--, 0 == wh[a][b].A && (delete wh[a][b], wh[a].A--), 0 == wh[a].A && delete wh[a]);
+    d.ed = !1;
+    0 == f && (delete hl[a][b][c], hl[a][b].A--, 0 == hl[a][b].A && (delete hl[a][b], hl[a].A--), 0 == hl[a].A && delete hl[a]);
   }
 }
-function Fh(a, b, c, d, e) {
+function ql(a, b, c, d, e) {
   var f = 1;
   b = ia(b);
   if (a[b]) {
@@ -7344,28 +7364,28 @@ function Fh(a, b, c, d, e) {
     try {
       for (var n = l.length, y = 0;y < n;y++) {
         var v = l[y];
-        v && !v.Oa && (f &= !1 !== Gh(v, e));
+        v && !v.Oa && (f &= !1 !== rl(v, e));
       }
     } finally {
-      a.fa = Math.max(g, a.fa), l.Nb--, Eh(c, d, b, l);
+      a.fa = Math.max(g, a.fa), l.Nb--, pl(c, d, b, l);
     }
   }
   return Boolean(f);
 }
-function Gh(a, b) {
-  a.zb && Dh(a.key);
+function rl(a, b) {
+  a.zb && ol(a.key);
   return a.handleEvent(b);
 }
-function Bh(a, b) {
+function ml(a, b) {
   if (a.Oa) {
     return!0;
   }
-  var c = a.type, d = wh;
+  var c = a.type, d = hl;
   if (!(c in d)) {
     return!0;
   }
   var d = d[c], e, f;
-  if (!oh) {
+  if (!$k) {
     e = b || da("window.event");
     var g = !0 in d, l = !1 in d;
     if (g) {
@@ -7387,7 +7407,7 @@ function Bh(a, b) {
         }
       }
     }
-    n = new sh;
+    n = new dl;
     n.Lb(e, this);
     e = !0;
     try {
@@ -7398,71 +7418,71 @@ function Bh(a, b) {
         f = d[!0];
         f.fa = f.A;
         for (var D = v.length - 1;!n.cb && 0 <= D && f.fa;D--) {
-          n.currentTarget = v[D], e &= Fh(f, v[D], c, !0, n);
+          n.currentTarget = v[D], e &= ql(f, v[D], c, !0, n);
         }
         if (l) {
           for (f = d[!1], f.fa = f.A, D = 0;!n.cb && D < v.length && f.fa;D++) {
-            n.currentTarget = v[D], e &= Fh(f, v[D], c, !1, n);
+            n.currentTarget = v[D], e &= ql(f, v[D], c, !1, n);
           }
         }
       } else {
-        e = Gh(a, n);
+        e = rl(a, n);
       }
     } finally {
       v && (v.length = 0);
     }
     return e;
   }
-  c = new sh(b, this);
-  return e = Gh(a, c);
+  c = new dl(b, this);
+  return e = rl(a, c);
 }
-;function Hh() {
-  mh.call(this);
+;function sl() {
+  Yk.call(this);
 }
-pa(Hh, mh);
-h = Hh.prototype;
-h.Yc = !0;
-h.hd = null;
+pa(sl, Yk);
+h = sl.prototype;
+h.Xc = !0;
+h.gd = null;
 h.addEventListener = function(a, b, c, d) {
-  zh(this, a, b, c, d);
+  kl(this, a, b, c, d);
 };
 h.removeEventListener = function(a, b, c, d) {
-  Ch(this, a, b, c, d);
+  nl(this, a, b, c, d);
 };
 h.dispatchEvent = function(a) {
-  var b = a.type || a, c = wh;
+  var b = a.type || a, c = hl;
   if (b in c) {
     if (ga(a)) {
-      a = new qh(a, this);
+      a = new bl(a, this);
     } else {
-      if (a instanceof qh) {
+      if (a instanceof bl) {
         a.target = a.target || this;
       } else {
         var d = a;
-        a = new qh(b, this);
+        a = new bl(b, this);
         Pa(a, d);
       }
     }
     var d = 1, e, c = c[b], b = !0 in c, f;
     if (b) {
       e = [];
-      for (f = this;f;f = f.hd) {
+      for (f = this;f;f = f.gd) {
         e.push(f);
       }
       f = c[!0];
       f.fa = f.A;
       for (var g = e.length - 1;!a.cb && 0 <= g && f.fa;g--) {
-        a.currentTarget = e[g], d &= Fh(f, e[g], a.type, !0, a) && !1 != a.Ub;
+        a.currentTarget = e[g], d &= ql(f, e[g], a.type, !0, a) && !1 != a.Ub;
       }
     }
     if (!1 in c) {
       if (f = c[!1], f.fa = f.A, b) {
         for (g = 0;!a.cb && g < e.length && f.fa;g++) {
-          a.currentTarget = e[g], d &= Fh(f, e[g], a.type, !1, a) && !1 != a.Ub;
+          a.currentTarget = e[g], d &= ql(f, e[g], a.type, !1, a) && !1 != a.Ub;
         }
       } else {
-        for (e = this;!a.cb && e && f.fa;e = e.hd) {
-          a.currentTarget = e, d &= Fh(f, e, a.type, !1, a) && !1 != a.Ub;
+        for (e = this;!a.cb && e && f.fa;e = e.gd) {
+          a.currentTarget = e, d &= ql(f, e, a.type, !1, a) && !1 != a.Ub;
         }
       }
     }
@@ -7472,16 +7492,16 @@ h.dispatchEvent = function(a) {
   }
   return a;
 };
-function Ih(a) {
-  return Jh(a || arguments.callee.caller, []);
+function tl(a) {
+  return ul(a || arguments.callee.caller, []);
 }
-function Jh(a, b) {
+function ul(a, b) {
   var c = [];
   if (0 <= Ca(b, a)) {
     c.push("[...circular reference...]");
   } else {
     if (a && 50 > b.length) {
-      c.push(Kh(a) + "(");
+      c.push(vl(a) + "(");
       for (var d = a.arguments, e = 0;e < d.length;e++) {
         0 < e && c.push(", ");
         var f;
@@ -7499,7 +7519,7 @@ function Jh(a, b) {
             f = f ? "true" : "false";
             break;
           case "function":
-            f = (f = Kh(f)) ? f : "[fn]";
+            f = (f = vl(f)) ? f : "[fn]";
             break;
           default:
             f = typeof f;
@@ -7510,7 +7530,7 @@ function Jh(a, b) {
       b.push(a);
       c.push(")\n");
       try {
-        c.push(Jh(a.caller, b));
+        c.push(ul(a.caller, b));
       } catch (g) {
         c.push("[exception trying to get caller]\n");
       }
@@ -7520,73 +7540,73 @@ function Jh(a, b) {
   }
   return c.join("");
 }
-function Kh(a) {
-  if (Lh[a]) {
-    return Lh[a];
+function vl(a) {
+  if (wl[a]) {
+    return wl[a];
   }
   a = String(a);
-  if (!Lh[a]) {
+  if (!wl[a]) {
     var b = /function ([^\(]+)/.exec(a);
-    Lh[a] = b ? b[1] : "[Anonymous]";
+    wl[a] = b ? b[1] : "[Anonymous]";
   }
-  return Lh[a];
+  return wl[a];
 }
-var Lh = {};
-function Mh(a, b, c, d, e) {
+var wl = {};
+function xl(a, b, c, d, e) {
   this.reset(a, b, c, d, e);
 }
-Mh.prototype.ad = null;
-Mh.prototype.$c = null;
-var Nh = 0;
-Mh.prototype.reset = function(a, b, c, d, e) {
-  "number" == typeof e || Nh++;
+xl.prototype.$c = null;
+xl.prototype.Zc = null;
+var yl = 0;
+xl.prototype.reset = function(a, b, c, d, e) {
+  "number" == typeof e || yl++;
   d || oa();
   this.wb = a;
-  this.Gd = b;
-  delete this.ad;
+  this.Fd = b;
   delete this.$c;
+  delete this.Zc;
 };
-Mh.prototype.od = function(a) {
+xl.prototype.nd = function(a) {
   this.wb = a;
 };
-function Oh(a) {
-  this.Hd = a;
+function zl(a) {
+  this.Gd = a;
 }
-Oh.prototype.Qb = null;
-Oh.prototype.wb = null;
-Oh.prototype.$b = null;
-Oh.prototype.bd = null;
-function Ph(a, b) {
+zl.prototype.Qb = null;
+zl.prototype.wb = null;
+zl.prototype.$b = null;
+zl.prototype.ad = null;
+function Al(a, b) {
   this.name = a;
   this.value = b;
 }
-Ph.prototype.toString = function() {
+Al.prototype.toString = function() {
   return this.name;
 };
-var Qh = new Ph("SEVERE", 1E3), Rh = new Ph("WARNING", 900), Sh = new Ph("CONFIG", 700), Th = new Ph("FINE", 500);
-Oh.prototype.getParent = function() {
+var Bl = new Al("SEVERE", 1E3), Cl = new Al("WARNING", 900), Dl = new Al("CONFIG", 700), El = new Al("FINE", 500);
+zl.prototype.getParent = function() {
   return this.Qb;
 };
-Oh.prototype.od = function(a) {
+zl.prototype.nd = function(a) {
   this.wb = a;
 };
-function Uh(a) {
+function Fl(a) {
   if (a.wb) {
     return a.wb;
   }
   if (a.Qb) {
-    return Uh(a.Qb);
+    return Fl(a.Qb);
   }
   Aa("Root logger has no level set.");
   return null;
 }
-Oh.prototype.log = function(a, b, c) {
-  if (a.value >= Uh(this).value) {
-    for (a = this.Dd(a, b, c), b = "log:" + a.Gd, ba.console && (ba.console.timeStamp ? ba.console.timeStamp(b) : ba.console.markTimeline && ba.console.markTimeline(b)), ba.msWriteProfilerMark && ba.msWriteProfilerMark(b), b = this;b;) {
+zl.prototype.log = function(a, b, c) {
+  if (a.value >= Fl(this).value) {
+    for (a = this.Cd(a, b, c), b = "log:" + a.Fd, ba.console && (ba.console.timeStamp ? ba.console.timeStamp(b) : ba.console.markTimeline && ba.console.markTimeline(b)), ba.msWriteProfilerMark && ba.msWriteProfilerMark(b), b = this;b;) {
       c = b;
       var d = a;
-      if (c.bd) {
-        for (var e = 0, f = void 0;f = c.bd[e];e++) {
+      if (c.ad) {
+        for (var e = 0, f = void 0;f = c.ad[e];e++) {
           f(d);
         }
       }
@@ -7594,10 +7614,10 @@ Oh.prototype.log = function(a, b, c) {
     }
   }
 };
-Oh.prototype.Dd = function(a, b, c) {
-  var d = new Mh(a, String(b), this.Hd);
+zl.prototype.Cd = function(a, b, c) {
+  var d = new xl(a, String(b), this.Gd);
   if (c) {
-    d.ad = c;
+    d.$c = c;
     var e;
     var f = arguments.callee.caller;
     try {
@@ -7608,7 +7628,7 @@ Oh.prototype.Dd = function(a, b, c) {
       } else {
         var n, y, v = !1;
         try {
-          n = c.lineNumber || c.ce || "Not available";
+          n = c.lineNumber || c.be || "Not available";
         } catch (z) {
           n = "Not available", v = !0;
         }
@@ -7619,32 +7639,32 @@ Oh.prototype.Dd = function(a, b, c) {
         }
         g = !v && c.lineNumber && c.fileName && c.stack ? c : {message:c.message, name:c.name, lineNumber:n, fileName:y, stack:c.stack || "Not available"};
       }
-      e = "Message: " + ra(g.message) + '\nUrl: \x3ca href\x3d"view-source:' + g.fileName + '" target\x3d"_new"\x3e' + g.fileName + "\x3c/a\x3e\nLine: " + g.lineNumber + "\n\nBrowser stack:\n" + ra(g.stack + "-\x3e ") + "[end]\n\nJS stack traversal:\n" + ra(Ih(f) + "-\x3e ");
+      e = "Message: " + ra(g.message) + '\nUrl: \x3ca href\x3d"view-source:' + g.fileName + '" target\x3d"_new"\x3e' + g.fileName + "\x3c/a\x3e\nLine: " + g.lineNumber + "\n\nBrowser stack:\n" + ra(g.stack + "-\x3e ") + "[end]\n\nJS stack traversal:\n" + ra(tl(f) + "-\x3e ");
     } catch (P) {
       e = "Exception trying to expose exception! You win, we lose. " + P;
     }
-    d.$c = e;
+    d.Zc = e;
   }
   return d;
 };
-function Vh(a, b) {
-  a.log(Th, b, void 0);
+function Gl(a, b) {
+  a.log(El, b, void 0);
 }
-var Wh = {}, Xh = null;
-function Yh(a) {
-  Xh || (Xh = new Oh(""), Wh[""] = Xh, Xh.od(Sh));
+var Hl = {}, Il = null;
+function Jl(a) {
+  Il || (Il = new zl(""), Hl[""] = Il, Il.nd(Dl));
   var b;
-  if (!(b = Wh[a])) {
-    b = new Oh(a);
-    var c = a.lastIndexOf("."), d = a.substr(c + 1), c = Yh(a.substr(0, c));
+  if (!(b = Hl[a])) {
+    b = new zl(a);
+    var c = a.lastIndexOf("."), d = a.substr(c + 1), c = Jl(a.substr(0, c));
     c.$b || (c.$b = {});
     c.$b[d] = b;
     b.Qb = c;
-    Wh[a] = b;
+    Hl[a] = b;
   }
   return b;
 }
-;function Zh(a) {
+;function Kl(a) {
   a = String(a);
   if (/^\s*$/.test(a) ? 0 : /^[\],:{}\s\u2028\u2029]*$/.test(a.replace(/\\["\\\/bfnrtu]/g, "@").replace(/"[^"\\\n\r\u2028\u2029\x00-\x08\x0a-\x1f]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, "]").replace(/(?:^|:|,)(?:[\s\u2028\u2029]*\[)+/g, ""))) {
     try {
@@ -7654,13 +7674,13 @@ function Yh(a) {
   }
   throw Error("Invalid JSON string: " + a);
 }
-function $h() {
+function Ll() {
   this.Tb = void 0;
 }
-function ai(a, b, c) {
+function Ml(a, b, c) {
   switch(typeof b) {
     case "string":
-      bi(b, c);
+      Nl(b, c);
       break;
     case "number":
       c.push(isFinite(b) && !isNaN(b) ? b : "null");
@@ -7680,7 +7700,7 @@ function ai(a, b, c) {
         var d = b.length;
         c.push("[");
         for (var e = "", f = 0;f < d;f++) {
-          c.push(e), e = b[f], ai(a, a.Tb ? a.Tb.call(b, String(f), e) : e, c), e = ",";
+          c.push(e), e = b[f], Ml(a, a.Tb ? a.Tb.call(b, String(f), e) : e, c), e = ",";
         }
         c.push("]");
         break;
@@ -7688,7 +7708,7 @@ function ai(a, b, c) {
       c.push("{");
       d = "";
       for (f in b) {
-        Object.prototype.hasOwnProperty.call(b, f) && (e = b[f], "function" != typeof e && (c.push(d), bi(f, c), c.push(":"), ai(a, a.Tb ? a.Tb.call(b, f, e) : e, c), d = ","));
+        Object.prototype.hasOwnProperty.call(b, f) && (e = b[f], "function" != typeof e && (c.push(d), Nl(f, c), c.push(":"), Ml(a, a.Tb ? a.Tb.call(b, f, e) : e, c), d = ","));
       }
       c.push("}");
       break;
@@ -7698,60 +7718,60 @@ function ai(a, b, c) {
       throw Error("Unknown type: " + typeof b);;
   }
 }
-var ci = {'"':'\\"', "\\":"\\\\", "/":"\\/", "\b":"\\b", "\f":"\\f", "\n":"\\n", "\r":"\\r", "\t":"\\t", "\x0B":"\\u000b"}, di = /\uffff/.test("\uffff") ? /[\\\"\x00-\x1f\x7f-\uffff]/g : /[\\\"\x00-\x1f\x7f-\xff]/g;
-function bi(a, b) {
-  b.push('"', a.replace(di, function(a) {
-    if (a in ci) {
-      return ci[a];
+var Ol = {'"':'\\"', "\\":"\\\\", "/":"\\/", "\b":"\\b", "\f":"\\f", "\n":"\\n", "\r":"\\r", "\t":"\\t", "\x0B":"\\u000b"}, Pl = /\uffff/.test("\uffff") ? /[\\\"\x00-\x1f\x7f-\uffff]/g : /[\\\"\x00-\x1f\x7f-\xff]/g;
+function Nl(a, b) {
+  b.push('"', a.replace(Pl, function(a) {
+    if (a in Ol) {
+      return Ol[a];
     }
     var b = a.charCodeAt(0), e = "\\u";
     16 > b ? e += "000" : 256 > b ? e += "00" : 4096 > b && (e += "0");
-    return ci[a] = e + b.toString(16);
+    return Ol[a] = e + b.toString(16);
   }), '"');
 }
-;function ei() {
+;function Ql() {
 }
-ei.prototype.Lc = null;
-function fi(a) {
+Ql.prototype.Kc = null;
+function Rl(a) {
   var b;
-  (b = a.Lc) || (b = {}, gi(a) && (b[0] = !0, b[1] = !0), b = a.Lc = b);
+  (b = a.Kc) || (b = {}, Sl(a) && (b[0] = !0, b[1] = !0), b = a.Kc = b);
   return b;
 }
-;var hi;
-function ii() {
+;var Tl;
+function Ul() {
 }
-pa(ii, ei);
-function ji(a) {
-  return(a = gi(a)) ? new ActiveXObject(a) : new XMLHttpRequest;
+pa(Ul, Ql);
+function Vl(a) {
+  return(a = Sl(a)) ? new ActiveXObject(a) : new XMLHttpRequest;
 }
-function gi(a) {
-  if (!a.cd && "undefined" == typeof XMLHttpRequest && "undefined" != typeof ActiveXObject) {
+function Sl(a) {
+  if (!a.bd && "undefined" == typeof XMLHttpRequest && "undefined" != typeof ActiveXObject) {
     for (var b = ["MSXML2.XMLHTTP.6.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP"], c = 0;c < b.length;c++) {
       var d = b[c];
       try {
-        return new ActiveXObject(d), a.cd = d;
+        return new ActiveXObject(d), a.bd = d;
       } catch (e) {
       }
     }
     throw Error("Could not create ActiveXObject. ActiveX might be disabled, or MSXML might not be installed");
   }
-  return a.cd;
+  return a.bd;
 }
-hi = new ii;
-function ki(a) {
-  mh.call(this);
-  this.headers = new wg;
+Tl = new Ul;
+function Wl(a) {
+  Yk.call(this);
+  this.headers = new hk;
   this.Yb = a || null;
 }
-pa(ki, Hh);
-ki.prototype.ha = Yh("goog.net.XhrIo");
-var li = /^https?$/i;
-h = ki.prototype;
+pa(Wl, sl);
+Wl.prototype.ha = Jl("goog.net.XhrIo");
+var Xl = /^https?$/i;
+h = Wl.prototype;
 h.Ra = !1;
 h.G = null;
 h.Xb = null;
 h.Mb = "";
-h.ed = "";
+h.dd = "";
 h.ub = 0;
 h.vb = "";
 h.Bc = !1;
@@ -7760,8 +7780,8 @@ h.Ec = !1;
 h.qb = !1;
 h.Vb = 0;
 h.Pa = null;
-h.nd = "";
-h.Nd = !1;
+h.md = "";
+h.Md = !1;
 h.send = function(a, b, c, d) {
   if (this.G) {
     throw Error("[goog.net.XhrIo] Object is active with another request\x3d" + this.Mb + "; newUri\x3d" + a);
@@ -7770,73 +7790,73 @@ h.send = function(a, b, c, d) {
   this.Mb = a;
   this.vb = "";
   this.ub = 0;
-  this.ed = b;
+  this.dd = b;
   this.Bc = !1;
   this.Ra = !0;
-  this.G = this.Yb ? ji(this.Yb) : ji(hi);
-  this.Xb = this.Yb ? fi(this.Yb) : fi(hi);
-  this.G.onreadystatechange = na(this.gd, this);
+  this.G = this.Yb ? Vl(this.Yb) : Vl(Tl);
+  this.Xb = this.Yb ? Rl(this.Yb) : Rl(Tl);
+  this.G.onreadystatechange = na(this.fd, this);
   try {
-    Vh(this.ha, mi(this, "Opening Xhr")), this.Ec = !0, this.G.open(b, a, !0), this.Ec = !1;
+    Gl(this.ha, Yl(this, "Opening Xhr")), this.Ec = !0, this.G.open(b, a, !0), this.Ec = !1;
   } catch (e) {
-    Vh(this.ha, mi(this, "Error opening Xhr: " + e.message));
-    ni(this, e);
+    Gl(this.ha, Yl(this, "Error opening Xhr: " + e.message));
+    Zl(this, e);
     return;
   }
   a = c || "";
   var f = this.headers.nb();
-  d && vg(d, function(a, b) {
+  d && gk(d, function(a, b) {
     f.set(b, a);
   });
   d = ba.FormData && a instanceof ba.FormData;
   "POST" != b || f.Wa("Content-Type") || d || f.set("Content-Type", "application/x-www-form-urlencoded;charset\x3dutf-8");
-  vg(f, function(a, b) {
+  gk(f, function(a, b) {
     this.G.setRequestHeader(b, a);
   }, this);
-  this.nd && (this.G.responseType = this.nd);
-  "withCredentials" in this.G && (this.G.withCredentials = this.Nd);
+  this.md && (this.G.responseType = this.md);
+  "withCredentials" in this.G && (this.G.withCredentials = this.Md);
   try {
-    this.Pa && (ba.clearTimeout(this.Pa), this.Pa = null), 0 < this.Vb && (Vh(this.ha, mi(this, "Will abort after " + this.Vb + "ms if incomplete")), this.Pa = ba.setTimeout(na(this.Ld, this), this.Vb)), Vh(this.ha, mi(this, "Sending request")), this.Kb = !0, this.G.send(a), this.Kb = !1;
+    this.Pa && (ba.clearTimeout(this.Pa), this.Pa = null), 0 < this.Vb && (Gl(this.ha, Yl(this, "Will abort after " + this.Vb + "ms if incomplete")), this.Pa = ba.setTimeout(na(this.Kd, this), this.Vb)), Gl(this.ha, Yl(this, "Sending request")), this.Kb = !0, this.G.send(a), this.Kb = !1;
   } catch (g) {
-    Vh(this.ha, mi(this, "Send error: " + g.message)), ni(this, g);
+    Gl(this.ha, Yl(this, "Send error: " + g.message)), Zl(this, g);
   }
 };
-h.Ld = function() {
-  "undefined" != typeof aa && this.G && (this.vb = "Timed out after " + this.Vb + "ms, aborting", this.ub = 8, Vh(this.ha, mi(this, this.vb)), this.dispatchEvent("timeout"), this.abort(8));
+h.Kd = function() {
+  "undefined" != typeof aa && this.G && (this.vb = "Timed out after " + this.Vb + "ms, aborting", this.ub = 8, Gl(this.ha, Yl(this, this.vb)), this.dispatchEvent("timeout"), this.abort(8));
 };
-function ni(a, b) {
+function Zl(a, b) {
   a.Ra = !1;
   a.G && (a.qb = !0, a.G.abort(), a.qb = !1);
   a.vb = b;
   a.ub = 5;
-  oi(a);
-  pi(a);
+  $l(a);
+  am(a);
 }
-function oi(a) {
+function $l(a) {
   a.Bc || (a.Bc = !0, a.dispatchEvent("complete"), a.dispatchEvent("error"));
 }
 h.abort = function(a) {
-  this.G && this.Ra && (Vh(this.ha, mi(this, "Aborting")), this.Ra = !1, this.qb = !0, this.G.abort(), this.qb = !1, this.ub = a || 7, this.dispatchEvent("complete"), this.dispatchEvent("abort"), pi(this));
+  this.G && this.Ra && (Gl(this.ha, Yl(this, "Aborting")), this.Ra = !1, this.qb = !0, this.G.abort(), this.qb = !1, this.ub = a || 7, this.dispatchEvent("complete"), this.dispatchEvent("abort"), am(this));
 };
-h.gd = function() {
-  this.Ec || this.Kb || this.qb ? qi(this) : this.Id();
+h.fd = function() {
+  this.Ec || this.Kb || this.qb ? bm(this) : this.Hd();
 };
-h.Id = function() {
-  qi(this);
+h.Hd = function() {
+  bm(this);
 };
-function qi(a) {
+function bm(a) {
   if (a.Ra && "undefined" != typeof aa) {
-    if (a.Xb[1] && 4 == ri(a) && 2 == si(a)) {
-      Vh(a.ha, mi(a, "Local request error detected and ignored"));
+    if (a.Xb[1] && 4 == cm(a) && 2 == dm(a)) {
+      Gl(a.ha, Yl(a, "Local request error detected and ignored"));
     } else {
-      if (a.Kb && 4 == ri(a)) {
-        ba.setTimeout(na(a.gd, a), 0);
+      if (a.Kb && 4 == cm(a)) {
+        ba.setTimeout(na(a.fd, a), 0);
       } else {
-        if (a.dispatchEvent("readystatechange"), 4 == ri(a)) {
-          Vh(a.ha, mi(a, "Request complete"));
+        if (a.dispatchEvent("readystatechange"), 4 == cm(a)) {
+          Gl(a.ha, Yl(a, "Request complete"));
           a.Ra = !1;
           try {
-            var b = si(a), c, d;
+            var b = dm(a), c, d;
             a: {
               switch(b) {
                 case 200:
@@ -7861,24 +7881,24 @@ function qi(a) {
             if (!(c = d)) {
               var e;
               if (e = 0 === b) {
-                var f = String(a.Mb).match(Vg)[1] || null;
+                var f = String(a.Mb).match(Gk)[1] || null;
                 if (!f && self.location) {
                   var g = self.location.protocol, f = g.substr(0, g.length - 1)
                 }
-                e = !li.test(f ? f.toLowerCase() : "");
+                e = !Xl.test(f ? f.toLowerCase() : "");
               }
               c = e;
             }
-            c ? (a.dispatchEvent("complete"), a.dispatchEvent("success")) : (a.ub = 6, a.vb = ti(a) + " [" + si(a) + "]", oi(a));
+            c ? (a.dispatchEvent("complete"), a.dispatchEvent("success")) : (a.ub = 6, a.vb = em(a) + " [" + dm(a) + "]", $l(a));
           } finally {
-            pi(a);
+            am(a);
           }
         }
       }
     }
   }
 }
-function pi(a) {
+function am(a) {
   if (a.G) {
     var b = a.G, c = a.Xb[0] ? ea : null;
     a.G = null;
@@ -7888,41 +7908,41 @@ function pi(a) {
     try {
       b.onreadystatechange = c;
     } catch (d) {
-      a.ha.log(Qh, "Problem encountered resetting onreadystatechange: " + d.message, void 0);
+      a.ha.log(Bl, "Problem encountered resetting onreadystatechange: " + d.message, void 0);
     }
   }
 }
-function ri(a) {
+function cm(a) {
   return a.G ? a.G.readyState : 0;
 }
-function si(a) {
+function dm(a) {
   try {
-    return 2 < ri(a) ? a.G.status : -1;
+    return 2 < cm(a) ? a.G.status : -1;
   } catch (b) {
-    return a.ha.log(Rh, "Can not get status: " + b.message, void 0), -1;
+    return a.ha.log(Cl, "Can not get status: " + b.message, void 0), -1;
   }
 }
-function ti(a) {
+function em(a) {
   try {
-    return 2 < ri(a) ? a.G.statusText : "";
+    return 2 < cm(a) ? a.G.statusText : "";
   } catch (b) {
-    return Vh(a.ha, "Can not get status: " + b.message), "";
+    return Gl(a.ha, "Can not get status: " + b.message), "";
   }
 }
-function ui(a) {
+function fm(a) {
   try {
     return a.G ? a.G.responseText : "";
   } catch (b) {
-    return Vh(a.ha, "Can not get responseText: " + b.message), "";
+    return Gl(a.ha, "Can not get responseText: " + b.message), "";
   }
 }
 h.getResponseHeader = function(a) {
-  return this.G && 4 == ri(this) ? this.G.getResponseHeader(a) : void 0;
+  return this.G && 4 == cm(this) ? this.G.getResponseHeader(a) : void 0;
 };
-function mi(a, b) {
-  return b + " [" + a.ed + " " + a.Mb + " " + si(a) + "]";
+function Yl(a, b) {
+  return b + " [" + a.dd + " " + a.Mb + " " + dm(a) + "]";
 }
-;function vi(a, b) {
+;function gm(a, b) {
   var c = Array.prototype.slice.call(arguments), d = c.shift();
   if ("undefined" == typeof d) {
     throw Error("[goog.string.format] Template required");
@@ -7936,14 +7956,14 @@ function mi(a, b) {
       throw Error("[goog.string.format] Not enough arguments");
     }
     arguments[0] = D;
-    return vi.xa[y].apply(null, arguments);
+    return gm.xa[y].apply(null, arguments);
   });
 }
-vi.xa = {};
-vi.xa.s = function(a, b, c) {
+gm.xa = {};
+gm.xa.s = function(a, b, c) {
   return isNaN(c) || "" == c || a.length >= c ? a : a = -1 < b.indexOf("-", 0) ? a + Array(c - a.length + 1).join(" ") : Array(c - a.length + 1).join(" ") + a;
 };
-vi.xa.f = function(a, b, c, d, e) {
+gm.xa.f = function(a, b, c, d, e) {
   d = a.toString();
   isNaN(e) || "" == e || (d = a.toFixed(e));
   var f;
@@ -7956,31 +7976,11 @@ vi.xa.f = function(a, b, c, d, e) {
   a = c - d.length - f.length;
   return d = 0 <= b.indexOf("-", 0) ? f + d + Array(a + 1).join(" ") : f + Array(a + 1).join(0 <= b.indexOf("0", 0) ? "0" : " ") + d;
 };
-vi.xa.d = function(a, b, c, d, e, f, g, l) {
-  return vi.xa.f(parseInt(a, 10), b, c, d, 0, f, g, l);
+gm.xa.d = function(a, b, c, d, e, f, g, l) {
+  return gm.xa.f(parseInt(a, 10), b, c, d, 0, f, g, l);
 };
-vi.xa.i = vi.xa.d;
-vi.xa.u = vi.xa.d;
-var wi = new V(null, "getDefaultProps", "getDefaultProps"), $a = new V(null, "dup", "dup"), xi = new V(null, "componentWillUpdate", "componentWillUpdate"), yi = new V(null, "weeks", "weeks"), zi = new V(null, "div.text-center", "div.text-center"), Ai = new V(null, "fallback-locale", "fallback-locale"), Bi = new V("controllers", "objects-visible", "controllers/objects-visible"), Ci = new V(null, "device-id", "device-id"), Di = new V(null, "status", "status"), Ei = new V(null, "componentDidUpdate", 
-"componentDidUpdate"), Fi = new V(null, "tbody", "tbody"), Gi = new V(null, "response", "response"), Hi = new V(null, "href", "href"), Ii = new V("controllers", "scantime", "controllers/scantime"), Ji = new V(null, "dictionary", "dictionary"), Ki = new V(null, "read", "read"), Li = new V(null, "trunc", "trunc"), nc = new V(null, "default", "default"), Mi = new V(null, "border", "border"), Ni = new V(null, "render", "render"), Oi = new V(null, "i.fa.fa-refresh", "i.fa.fa-refresh"), Pi = new V(null, 
-"strong", "strong"), Qi = new V("controllers", "list", "controllers/list"), Ri = new V(null, "ul", "ul"), Si = new V(null, "original-text", "original-text"), Ti = new V(null, "h2.modal-title", "h2.modal-title"), Ui = new V(null, "margin", "margin"), Vi = new V(null, "en", "en"), Wi = new V(null, "background", "background"), Xi = new V(null, "img", "img"), Yi = new V(null, "cljsRender", "cljsRender"), Zi = new V(null, "secs", "secs"), aj = new V(null, "component-function", "component-function"), bj = 
-new V(null, "edn", "edn"), cj = new V(null, "status-text", "status-text"), dj = new V(null, "msecs", "msecs"), ej = new V(null, "i.fa.fa-bar-chart-o", "i.fa.fa-bar-chart-o"), fj = new V(null, "raw", "raw"), gj = new V(null, "pass", "pass"), hj = new V(null, "width", "width"), ij = new V(null, "componentWillReceiveProps", "componentWillReceiveProps"), jj = new V(null, "div", "div"), kj = new V(null, "target", "target"), lj = new V(null, "derefed", "derefed"), mj = new V(null, "component-did-mount", 
-"component-did-mount"), nj = new V("controllers", "graphs", "controllers/graphs"), oj = new V(null, "margin-left", "margin-left"), pj = new V(null, "div.modal-dialog.modal-lg", "div.modal-dialog.modal-lg"), qj = new V(null, "span.glyphicon.glyphicon-remove", "span.glyphicon.glyphicon-remove"), rj = new V(null, "on-change", "on-change"), sj = new V(null, "a.btn.btn-default.visible-xs", "a.btn.btn-default.visible-xs"), tj = new V(null, "content", "content"), uj = new V(null, "dev-mode?", "dev-mode?"), 
-vj = new V(null, "div.modal-footer", "div.modal-footer"), wj = new V(null, "key", "key"), xj = new V(null, "class", "class"), yj = new V(null, "prefix", "prefix"), zj = new V(null, "div.input-group", "div.input-group"), Aj = new V(null, "write", "write"), Bj = new V(null, "table.table.table-striped", "table.table.table-striped"), Cj = new V(null, "mins", "mins"), Dj = new V(null, "span.sr-only", "span.sr-only"), Ej = new V(null, "timeout", "timeout"), mg = new V(null, "keywordize-keys", "keywordize-keys"), 
-Fj = new V(null, "margin-top", "margin-top"), Gj = new V(null, "scope-fn", "scope-fn"), Hj = new V(null, "name", "name"), Ij = new V(null, "floor", "floor"), Jj = new V(null, "padding-right", "padding-right"), Kj = new V(null, "div.btn-group-vertical.btn-group.btn-block", "div.btn-group-vertical.btn-group.btn-block"), Lj = new V("controllers", "last-scan", "controllers/last-scan"), Mj = new V(null, "device-table-btns", "device-table-btns"), Nj = new V(null, "div.text-left", "div.text-left"), Oj = 
-new V("controllers", "nothing-found", "controllers/nothing-found"), Pj = new V(null, "round", "round"), Qj = new V("explorer", "not-sub-vigilia", "explorer/not-sub-vigilia"), Rj = new V(null, "content-type", "content-type"), Sj = new V(null, "object-instance", "object-instance"), Tj = new V(null, "not-found", "not-found"), Uj = new V(null, "a.btn.btn-primary.btn-lg", "a.btn.btn-primary.btn-lg"), Vj = new V(null, "white-space", "white-space"), Wj = new V("controllers", "loading-objects", "controllers/loading-objects"), 
-Wa = new V(null, "flush-on-newline", "flush-on-newline"), Xj = new V(null, "object-type", "object-type"), Yj = new V(null, "div.jumbotron", "div.jumbotron"), Zj = new V(null, "hours", "hours"), ak = new V(null, "i.fa.fa-list", "i.fa.fa-list"), bk = new V(null, "api-root", "api-root"), ck = new V("controllers", "description", "controllers/description"), dk = new V(null, "fmt-fn", "fmt-fn"), ek = new V(null, "missing", "missing"), fk = new V(null, "i.fa.fa-briefcase", "i.fa.fa-briefcase"), gk = new V(null, 
-"div.modal-content", "div.modal-content"), hk = new V(null, "on-dispose", "on-dispose"), ik = new V(null, "componentWillUnmount", "componentWillUnmount"), jk = new V(null, "style", "style"), kk = new V(null, "button.close", "button.close"), lk = new V(null, "max-height", "max-height"), mk = new V("controllers", "unit", "controllers/unit"), nk = new V(null, "data-dismiss", "data-dismiss"), ok = new V(null, "locale", "locale"), pk = new V(null, "get-default-format", "get-default-format"), qk = new V(null, 
-"src", "src"), rk = new V(null, "title", "title"), sk = new V(null, "div.modal-body", "div.modal-body"), tk = new V(null, "cursor", "cursor"), uk = new V(null, "shown-callback", "shown-callback"), vk = new V(null, "div.col-sm-4", "div.col-sm-4"), wk = new V(null, "device", "device"), xk = new V(null, "years", "years"), yk = new V(null, "button.btn.btn-default.btn-sm", "button.btn.btn-default.btn-sm"), zk = new V("explorer", "learn-more", "explorer/learn-more"), Ak = new V(null, "div.modal-header", 
-"div.modal-header"), Bk = new V(null, "days", "days"), Ck = new V(null, "displayName", "displayName"), Dk = new V(null, "div.col-sm-6", "div.col-sm-6"), Ek = new V(null, "auto-run", "auto-run"), Fk = new V("controllers", "name", "controllers/name"), Gk = new V(null, "parse-error", "parse-error"), Hk = new V("explorer", "guess", "explorer/guess"), Ik = new V(null, "log-missing-translation-fn", "log-missing-translation-fn"), Jk = new V(null, "thead", "thead"), Kk = new V(null, "div.col-sm-2", "div.col-sm-2"), 
-Lk = new V(null, "object-id", "object-id"), Mk = new V(null, "scope", "scope"), Nk = new V(null, "response-format", "response-format"), Ok = new V("controllers", "devices", "controllers/devices"), Pk = new V(null, "overflow-y", "overflow-y"), Qk = new V(null, "aria-hidden", "aria-hidden"), Rk = new V(null, "finally", "finally"), Sk = new V(null, "ks", "ks"), Tk = new V(null, "url", "url"), Uk = new V(null, "done", "done"), Vk = new V(null, "button.btn.btn-default", "button.btn.btn-default"), Wk = 
-new V(null, "div.col-sm-8", "div.col-sm-8"), Xk = new V(null, "keywords?", "keywords?"), Yk = new V(null, "json", "json"), ab = new V(null, "print-length", "print-length"), Zk = new V(null, "params", "params"), $k = new V(null, "headers", "headers"), al = new V(null, "type", "type"), bl = new V("controllers", "refresh", "controllers/refresh"), cl = new V("briefcase", "delete-all", "briefcase/delete-all"), dl = new V("controllers", "value", "controllers/value"), el = new V(null, "max-width", "max-width"), 
-fl = new V("explorer", "record", "explorer/record"), gl = new V(null, "span.glyphicon.glyphicon-search", "span.glyphicon.glyphicon-search"), hl = new V(null, "small", "small"), t = new V(null, "else", "else"), Xa = new V(null, "readably", "readably"), il = new V(null, "unit", "unit"), jl = new V(null, "border-radius", "border-radius"), kl = new V(null, "compiled-dictionary", "compiled-dictionary"), $f = new V(null, "validator", "validator"), Ya = new V(null, "meta", "meta"), ll = new V(null, "ceil", 
-"ceil"), ml = new V(null, "error-handler", "error-handler"), nl = new V(null, "h3.text-center", "h3.text-center"), ol = new V(null, "fr", "fr"), pl = new V(null, "h4", "h4"), ql = new V(null, "i.fa.fa-download", "i.fa.fa-download"), rl = new V(null, "role", "role"), sl = new V(null, "h3", "h3"), tl = new V(null, "span.input-group-addon", "span.input-group-addon"), ul = new V(null, "charset", "charset"), vl = new V(null, "div.container-fluid", "div.container-fluid"), wl = new V(null, "is-parse-error", 
-"is-parse-error"), xl = new V(null, "format", "format"), yl = new V(null, "h2", "h2"), zl = new V(null, "handler", "handler"), Al = new V(null, "input", "input"), Bl = new V(null, "div.col-sm-6.text-center", "div.col-sm-6.text-center"), Cl = new V(null, "getInitialState", "getInitialState"), Dl = new V(null, "on-set", "on-set"), El = new V(null, "for", "for"), Fl = new V(null, "th", "th"), Gl = new V("controllers", "no-name", "controllers/no-name"), Hl = new V(null, "componentFunction", "componentFunction"), 
-Il = new V(null, "div.col-sm-10", "div.col-sm-10"), Jl = new V(null, "project-id", "project-id"), Kl = new V(null, "a.btn.btn-default.btn-sm", "a.btn.btn-default.btn-sm"), Ll = new V("briefcase", "change-colors", "briefcase/change-colors"), Ml = new V("controllers", "search-name", "controllers/search-name"), Nl = new V(null, "id", "id"), Ol = new V(null, "ms", "ms"), Pl = new V(null, "value", "value"), q = new V(null, "file", "file"), Ql = new V(null, "top-margin", "top-margin"), Rl = new V(null, 
-"description", "description"), Sl = new V(null, "tab-index", "tab-index"), Tl = new V(null, "height", "height"), Ul = new V(null, "td", "td"), Vl = new V(null, "tag", "tag"), Wl = new V(null, "div.col-sm-2.text-center", "div.col-sm-2.text-center"), Xl = new V(null, "div.row", "div.row"), Yl = new V(null, "on-click", "on-click"), Zl = new V(null, "li", "li"), $l = new V(null, "div.modal.fade", "div.modal.fade"), am = new V(null, "p", "p"), bm = new V(null, "tr", "tr"), cm = new V(null, "placeholder", 
-"placeholder"), dm = new V(null, "months", "months"), em = new V(null, "padding-top", "padding-top"), fm = new V(null, "iframe", "iframe"), gm = new V(null, "shouldComponentUpdate", "shouldComponentUpdate");
+gm.xa.i = gm.xa.d;
+gm.xa.u = gm.xa.d;
 function hm(a, b, c) {
   if ("string" === typeof b) {
     return a.replace(RegExp(String(b).replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, "\\$1").replace(/\x08/g, "\\x08"), "g"), c);
@@ -8089,8 +8089,8 @@ var lm = function() {
   return c;
 }();
 function mm(a) {
-  if (a ? a.Vc : a) {
-    return a.Vc();
+  if (a ? a.Uc : a) {
+    return a.Uc();
   }
   var b;
   b = mm[k(null == a ? null : a)];
@@ -8100,8 +8100,8 @@ function mm(a) {
   return b.call(null, a);
 }
 function nm(a, b) {
-  if (a ? a.Wc : a) {
-    return a.Wc(0, b);
+  if (a ? a.Vc : a) {
+    return a.Vc(0, b);
   }
   var c;
   c = nm[k(null == a ? null : a)];
@@ -8115,10 +8115,10 @@ function om(a, b, c) {
   this.buffer = b;
   this.Dc = c;
 }
-om.prototype.Vc = function() {
+om.prototype.Uc = function() {
   return 0 === this.buffer.length ? (this.Dc += 1, this.F[this.Dc]) : this.buffer.pop();
 };
-om.prototype.Wc = function(a, b) {
+om.prototype.Vc = function(a, b) {
   return this.buffer.push(b);
 };
 function pm(a) {
@@ -8284,11 +8284,11 @@ function Tm() {
 function Um(a) {
   var b;
   b = Gm.n ? Gm.n(a, !0, null, !0) : Gm.call(null, a, !0, null);
-  b = b instanceof E ? m(new p(null, 1, [Vl, b], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/reader.cljs"], null)) : "string" === typeof b ? m(new p(null, 1, [Vl, b], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/reader.cljs"], null)) : b instanceof V ? m(new Ze([b, !0]), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/reader.cljs"], null)) : t ? 
+  b = b instanceof E ? m(new p(null, 1, [Rj, b], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/reader.cljs"], null)) : "string" === typeof b ? m(new p(null, 1, [Rj, b], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/reader.cljs"], null)) : b instanceof V ? m(new Ze([b, !0]), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/cljs/reader.cljs"], null)) : t ? 
   b : null;
   Rc(b) || qm.e(a, L(["Metadata must be Symbol,Keyword,String or Map"], 0));
   var c = Gm.n ? Gm.n(a, !0, null, !0) : Gm.call(null, a, !0, null);
-  return(c ? c.j & 262144 || c.Ad || (c.j ? 0 : s(Kb, c)) : s(Kb, c)) ? m(c, yf.e(L([Lc(c), b], 0))) : qm.e(a, L(["Metadata can only be applied to IWithMetas"], 0));
+  return(c ? c.j & 262144 || c.zd || (c.j ? 0 : s(Kb, c)) : s(Kb, c)) ? m(c, yf.e(L([Lc(c), b], 0))) : qm.e(a, L(["Metadata can only be applied to IWithMetas"], 0));
 }
 function Vm(a) {
   return Ef(Fm("}", a));
@@ -8510,7 +8510,7 @@ function Km(a, b) {
     return b.call(this, a, e);
   }
   function b(a, b) {
-    return U.c(vi, a, b);
+    return U.c(gm, a, b);
   }
   a.l = 1;
   a.h = function(a) {
@@ -8565,21 +8565,21 @@ var kn = function() {
   }
   function b(a, b) {
     var e = Q.c(b, 0, null), f = Q.c(b, 1, null), f = r(f) ? Math.pow.a ? Math.pow.a(10, f) : Math.pow.call(null, 10, f) : null, g = bb(f) ? a : a * f, l = function() {
-      var a = r(e) ? e : Pj;
-      if (C.a(Li, a)) {
+      var a = r(e) ? e : Lh;
+      if (C.a(Ig, a)) {
         return hd(g);
       }
-      if (C.a(ll, a)) {
+      if (C.a(hj, a)) {
         return a = Math.ceil.b ? Math.ceil.b(g) : Math.ceil.call(null, g), hd(a);
       }
-      if (C.a(Ij, a)) {
+      if (C.a(Eh, a)) {
         return a = Math.floor.b ? Math.floor.b(g) : Math.floor.call(null, g), hd(a);
       }
-      if (C.a(Pj, a)) {
+      if (C.a(Lh, a)) {
         return Math.round.b ? Math.round.b(g) : Math.round.call(null, g);
       }
       if (t) {
-        throw sg.a("Unknown round type", m(new p(null, 1, [al, e], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/encore.cljs"], null)));
+        throw sg.a("Unknown round type", m(new p(null, 1, [Wi, e], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/encore.cljs"], null)));
       }
       return null;
     }();
@@ -8604,9 +8604,9 @@ Wd.a(function(a) {
   }
   function b(a) {
     a = Xc(a) ? U.a(uf, a) : a;
-    var b = R.a(a, Ol), e = R.a(a, dj), f = R.a(a, Zi), g = R.a(a, Cj), l = R.a(a, Zj), n = R.a(a, Bk), y = R.a(a, yi), v = R.a(a, dm), z = R.a(a, xk);
-    if (!Td(new Af(null, new p(null, 9, [yi, null, Zi, null, dj, null, Cj, null, Zj, null, xk, null, Bk, null, Ol, null, dm, null], null), null), xf(a))) {
-      throw Error([w("Assert failed: "), w(Z.e(L([m(sd(new E(null, "every?", "every?", 1363110461, null), new Af(null, new p(null, 9, [yi, null, Zi, null, dj, null, Cj, null, Zj, null, xk, null, Bk, null, Ol, null, dm, null], null), null), m(sd(new E(null, "keys", "keys", -1637242963, null), new E(null, "opts", "opts", -1637113383, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/encore.cljs"], null))), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/encore.cljs"], 
+    var b = R.a(a, Kj), e = R.a(a, $g), f = R.a(a, Wg), g = R.a(a, yh), l = R.a(a, Vh), n = R.a(a, wi), y = R.a(a, vg), v = R.a(a, ak), z = R.a(a, si);
+    if (!Td(new Af(null, new p(null, 9, [vg, null, Wg, null, $g, null, yh, null, Vh, null, si, null, wi, null, Kj, null, ak, null], null), null), xf(a))) {
+      throw Error([w("Assert failed: "), w(Z.e(L([m(sd(new E(null, "every?", "every?", 1363110461, null), new Af(null, new p(null, 9, [vg, null, Wg, null, $g, null, yh, null, Vh, null, si, null, wi, null, Kj, null, ak, null], null), null), m(sd(new E(null, "keys", "keys", -1637242963, null), new E(null, "opts", "opts", -1637113383, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/encore.cljs"], null))), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/encore.cljs"], 
       null))], 0)))].join(""));
     }
     return ln((r(z) ? 31536E6 * z : 0) + (r(v) ? 2551392E3 * v : 0) + (r(y) ? 6048E5 * y : 0) + (r(n) ? 864E5 * n : 0) + (r(l) ? 36E5 * l : 0) + (r(g) ? 6E4 * g : 0) + (r(f) ? 1E3 * f : 0) + (r(e) ? e : 0) + (r(b) ? b : 0));
@@ -8691,7 +8691,7 @@ Wd.a(function(a) {
 Wd.a(function(a) {
   return[w("ERROR: "), w(a)].join("");
 }, nn);
-ag.b(new p(null, 2, [Uk, !1, Pl, null], null));
+ag.b(new p(null, 2, [Pi, !1, Lj, null], null));
 var on = og(function() {
   function a(a) {
     var c = null;
@@ -8743,24 +8743,24 @@ function sn(a) {
   if (!Rc(a)) {
     throw Error([w("Assert failed: "), w(Z.e(L([m(sd(new E(null, "map?", "map?", -1637187556, null), new E(null, "tconfig", "tconfig", 1170855535, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))], 0)))].join(""));
   }
-  var c = Xc(a) ? U.a(uf, a) : a, d = R.c(c, Ik, function() {
+  var c = Xc(a) ? U.a(uf, a) : a, d = R.c(c, Di, function() {
     return function(a) {
       a = Xc(a) ? U.a(uf, a) : a;
-      R.a(a, Mk);
-      R.a(a, Sk);
-      R.a(a, ok);
+      R.a(a, Hi);
+      R.a(a, Ni);
+      R.a(a, ji);
       return mn([w("Missing translation"), w(a)].join(""));
     };
-  }(a, c)), e = R.c(c, dk, pn), f = R.c(c, Gj, function() {
+  }(a, c)), e = R.c(c, Zh, pn), f = R.c(c, Ch, function() {
     return function(a) {
       return on.a ? on.a(null, a) : on.call(null, null, a);
     };
-  }(a, c, d, e)), g = R.c(c, Ai, Vi), l = R.a(c, uj), n = R.a(c, kl);
-  if (!r(kl.b(a))) {
-    throw Error([w("Assert failed: "), w("Missing tconfig key: :compiled-dictionary"), w("\n"), w(Z.e(L([m(sd(kl, new E(null, "tconfig", "tconfig", 1170855535, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))], 0)))].join(""));
+  }(a, c, d, e)), g = R.c(c, xg, Sg), l = R.a(c, qh), n = R.a(c, gj);
+  if (!r(gj.b(a))) {
+    throw Error([w("Assert failed: "), w("Missing tconfig key: :compiled-dictionary"), w("\n"), w(Z.e(L([m(sd(gj, new E(null, "tconfig", "tconfig", 1170855535, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))], 0)))].join(""));
   }
-  if (!bb(Ji.b(a))) {
-    throw Error([w("Assert failed: "), w("Invalid tconfig key: :dictionary"), w("\n"), w(Z.e(L([m(sd(new E(null, "not", "not", -1640422260, null), m(sd(Ji, new E(null, "tconfig", "tconfig", 1170855535, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))], 0)))].join(""));
+  if (!bb(Gg.b(a))) {
+    throw Error([w("Assert failed: "), w("Invalid tconfig key: :dictionary"), w("\n"), w(Z.e(L([m(sd(new E(null, "not", "not", -1640422260, null), m(sd(Gg, new E(null, "tconfig", "tconfig", 1170855535, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))], 0)))].join(""));
   }
   var y = function(a, b) {
     return function(c, d, e) {
@@ -8798,7 +8798,7 @@ function sn(a) {
         }
         var z = null == ca ? null : Eb(ca);
         if (z instanceof V) {
-          r(d) && (d.b ? d.b(m(new p(null, 4, [ok, a, Mk, f.b ? f.b(null) : f.call(null, null), Sk, ca, uj, l], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))) : d.call(null, m(new p(null, 4, [ok, a, Mk, f.b ? f.b(null) : f.call(null, null), Sk, ca, uj, l], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))));
+          r(d) && (d.b ? d.b(m(new p(null, 4, [ji, a, Hi, f.b ? f.b(null) : f.call(null, null), Ni, ca, qh, l], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))) : d.call(null, m(new p(null, 4, [ji, a, Hi, f.b ? f.b(null) : f.call(null, null), Ni, ca, qh, l], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/taoensso/tower.cljs"], null))));
           c = Ud(function(a, b, c) {
             return function(a) {
               return y(c, a, g);
@@ -8808,8 +8808,8 @@ function sn(a) {
             return c;
           }
           c = function() {
-            var b = v(n, ek, a);
-            return r(b) ? b : v(n, ek, g);
+            var b = v(n, $h, a);
+            return r(b) ? b : v(n, $h, g);
           }();
           return r(c) ? e.t ? e.t(a, c, b(a), b(f.b ? f.b(null) : f.call(null, null)), b(ca)) : e.call(null, a, c, b(a), b(f.b ? f.b(null) : f.call(null, null)), b(ca)) : null;
         }
@@ -8835,14 +8835,14 @@ function sn(a) {
     return a;
   }();
 }
-;var tn = ag.b("en"), un = m(new p(null, 2, [Ai, Vi, kl, Gc([Bi, Ii, Qi, nj, Lj, Oj, Wj, ck, mk, Fk, Ok, bl, cl, dl, Gl, Ll, Ml], [new p(null, 2, [ol, "Objets visibles", Vi, "Objects visible"], null), new p(null, 2, [ol, "Scann\u00e9 en:", Vi, "Scanned in:"], null), new p(null, 2, [ol, "Liste d'appareils", Vi, "Devices list"], null), new p(null, 1, [ol, "Graphiques"], null), new p(null, 2, [ol, "Dernier scan:", Vi, "Last scan:"], null), new p(null, 2, [ol, "Aucun appareil trouv\u00e9", Vi, "No device found"], 
-null), new p(null, 2, [ol, "Chargement des objets...", Vi, "Loading objects..."], null), new p(null, 2, [ol, "Description", Vi, "Description"], null), new p(null, 2, [ol, "Unit\u00e9", Vi, "Unit"], null), new p(null, 2, [ol, "Nom", Vi, "Name"], null), new p(null, 2, [ol, "Contr\u00f4leurs", Vi, "Controllers"], null), new p(null, 2, [ol, "Actualiser", Vi, "Refresh"], null), new p(null, 2, [ol, "Effacer tout", Vi, "Delete all"], null), new p(null, 2, [ol, "Valeur", Vi, "Value"], null), new p(null, 
-2, [ol, "\x3csans nom\x3e", Vi, "\x3cno name\x3e"], null), new p(null, 2, [ol, "Changer les couleurs", Vi, "Change colors"], null), new p(null, 2, [ol, "Rechercher nom", Vi, "Search name"], null)])], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/translation.cljs"], null)), $ = sn(un);
-var vn = m(new p(null, 2, [Ai, Vi, kl, new p(null, 4, [zk, new p(null, 2, [ol, "En savoir plus!", Vi, "Learn more!"], null), fl, new p(null, 2, [ol, "Enregistrer votre r\u00e9seau maintenant!", Vi, "Record your network now!"], null), Hk, new p(null, 2, [ol, "Pourquoi tenter de deviner ce qui s'est pass\u00e9, alors que vous pouvez SAVOIR ce qui s'est pass\u00e9?", Vi, "Why try to guess what happened when you can KNOW it?"], null), Qj, new p(null, 2, [ol, "Ce projet n'est pas configur\u00e9 ou inscrit \u00e0 Vigilia.", 
-Vi, "This project isn't configured or subscribed to Vigilia."], null)], null)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/translation2.cljs"], null)), wn = sn(vn);
+;var tn = ag.b("en"), un = m(new p(null, 2, [xg, Sg, gj, Gc([yg, Fg, Ng, jh, Hh, Kh, Sh, Yh, hi, Ai, Ji, Xi, Yi, Zi, Cj, Hj, Ij], [new p(null, 2, [kj, "Objets visibles", Sg, "Objects visible"], null), new p(null, 2, [kj, "Scann\u00e9 en:", Sg, "Scanned in:"], null), new p(null, 2, [kj, "Liste d'appareils", Sg, "Devices list"], null), new p(null, 1, [kj, "Graphiques"], null), new p(null, 2, [kj, "Dernier scan:", Sg, "Last scan:"], null), new p(null, 2, [kj, "Aucun appareil trouv\u00e9", Sg, "No device found"], 
+null), new p(null, 2, [kj, "Chargement des objets...", Sg, "Loading objects..."], null), new p(null, 2, [kj, "Description", Sg, "Description"], null), new p(null, 2, [kj, "Unit\u00e9", Sg, "Unit"], null), new p(null, 2, [kj, "Nom", Sg, "Name"], null), new p(null, 2, [kj, "Contr\u00f4leurs", Sg, "Controllers"], null), new p(null, 2, [kj, "Actualiser", Sg, "Refresh"], null), new p(null, 2, [kj, "Effacer tout", Sg, "Delete all"], null), new p(null, 2, [kj, "Valeur", Sg, "Value"], null), new p(null, 
+2, [kj, "\x3csans nom\x3e", Sg, "\x3cno name\x3e"], null), new p(null, 2, [kj, "Changer les couleurs", Sg, "Change colors"], null), new p(null, 2, [kj, "Rechercher nom", Sg, "Search name"], null)])], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/translation.cljs"], null)), $ = sn(un);
+var vn = m(new p(null, 2, [xg, Sg, gj, new p(null, 4, [ui, new p(null, 2, [kj, "En savoir plus!", Sg, "Learn more!"], null), bj, new p(null, 2, [kj, "Enregistrer votre r\u00e9seau maintenant!", Sg, "Record your network now!"], null), Ci, new p(null, 2, [kj, "Pourquoi tenter de deviner ce qui s'est pass\u00e9, alors que vous pouvez SAVOIR ce qui s'est pass\u00e9?", Sg, "Why try to guess what happened when you can KNOW it?"], null), Mh, new p(null, 2, [kj, "Ce projet n'est pas configur\u00e9 ou inscrit \u00e0 Vigilia.", 
+Sg, "This project isn't configured or subscribed to Vigilia."], null)], null)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/translation2.cljs"], null)), wn = sn(vn);
 function xn(a, b, c, d, e, f, g) {
-  if (a ? a.Kc : a) {
-    return a.Kc(0, b, c, d, e, f, g);
+  if (a ? a.Jc : a) {
+    return a.Jc(0, b, c, d, e, f, g);
   }
   var l;
   l = xn[k(null == a ? null : a)];
@@ -8851,10 +8851,10 @@ function xn(a, b, c, d, e, f, g) {
   }
   return l.call(null, a, b, c, d, e, f, g);
 }
-ki.prototype.Kc = function(a, b, c, d, e, f, g) {
+Wl.prototype.Jc = function(a, b, c, d, e, f, g) {
   a = Xc(g) ? U.a(uf, g) : g;
-  a = R.a(a, Ej);
-  zh(this, "complete", f);
+  a = R.a(a, Ah);
+  kl(this, "complete", f);
   this.send(b, c, d, e, a);
   return this;
 };
@@ -8862,62 +8862,62 @@ function yn(a) {
   return Ud(Df([a]), m(new X(null, 6, 5, Y, [200, 201, 202, 204, 205, 206], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)));
 }
 function zn(a) {
-  return Ym(ui(a));
+  return Ym(fm(a));
 }
 function An() {
-  return m(new p(null, 2, [Ki, zn, Rl, "EDN"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
+  return m(new p(null, 2, [Hg, zn, Nj, "EDN"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
 }
 function Bn() {
-  return m(new p(null, 2, [Aj, Z, Rj, "application/edn"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
+  return m(new p(null, 2, [wh, Z, Nh, "application/edn"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
 }
 function Cn(a) {
-  return r(a) ? kh(new wg(ig(a))).toString() : null;
+  return r(a) ? Wk(new hk(ig(a))).toString() : null;
 }
 function Dn(a) {
-  return ui(a);
+  return fm(a);
 }
 function En() {
-  return m(new p(null, 2, [Aj, Cn, Rj, "application/x-www-form-urlencoded"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
+  return m(new p(null, 2, [wh, Cn, Nh, "application/x-www-form-urlencoded"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
 }
 function Fn(a) {
-  var b = new $h;
+  var b = new Ll;
   a = ig(a);
   var c = [];
-  ai(b, a, c);
+  Ml(b, a, c);
   return c.join("");
 }
 function Gn(a) {
   a = Xc(a) ? U.a(uf, a) : a;
-  var b = R.a(a, Xk), c = R.a(a, yj);
-  return m(new p(null, 2, [Ki, function(a) {
-    a.G ? (a = a.G.responseText, c && 0 == a.indexOf(c) && (a = a.substring(c.length)), a = Zh(a)) : a = void 0;
+  var b = R.a(a, Si), c = R.a(a, uh);
+  return m(new p(null, 2, [Hg, function(a) {
+    a.G ? (a = a.G.responseText, c && 0 == a.indexOf(c) && (a = a.substring(c.length)), a = Kl(a)) : a = void 0;
     return ng.e(a, L([mg, b], 0));
-  }, Rl, [w("JSON"), w(r(c) ? [w(" prefix '"), w(c), w("'")].join("") : null), w(r(b) ? " keywordize" : null)].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
+  }, Nj, [w("JSON"), w(r(c) ? [w(" prefix '"), w(c), w("'")].join("") : null), w(r(b) ? " keywordize" : null)].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
 }
 function Hn(a) {
   a = a.getResponseHeader("Content-Type");
   a = r(r(a) ? 0 <= a.indexOf("json") : a) ? Gn(m(Ye, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null))) : An();
-  return me.c(a, m(new X(null, 1, 5, Y, [Rl], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)), function(a) {
+  return me.c(a, m(new X(null, 1, 5, Y, [Nj], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)), function(a) {
     return[w(a), w(" (default)")].join("");
   });
 }
 function In(a, b) {
-  var c = Xc(b) ? U.a(uf, b) : b, d = R.a(c, Rl), c = R.a(c, Ki);
-  return Hc.e(a, Ki, c, L([Rl, d], 0));
+  var c = Xc(b) ? U.a(uf, b) : b, d = R.a(c, Nj), c = R.a(c, Hg);
+  return Hc.e(a, Hg, c, L([Nj, d], 0));
 }
 function Jn(a, b, c) {
   try {
-    var d = b.target, e = si(d), f = r(Ki.b(a)) ? a : c.b ? c.b(d) : c.call(null, d), g = Ki.b(f);
+    var d = b.target, e = dm(d), f = r(Hg.b(a)) ? a : c.b ? c.b(d) : c.call(null, d), g = Hg.b(f);
     try {
       var l = g.b ? g.b(d) : g.call(null, d);
-      return r(yn(e)) ? m(new X(null, 2, 5, Y, [!0, l], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)) : m(new X(null, 2, 5, Y, [!1, m(new p(null, 3, [Di, e, cj, ti(d), Gi, l], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
+      return r(yn(e)) ? m(new X(null, 2, 5, Y, [!0, l], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)) : m(new X(null, 2, 5, Y, [!1, m(new p(null, 3, [Ag, e, Zg, em(d), Dg, l], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
     } catch (n) {
       if (n instanceof Object) {
         c = n;
         a = m;
         b = Y;
-        var y, v = Xc(f) ? U.a(uf, f) : f, z = R.a(v, Rl), D = m(new p(null, 2, [Di, e, Gi, null], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)), P = [w(c.message), w("  Format should have been "), w(z)].join(""), S = Hc.e(D, cj, P, L([wl, !0, Si, ui(d)], 0));
-        y = r(yn(e)) ? S : Hc.e(D, cj, ti(d), L([Gk, S], 0));
+        var y, v = Xc(f) ? U.a(uf, f) : f, z = R.a(v, Nj), D = m(new p(null, 2, [Ag, e, Dg, null], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)), P = [w(c.message), w("  Format should have been "), w(z)].join(""), S = Hc.e(D, Zg, P, L([sj, !0, Pg, fm(d)], 0));
+        y = r(yn(e)) ? S : Hc.e(D, Zg, em(d), L([Bi, S], 0));
         return a(new X(null, 2, 5, b, [!1, y], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
       }
       if (t) {
@@ -8927,7 +8927,7 @@ function Jn(a, b, c) {
     }
   } catch (T) {
     if (T instanceof Object) {
-      return c = T, m(new X(null, 2, 5, Y, [!1, m(new p(null, 3, [Di, 0, cj, c.message, Gi, null], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
+      return c = T, m(new X(null, 2, 5, Y, [!1, m(new p(null, 3, [Ag, 0, Zg, c.message, Dg, null], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
     }
     if (t) {
       throw T;
@@ -8939,7 +8939,7 @@ function Kn() {
   throw Error("No response format was supplied.");
 }
 function Ln(a, b) {
-  var c = Xc(b) ? U.a(uf, b) : b, d = R.a(c, pk), e = R.a(c, zl);
+  var c = Xc(b) ? U.a(uf, b) : b, d = R.a(c, ki), e = R.a(c, vj);
   return function(b) {
     return e.b ? e.b(Jn(a, b, r(d) ? d : Kn)) : e.call(null, Jn(a, b, r(d) ? d : Kn));
   };
@@ -8948,10 +8948,10 @@ var Mn = function() {
   function a(a, b, c, g) {
     c = Xc(c) ? U.a(uf, c) : c;
     var l;
-    l = R.a(c, xl);
+    l = R.a(c, tj);
     if (!Rc(l)) {
       if (Zc(l)) {
-        l = In(En(), m(new p(null, 2, [Ki, l, Rl, "custom"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)));
+        l = In(En(), m(new p(null, 2, [Hg, l, Nj, "custom"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)));
       } else {
         if (t) {
           throw Error([w("unrecognized format: "), w(l)].join(""));
@@ -8962,15 +8962,15 @@ var Mn = function() {
     b = b instanceof V ? jm(yd(b)) : b;
     var n;
     var y = l, v = Xc(y) ? U.a(uf, y) : y;
-    R.a(v, Rj);
-    R.a(v, Aj);
+    R.a(v, Nh);
+    R.a(v, wh);
     n = Xc(c) ? U.a(uf, c) : c;
-    y = R.a(n, $k);
-    n = R.a(n, Zk);
+    y = R.a(n, Vi);
+    n = R.a(n, Ui);
     if (C.a(b, "GET")) {
       n = m(new X(null, 3, 5, Y, [r(n) ? [w(a), w("?"), w(Cn(n))].join("") : a, null, y], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
     } else {
-      var z = Xc(v) ? U.a(uf, v) : v, v = R.a(z, Rj), z = R.a(z, Aj);
+      var z = Xc(v) ? U.a(uf, v) : v, v = R.a(z, Nh), z = R.a(z, wh);
       n = z.b ? z.b(n) : z.call(null, n);
       v = r(v) ? m(new p(null, 1, ["Content-Type", v], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)) : null;
       y = yf.e(L([r(y) ? y : m(Ye, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)), v], 0));
@@ -8983,7 +8983,7 @@ var Mn = function() {
     return xn(g, a, b, y, ig(n), l, c);
   }
   function b(a, b, f) {
-    return c.n(a, b, f, new ki);
+    return c.n(a, b, f, new Wl);
   }
   var c = null, c = function(c, e, f, g) {
     switch(arguments.length) {
@@ -8999,14 +8999,14 @@ var Mn = function() {
   return c;
 }();
 function Nn(a) {
-  if (C.a(Tk, a) || C.a(fj, a)) {
+  if (C.a(Oi, a) || C.a(bh, a)) {
     return En();
   }
-  if (C.a(bj, a)) {
+  if (C.a(Yg, a)) {
     return Bn();
   }
-  if (C.a(Yk, a)) {
-    return m(new p(null, 2, [Aj, Fn, Rj, "application/json"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
+  if (C.a(Ti, a)) {
+    return m(new p(null, 2, [wh, Fn, Nh, "application/json"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null));
   }
   if (t) {
     throw Error([w("unrecognized request format: "), w(a)].join(""));
@@ -9015,7 +9015,7 @@ function Nn(a) {
 }
 function On(a) {
   a = Xc(a) ? U.a(uf, a) : a;
-  var b = R.a(a, Rk), c = R.a(a, ml), d = R.a(a, zl);
+  var b = R.a(a, Mi), c = R.a(a, ij), d = R.a(a, vj);
   return function(a) {
     var f = Q.c(a, 0, null);
     a = Q.c(a, 1, null);
@@ -9025,9 +9025,9 @@ function On(a) {
   };
 }
 function Pn(a) {
-  var b = Xc(a) ? U.a(uf, a) : a, c = R.a(b, Nk);
-  a = R.a(b, xl);
-  b = C.a(fj, c) ? m(new p(null, 2, [Ki, Dn, Rl, "raw text"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)) : C.a(bj, c) ? An() : C.a(Yk, c) ? Gn(b) : null;
+  var b = Xc(a) ? U.a(uf, a) : a, c = R.a(b, Ii);
+  a = R.a(b, tj);
+  b = C.a(bh, c) ? m(new p(null, 2, [Hg, Dn, Nj, "raw text"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/ajax/core.cljs"], null)) : C.a(Yg, c) ? An() : C.a(Ti, c) ? Gn(b) : null;
   return null == a ? In(Bn(), b) : a instanceof V ? In(Nn(a), b) : t ? a : null;
 }
 var Qn = function() {
@@ -9038,7 +9038,7 @@ var Qn = function() {
   }
   function b(a, b) {
     var e = Q.c(b, 0, null);
-    return Mn.c(a, "GET", Hc.e(e, zl, On(e), L([xl, Pn(e), pk, Hn], 0)));
+    return Mn.c(a, "GET", Hc.e(e, vj, On(e), L([tj, Pn(e), ki, Hn], 0)));
   }
   a.l = 1;
   a.h = function(a) {
@@ -9049,8 +9049,8 @@ var Qn = function() {
   a.e = b;
   return a;
 }();
-!Ig && !Hg || Hg && Hg && 9 <= Ug || Ig && Sg("1.9.1");
-Hg && Sg("9");
+!tk && !sk || sk && sk && 9 <= Fk || tk && Dk("1.9.1");
+sk && Dk("9");
 var Rn = React;
 (function() {
 });
@@ -9148,7 +9148,7 @@ h.a = function() {
 }();
 function Yn(a) {
   var b = Zc(a);
-  return b ? b : a ? a.r & 256 || a.Wd ? !0 : a.r ? !1 : s(pg, a) : s(pg, a);
+  return b ? b : a ? a.r & 256 || a.Vd ? !0 : a.r ? !1 : s(pg, a) : s(pg, a);
 }
 var Zn = {};
 function $n(a, b) {
@@ -9165,7 +9165,7 @@ var bo = function ao(b, c) {
         var l = R.c(c, d, Zn);
         return r(function() {
           var b = g === l;
-          return b || (b = $n(g, l)) ? b : (b = vd(d, jk)) ? ao(g, l) : b;
+          return b || (b = $n(g, l)) ? b : (b = vd(d, ei)) ? ao(g, l) : b;
         }()) ? b : new sc(!1);
       }, !0, b) : d;
     }
@@ -9309,8 +9309,8 @@ var ko = function() {
   return b;
 }();
 function lo(a) {
-  if (a ? a.ld : a) {
-    return a.ld();
+  if (a ? a.kd : a) {
+    return a.kd();
   }
   var b;
   b = lo[k(null == a ? null : a)];
@@ -9320,8 +9320,8 @@ function lo(a) {
   return b.call(null, a);
 }
 function mo(a) {
-  if (a ? a.md : a) {
-    return a.md();
+  if (a ? a.ld : a) {
+    return a.ld();
   }
   var b;
   b = mo[k(null == a ? null : a)];
@@ -9331,8 +9331,8 @@ function mo(a) {
   return b.call(null, a);
 }
 function no(a, b) {
-  if (a ? a.Gc : a) {
-    return a.Gc(0, b);
+  if (a ? a.Fc : a) {
+    return a.Fc(0, b);
   }
   var c;
   c = no[k(null == a ? null : a)];
@@ -9342,8 +9342,8 @@ function no(a, b) {
   return c.call(null, a, b);
 }
 function oo(a, b, c, d) {
-  if (a ? a.kd : a) {
-    return a.kd(0, 0, c, d);
+  if (a ? a.jd : a) {
+    return a.jd(0, 0, c, d);
   }
   var e;
   e = oo[k(null == a ? null : a)];
@@ -9410,7 +9410,7 @@ h.D = function(a, b, c) {
   Uf(this.state, b, c);
   return B(b, "\x3e");
 };
-h.kd = function(a, b, c, d) {
+h.jd = function(a, b, c, d) {
   var e = this;
   return r(function() {
     var a = e.gb;
@@ -9420,7 +9420,7 @@ h.kd = function(a, b, c, d) {
     return r(a) ? a : mo;
   }().call(null, this)) : null;
 };
-h.Gc = function(a, b) {
+h.Fc = function(a, b) {
   for (var c = G(b), d = null, e = 0, f = 0;;) {
     if (f < e) {
       var g = d.L(null, f);
@@ -9460,7 +9460,7 @@ h.Gb = function(a, b) {
   this.P = Ic.a(this.P, b);
   return Oc(this.P) ? lo(this) : null;
 };
-h.ld = function() {
+h.kd = function() {
   for (var a = G(this.Qa), b = null, c = 0, d = 0;;) {
     if (d < c) {
       var e = b.L(null, d);
@@ -9483,7 +9483,7 @@ h.ld = function() {
 h.w = function(a, b) {
   return this === b;
 };
-h.md = function() {
+h.ld = function() {
   var a = this.state, b = go(this.La, this), c = ho(this);
   Sd.a(c, this.Qa) && no(this, c);
   r(this.gb) || (r(!1) && cg.a(fo, rc), this.gb = !0);
@@ -9505,8 +9505,8 @@ var ro = function() {
     return b.call(this, a, e);
   }
   function b(a, b) {
-    var e = Xc(b) ? U.a(uf, b) : b, f = R.a(e, lj), g = R.a(e, hk), l = R.a(e, Dl), e = R.a(e, Ek), e = C.a(e, !0) ? mo : e, n = null != f, g = new qo(a, null, !n, n, null, m(Ye, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/ratom.cljs"], null)), e, l, g);
-    null != f && (r(!1) && cg.a(fo, rc), g.Gc(0, f));
+    var e = Xc(b) ? U.a(uf, b) : b, f = R.a(e, hh), g = R.a(e, ci), l = R.a(e, zj), e = R.a(e, zi), e = C.a(e, !0) ? mo : e, n = null != f, g = new qo(a, null, !n, n, null, m(Ye, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/ratom.cljs"], null)), e, l, g);
+    null != f && (r(!1) && cg.a(fo, rc), g.Fc(0, f));
     return g;
   }
   a.l = 1;
@@ -9542,10 +9542,10 @@ function uo(a, b) {
 }
 function vo() {
   var a = wo;
-  if (r(a.Hc)) {
+  if (r(a.Gc)) {
     return null;
   }
-  a.Hc = !0;
+  a.Gc = !0;
   return to.b ? to.b(function() {
     return xo(a);
   }) : to.call(null, function() {
@@ -9553,9 +9553,9 @@ function vo() {
   });
 }
 function xo(a) {
-  var b = a.Fc;
-  a.Fc = [];
-  a.Hc = !1;
+  var b = a.queue;
+  a.queue = [];
+  a.Gc = !1;
   a: {
     b.sort(uo);
     a = b.length;
@@ -9574,12 +9574,12 @@ function xo(a) {
   return b;
 }
 var wo = new function() {
-  this.Fc = [];
-  this.Hc = !1;
+  this.queue = [];
+  this.Gc = !1;
 };
 function yo(a) {
   a.Ib = !0;
-  wo.Fc.push(a);
+  wo.queue.push(a);
   return vo();
 }
 function zo(a) {
@@ -9591,18 +9591,18 @@ function Ao(a, b) {
     throw Error([w("Assert failed: "), w(Z.e(L([m(sd(new E(null, "is-reagent-component", "is-reagent-component", -461933192, null), new E(null, "C", "C", -1640531460, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/impl/batching.cljs"], null))], 0)))].join(""));
   }
   a.Ib = !1;
-  var c = a.Xc;
+  var c = a.Wc;
   if (null == c) {
     var c = go(b, a), d = ho(a);
-    null != d && (a.Xc = ro.e(b, L([Ek, function() {
+    null != d && (a.Wc = ro.e(b, L([zi, function() {
       return yo(a);
-    }, lj, d], 0)));
+    }, hh, d], 0)));
     return c;
   }
   return mo(c);
 }
 function Bo(a) {
-  var b = a.Xc;
+  var b = a.Wc;
   null != b && lo(b);
   return a.Ib = !1;
 }
@@ -9621,40 +9621,40 @@ var Eo = function Do(b) {
   } else {
     var e = d.cljsArgv, f = O(e), c = C.a(5, f) ? c.n ? c.n(Q.a(e, 1), Q.a(e, 2), Q.a(e, 3), Q.a(e, 4)) : c.call(null, Q.a(e, 1), Q.a(e, 2), Q.a(e, 3), Q.a(e, 4)) : C.a(4, f) ? c.c ? c.c(Q.a(e, 1), Q.a(e, 2), Q.a(e, 3)) : c.call(null, Q.a(e, 1), Q.a(e, 2), Q.a(e, 3)) : C.a(3, f) ? c.a ? c.a(Q.a(e, 1), Q.a(e, 2)) : c.call(null, Q.a(e, 1), Q.a(e, 2)) : C.a(2, f) ? c.b ? c.b(Q.a(e, 1)) : c.call(null, Q.a(e, 1)) : C.a(1, f) ? c.q ? c.q() : c.call(null) : t ? U.a(c, Ie.a(e, 1)) : null
   }
-  return Sc(c) ? b.qd(c, d.cljsLevel) : Zc(c) ? (b.cljsRender = c, Do(b)) : c;
+  return Sc(c) ? b.pd(c, d.cljsLevel) : Zc(c) ? (b.cljsRender = c, Do(b)) : c;
 };
 function Fo(a, b) {
-  if (C.a(ik, a)) {
+  if (C.a(di, a)) {
     return function() {
       Bo(this);
       return null == b ? null : b.b ? b.b(this) : b.call(null, this);
     };
   }
-  if (C.a(Ei, a) || C.a(xi, a)) {
+  if (C.a(Bg, a) || C.a(ug, a)) {
     return function(a) {
       a = a.cljsArgv;
       return b.a ? b.a(this, a) : b.call(null, this, a);
     };
   }
-  if (C.a(gm, a)) {
+  if (C.a(dk, a)) {
     return function(a) {
       var d = this.props.cljsArgv;
       a = a.cljsArgv;
       return null == b ? bb(co(d, a)) : b.c ? b.c(this, d, a) : b.call(null, this, d, a);
     };
   }
-  if (C.a(ij, a)) {
+  if (C.a(eh, a)) {
     return function(a) {
       return b.a ? b.a(this, a.cljsArgv) : b.call(null, this, a.cljsArgv);
     };
   }
-  if (C.a(Cl, a)) {
+  if (C.a(yj, a)) {
     return function() {
       var a = b.b ? b.b(this) : b.call(null, this);
       return cg.c(Co(this), yf, a);
     };
   }
-  if (C.a(wi, a)) {
+  if (C.a(tg, a)) {
     throw Error([w("Assert failed: "), w("getDefaultProps not supported yet"), w("\n"), w(Z.e(L([!1], 0)))].join(""));
   }
   return null;
@@ -9678,7 +9678,7 @@ function Go(a) {
     return b;
   }() : a;
 }
-var Ho = new Af(null, new p(null, 3, [Ni, null, Yi, null, Hl, null], null), null);
+var Ho = new Af(null, new p(null, 3, [Kg, null, Vg, null, Dj, null], null), null);
 function Io(a) {
   Zc(a) && (a.__reactDontBind = !0);
   return a;
@@ -9693,7 +9693,7 @@ function Jo(a, b, c) {
   }
   return r(d) ? d : Go(b);
 }
-var Ko = m(new p(null, 2, [gm, null, ik, null], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/impl/component.cljs"], null)), Lo = Tn(Wn);
+var Ko = m(new p(null, 2, [dk, null, di, null], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/impl/component.cljs"], null)), Lo = Tn(Wn);
 function Mo(a) {
   return fd(function(a, c, d) {
     return Hc.c(a, zd.b(Lo.b ? Lo.b(c) : Lo.call(null, c)), d);
@@ -9703,7 +9703,7 @@ function No(a) {
   return yf.e(L([Ko, a], 0));
 }
 function Oo(a, b) {
-  return Hc.e(a, Yi, b, L([Ni, r(Sn) ? function() {
+  return Hc.e(a, Vg, b, L([Kg, r(Sn) ? function() {
     var a = this;
     return Ao(a, function() {
       return Eo(a);
@@ -9714,20 +9714,20 @@ function Oo(a, b) {
 }
 function Po(a) {
   var b = function() {
-    var b = Hl.b(a);
-    return r(b) ? b : Ni.b(a);
+    var b = Dj.b(a);
+    return r(b) ? b : Kg.b(a);
   }();
   if (!Yn(b)) {
     throw Error([w("Assert failed: "), w([w("Render must be a function, not "), w(Z.e(L([b], 0)))].join("")), w("\n"), w(Z.e(L([m(sd(new E("util", "clj-ifn?", "util/clj-ifn?", -520791343, null), new E(null, "render-fun", "render-fun", -447610239, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/impl/component.cljs"], null))], 0)))].join(""));
   }
   var c = function() {
-    var c = Ck.b(a);
+    var c = xi.b(a);
     if (r(c)) {
       return c;
     }
-    c = b.be;
+    c = b.ae;
     return r(c) ? c : b.name;
-  }(), d = Oc(c) ? "" + w(eg.b("reagent")) : c, c = Oo(Hc.c(a, Ck, d), b);
+  }(), d = Oc(c) ? "" + w(eg.b("reagent")) : c, c = Oo(Hc.c(a, xi, d), b);
   return fd(function(a, b, c) {
     return Hc.c(a, b, Jo(b, c, d));
   }, m(Ye, new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/impl/component.cljs"], null)), c);
@@ -9743,7 +9743,7 @@ function Ro(a) {
   if (!Rc(a)) {
     throw Error([w("Assert failed: "), w(Z.e(L([m(sd(new E(null, "map?", "map?", -1637187556, null), new E(null, "body", "body", -1637502117, null)), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/impl/component.cljs"], null))], 0)))].join(""));
   }
-  var c = Qo(Po(No(Mo(a)))), d = c.qd = Io(b);
+  var c = Qo(Po(No(Mo(a)))), d = c.pd = Io(b);
   a = Rn.createClass(c);
   c = function(a, c, d) {
     return function() {
@@ -9768,7 +9768,7 @@ function Ro(a) {
   a.mb = a;
   return c;
 }
-;var To = /([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?/, Uo = Rn.DOM, Vo = m(new p(null, 3, [xj, "className", El, "htmlFor", ul, "charSet"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/impl/template.cljs"], null));
+;var To = /([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?/, Uo = Rn.DOM, Vo = m(new p(null, 3, [th, "className", Aj, "htmlFor", qj, "charSet"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/reagent/impl/template.cljs"], null));
 function Wo(a) {
   return a instanceof V || a instanceof E || "string" === typeof a;
 }
@@ -9827,7 +9827,7 @@ function ap(a, b) {
 }
 function bp(a, b) {
   var c = b.onChange, d = null == c ? null : b.value;
-  a.Cd = d;
+  a.Bd = d;
   if (null == d) {
     return null;
   }
@@ -9845,7 +9845,7 @@ var cp = Df([Uo.input, Uo.textarea]);
 function dp(a) {
   a.componentDidUpdate = function() {
     var a;
-    a = this.Cd;
+    a = this.Bd;
     if (null == a) {
       a = null;
     } else {
@@ -9890,7 +9890,7 @@ var gp = Tn(function(a) {
   return ep(d, b, "" + w(a));
 });
 function hp(a) {
-  return Rc(a) ? R.a(a, wj) : null;
+  return Rc(a) ? R.a(a, sh) : null;
 }
 function ip(a, b) {
   if (!(0 < O(a))) {
@@ -9906,7 +9906,7 @@ function ip(a, b) {
     c = gp.b ? gp.b(c) : gp.call(null, c);
   } else {
     var d = c.mb;
-    null != d ? c = d : r(Rn.isValidClass(c)) ? c = c.mb = ep(c, null, null) : (d = Lc(c), d = Hc.c(d, aj, c), d = (jp.b ? jp.b(d) : jp.call(null, d)).mb, c = c.mb = d);
+    null != d ? c = d : r(Rn.isValidClass(c)) ? c = c.mb = ep(c, null, null) : (d = Lc(c), d = Hc.c(d, Xg, c), d = (jp.b ? jp.b(d) : jp.call(null, d)).mb, c = c.mb = d);
   }
   d = {};
   d.cljsArgv = a;
@@ -9927,7 +9927,7 @@ var kp = {}, So = function() {
       var c = go(function() {
         return lp.a ? lp.a(a, b) : lp.call(null, a, b);
       }, kp);
-      r(ho(kp)) && (r(kp.Md) || (null != console.log && console.log("Warning: Reactive deref not supported in seq in ", Z.e(L([a], 0))), kp.Md = !0));
+      r(ho(kp)) && (r(kp.Ld) || (null != console.log && console.log("Warning: Reactive deref not supported in seq in ", Z.e(L([a], 0))), kp.Ld = !0));
       return c;
     }
     return a;
@@ -10028,22 +10028,22 @@ function fp(a, b, c) {
   b.e = c.e;
   return b;
 }();
-var op = np.b(m(new p(null, 2, [tj, m(new X(null, 1, 5, Y, [jj], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null)), uk, null], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null))), pp = m(function() {
-  var a = tj.b(A(op));
-  return m(new X(null, 3, 5, Y, [$l, m(new p(null, 3, [Nl, "modal", Sl, -1, rl, "dialog"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null)), m(new X(null, 2, 5, Y, [pj, m(new X(null, 2, 5, Y, [gk, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], 
+var op = np.b(m(new p(null, 2, [ph, m(new X(null, 1, 5, Y, [fh], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null)), pi, null], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null))), pp = m(function() {
+  var a = ph.b(A(op));
+  return m(new X(null, 3, 5, Y, [Wj, m(new p(null, 3, [Jj, "modal", Oj, -1, nj, "dialog"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null)), m(new X(null, 2, 5, Y, [lh, m(new X(null, 2, 5, Y, [bi, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], 
   null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null));
-}, m(new p(null, 1, [mj, function() {
+}, m(new p(null, 1, [ih, function() {
   var a = jQuery(ga("modal") ? document.getElementById("modal") : "modal");
   a.on.call(a, "hidden.bs.modal", function() {
-    return bg(op, m(new X(null, 1, 5, Y, [jj], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null)));
+    return bg(op, m(new X(null, 1, 5, Y, [fh], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null)));
   });
   return a.on.call(a, "shown.bs.modal", function() {
-    var a = uk.b(A(op));
+    var a = pi.b(A(op));
     return r(a) ? a.q ? a.q() : a.call(null) : null;
   });
 }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null))), qp = function() {
   function a(a, b) {
-    bg(op, yf.e(L([m(new p(null, 1, [tj, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null)), b], 0)));
+    bg(op, yf.e(L([m(new p(null, 1, [ph, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/templates/modals.cljs"], null)), b], 0)));
     var c = jQuery(ga("modal") ? document.getElementById("modal") : "modal");
     c.modal.call(c, {keyboard:!0});
     c.modal.call(c, "show");
@@ -10067,7 +10067,7 @@ var op = np.b(m(new p(null, 2, [tj, m(new X(null, 1, 5, Y, [jj], null), new p(nu
 }();
 var rp = function() {
   function a(a) {
-    return new Wg(a);
+    return new Hk(a);
   }
   function b() {
     return c.b(document.location);
@@ -10086,7 +10086,7 @@ var rp = function() {
   return c;
 }();
 function sp(a) {
-  var b = new ah(a), c = b.Ma(), d = function() {
+  var b = new Mk(a), c = b.Ma(), d = function() {
     return function(a, b) {
       return function l(c) {
         return new W(null, function(a) {
@@ -10191,7 +10191,7 @@ function tp(a) {
       }, null, null);
     }(a);
   }());
-  return new kh(ig(b));
+  return new Wk(ig(b));
 }
 var up = function() {
   function a(a) {
@@ -10216,7 +10216,7 @@ var up = function() {
 }();
 function vp(a) {
   a = yf.e(L([up.q(), a], 0));
-  a = "" + w($g(rp.q(), tp(a)));
+  a = "" + w(Lk(rp.q(), tp(a)));
   window.history.replaceState(null, document.title, a);
 }
 ;function wp(a) {
@@ -10231,8 +10231,8 @@ function xp(a) {
     return Td(function(a) {
       var d = Q.c(a, 0, null);
       a = Q.c(a, 1, null);
-      d = R.c(b, d, Tj);
-      if (C.a(d, Tj)) {
+      d = R.c(b, d, Ph);
+      if (C.a(d, Ph)) {
         return!1;
       }
       var e = Jc(a);
@@ -10243,7 +10243,7 @@ function xp(a) {
           return null;
         }
       } else {
-        return "number" === typeof d ? d === a : a instanceof RegExp && "string" === typeof d ? Mf(a, d) : C.a(d, a) ? gj : null;
+        return "number" === typeof d ? d === a : a instanceof RegExp && "string" === typeof d ? Mf(a, d) : C.a(d, a) ? ch : null;
       }
     }, a);
   };
@@ -10271,21 +10271,23 @@ function zp() {
     var f = A(c), g = function(b) {
       return function(f) {
         bg(c, f);
-        vp(m(new p(null, 1, [wk, f], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
-        return Qn.e(yp.e(bk.b(e), L(["device-summary", a, f], 0)), L([m(new p(null, 2, [zl, function() {
+        vp(m(new p(null, 1, [ri, f], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
+        NProgress.start();
+        return Qn.e(yp.e(Xh.b(e), L(["device-summary", a, f], 0)), L([m(new p(null, 2, [vj, function() {
           return function(a) {
+            NProgress.done();
             return bg(d, a);
           };
-        }(b), ml, Wf], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], 0));
+        }(b), ij, Wf], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], 0));
       };
     }(f), l = function() {
       var a = r(function() {
         if (r(b)) {
           var a = bb(f);
-          return a ? wk.b(up.q()) : a;
+          return a ? ri.b(up.q()) : a;
         }
         return b;
-      }()) ? wk.b(up.q()) : null;
+      }()) ? ri.b(up.q()) : null;
       return r(a) ? a : r(r(b) ? bb(f) : b) ? Dc(ed.a(function() {
         return function(a) {
           return Ym(H(a));
@@ -10294,7 +10296,7 @@ function zp() {
     }();
     r(l) && g(l);
     var n = A(c);
-    return m(new X(null, 3, 5, Y, [Kj, m(new p(null, 1, [Nl, "device-list"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), function() {
+    return m(new X(null, 3, 5, Y, [Gh, m(new p(null, 1, [Jj, "device-list"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), function() {
       return function v(a) {
         return new W(null, function() {
           for (;;) {
@@ -10307,12 +10309,12 @@ function zp() {
                   for (var a = 0;;) {
                     if (a < e) {
                       var l = x.a(d, a), v = Q.c(l, 0, null), z = Q.c(l, 1, null);
-                      Hd(f, m(new X(null, 3, 5, Y, [Vk, m(new p(null, 4, [jk, m(new p(null, 2, [tk, "pointer", Vj, "normal"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), xj, C.a(v, n) ? "active" : null, Yl, function(a, b, c) {
+                      Hd(f, m(new X(null, 3, 5, Y, [Qi, m(new p(null, 4, [ei, m(new p(null, 2, [oi, "pointer", Rh, "normal"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), th, C.a(v, n) ? "active" : null, Uj, function(a, b, c) {
                         return function() {
                           return g(c);
                         };
-                      }(a, l, v, z, d, e, f, c, b), rk, z], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 3, 5, Y, [Nj, m(new X(null, 2, 5, Y, [jj, v], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Pi, z], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
-                      null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 2, [wj, v, q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
+                      }(a, l, v, z, d, e, f, c, b), mi, z], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 3, 5, Y, [Jh, m(new X(null, 2, 5, Y, [fh, v], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Mg, z], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
+                      null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 2, [sh, v, q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
                       a += 1;
                     } else {
                       return!0;
@@ -10321,12 +10323,12 @@ function zp() {
                 }() ? Gd(f.B(), v(hc(c))) : Gd(f.B(), null);
               }
               var l = H(c), Ga = Q.c(l, 0, null), Za = Q.c(l, 1, null);
-              return N(m(new X(null, 3, 5, Y, [Vk, m(new p(null, 4, [jk, m(new p(null, 2, [tk, "pointer", Vj, "normal"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), xj, C.a(Ga, n) ? "active" : null, Yl, function(a, b) {
+              return N(m(new X(null, 3, 5, Y, [Qi, m(new p(null, 4, [ei, m(new p(null, 2, [oi, "pointer", Rh, "normal"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), th, C.a(Ga, n) ? "active" : null, Uj, function(a, b) {
                 return function() {
                   return g(b);
                 };
-              }(l, Ga, Za, c, b), rk, Za], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 3, 5, Y, [Nj, m(new X(null, 2, 5, Y, [jj, Ga], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Pi, Za], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
-              null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 2, [wj, Ga, q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), v(I(c)));
+              }(l, Ga, Za, c, b), mi, Za], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 3, 5, Y, [Jh, m(new X(null, 2, 5, Y, [fh, Ga], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Mg, Za], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
+              null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 2, [sh, Ga, q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), v(I(c)));
             }
             return null;
           }
@@ -10338,28 +10340,28 @@ function zp() {
   };
 }
 function Ap(a, b) {
-  return m(new X(null, 2, 5, Y, [Al, m(new p(null, 4, [al, "text", xj, "form-control", cm, $.a ? $.a(A(tn), Ml) : $.call(null, A(tn), Ml), rj, function(c) {
+  return m(new X(null, 2, 5, Y, [wj, m(new p(null, 4, [Wi, "text", th, "form-control", Zj, $.a ? $.a(A(tn), Ij) : $.call(null, A(tn), Ij), nh, function(c) {
     c = Nf(wp(c.target.value));
-    c = m(new p(null, 1, [Hj, c], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
+    c = m(new p(null, 1, [Dh, c], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
     return bg(a, ge(xp(c), b));
   }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
 }
 function Bp(a, b) {
   var c = A(a);
-  return m(new X(null, 2, 5, Y, [zi, [w(O(c)), w(" / "), w(O(b)), w(" "), w($.a ? $.a(A(tn), Bi) : $.call(null, A(tn), Bi))].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
+  return m(new X(null, 2, 5, Y, [wg, [w(O(c)), w(" / "), w(O(b)), w(" "), w($.a ? $.a(A(tn), yg) : $.call(null, A(tn), yg))].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
 }
-m(Ap, m(new p(null, 1, [mj, function(a) {
+m(Ap, m(new p(null, 1, [ih, function(a) {
   return a.getDOMNode().focus();
 }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
 function Cp(a, b) {
-  return m(new X(null, 3, 5, Y, [jj, m(new X(null, 3, 5, Y, [zj, m(new X(null, 3, 5, Y, [Ap, a, b], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [tl, m(new X(null, 1, 5, Y, [gl], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
+  return m(new X(null, 3, 5, Y, [fh, m(new X(null, 3, 5, Y, [vh, m(new X(null, 3, 5, Y, [Ap, a, b], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [pj, m(new X(null, 1, 5, Y, [cj], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
   null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 3, 5, Y, [Bp, a, b], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
 }
 function Dp(a, b, c, d, e) {
-  var f = ed.a(Hj, A(a));
-  return m(new X(null, 4, 5, Y, [Bj, m(new p(null, 1, [Nl, "device-table"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Jk, m(new X(null, 6, 5, Y, [bm, m(new X(null, 2, 5, Y, [Fl, $.a ? $.a(A(tn), Fk) : $.call(null, A(tn), Fk)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Fl, 
-  $.a ? $.a(A(tn), ck) : $.call(null, A(tn), ck)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Fl, $.a ? $.a(A(tn), dl) : $.call(null, A(tn), dl)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Fl, $.a ? $.a(A(tn), mk) : $.call(null, A(tn), mk)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
-  null)), m(new X(null, 1, 5, Y, [Fl], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Fi, function() {
+  var f = ed.a(Dh, A(a));
+  return m(new X(null, 4, 5, Y, [xh, m(new p(null, 1, [Jj, "device-table"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Ei, m(new X(null, 6, 5, Y, [Yj, m(new X(null, 2, 5, Y, [Bj, $.a ? $.a(A(tn), Ai) : $.call(null, A(tn), Ai)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Bj, 
+  $.a ? $.a(A(tn), Yh) : $.call(null, A(tn), Yh)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Bj, $.a ? $.a(A(tn), Zi) : $.call(null, A(tn), Zi)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Bj, $.a ? $.a(A(tn), hi) : $.call(null, A(tn), hi)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
+  null)), m(new X(null, 1, 5, Y, [Bj], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Cg, function() {
     return function l(a) {
       return new W(null, function() {
         for (var b = a;;) {
@@ -10370,16 +10372,16 @@ function Dp(a, b, c, d, e) {
                 for (var a = 0;;) {
                   if (a < z) {
                     var b = x.a(f, a);
-                    r(Hj.b(b)) && Hd(D, m(new X(null, 6, 5, Y, [bm, m(new X(null, 2, 5, Y, [Ul, function() {
-                      var a = Hj.b(b);
-                      return Oc(a) ? $.a ? $.a(A(tn), Gl) : $.call(null, A(tn), Gl) : a;
-                    }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Ul, Rl.b(b)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Ul, function() {
-                      var a = Pl.b(b);
-                      return r(a) ? "number" === typeof a ? vi("%.2f", a) : yd(a) : null;
-                    }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Ul, il.b(b)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Ul, function() {
-                      var a = Hc.e(b, Jl, c, L([Ci, d], 0));
-                      return Mj.b(e).call(null, a);
-                    }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 2, [wj, Lk.b(b), q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
+                    r(Dh.b(b)) && Hd(D, m(new X(null, 6, 5, Y, [Yj, m(new X(null, 2, 5, Y, [Qj, function() {
+                      var a = Dh.b(b);
+                      return Oc(a) ? $.a ? $.a(A(tn), Cj) : $.call(null, A(tn), Cj) : a;
+                    }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Qj, Nj.b(b)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Qj, function() {
+                      var a = Lj.b(b);
+                      return r(a) ? "number" === typeof a ? gm("%.2f", a) : yd(a) : null;
+                    }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Qj, ej.b(b)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Qj, function() {
+                      var a = Hc.e(b, Fj, c, L([zg, d], 0));
+                      return Ih.b(e).call(null, a);
+                    }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 2, [sh, Gi.b(b), q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
                     a += 1;
                   } else {
                     return!0;
@@ -10388,17 +10390,17 @@ function Dp(a, b, c, d, e) {
               }() ? Gd(D.B(), l(hc(b))) : Gd(D.B(), null);
             }
             var P = H(b);
-            if (r(Hj.b(P))) {
-              return N(m(new X(null, 6, 5, Y, [bm, m(new X(null, 2, 5, Y, [Ul, function() {
-                var a = Hj.b(P);
-                return Oc(a) ? $.a ? $.a(A(tn), Gl) : $.call(null, A(tn), Gl) : a;
-              }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Ul, Rl.b(P)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Ul, function() {
-                var a = Pl.b(P);
-                return r(a) ? "number" === typeof a ? vi("%.2f", a) : yd(a) : null;
-              }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Ul, il.b(P)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Ul, function() {
-                var a = Hc.e(P, Jl, c, L([Ci, d], 0));
-                return Mj.b(e).call(null, a);
-              }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 2, [wj, Lk.b(P), q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), l(I(b)));
+            if (r(Dh.b(P))) {
+              return N(m(new X(null, 6, 5, Y, [Yj, m(new X(null, 2, 5, Y, [Qj, function() {
+                var a = Dh.b(P);
+                return Oc(a) ? $.a ? $.a(A(tn), Cj) : $.call(null, A(tn), Cj) : a;
+              }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Qj, Nj.b(P)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Qj, function() {
+                var a = Lj.b(P);
+                return r(a) ? "number" === typeof a ? gm("%.2f", a) : yd(a) : null;
+              }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Qj, ej.b(P)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 2, 5, Y, [Qj, function() {
+                var a = Hc.e(P, Fj, c, L([zg, d], 0));
+                return Ih.b(e).call(null, a);
+              }()], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 2, [sh, Gi.b(P), q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), l(I(b)));
             }
             b = I(b);
           } else {
@@ -10412,10 +10414,11 @@ function Dp(a, b, c, d, e) {
 function Ep() {
   return function(a, b, c, d) {
     var e = A(c), f = np.b(e);
-    r(e) || Qn.e(yp.e(bk.b(d), L(["objects", a, b], 0)), L([m(new p(null, 2, [zl, function(a) {
+    r(e) || (NProgress.start(), Qn.e(yp.e(Xh.b(d), L(["objects", a, b], 0)), L([m(new p(null, 2, [vj, function(a) {
+      NProgress.done();
       return bg(c, a);
-    }, ml, Wf], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], 0));
-    return m(new X(null, 3, 5, Y, [jj, m(new X(null, 3, 5, Y, [Cp, f, e], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 6, 5, Y, [Dp, f, c, a, b, d], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
+    }, ij, Wf], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], 0)));
+    return m(new X(null, 3, 5, Y, [fh, m(new X(null, 3, 5, Y, [Cp, f, e], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 6, 5, Y, [Dp, f, c, a, b, d], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
     null));
   };
 }
@@ -10423,38 +10426,39 @@ var Fp = m(function(a, b, c, d) {
   var e = A(c), f = A(b);
   b = m;
   c = Y;
-  var g = r(e) ? m(new X(null, 2, 5, Y, [Yj, m(new X(null, 4, 5, Y, [sl, m(new p(null, 1, [jk, m(new p(null, 2, [Fj, 0, em, 20], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), Hj.b(e), m(new X(null, 2, 5, Y, [hl, [w(" ("), w(f), w(")")].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
-  null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)) : null, l = m(new X(null, 5, 5, Y, [sj, m(new p(null, 1, [Hi, "#device-list"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), $.a ? $.a(A(tn), 
-  Qi) : $.call(null, A(tn), Qi), " ", m(new X(null, 1, 5, Y, [ak], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
+  var g = r(e) ? m(new X(null, 2, 5, Y, [Uh, m(new X(null, 4, 5, Y, [oj, m(new p(null, 1, [ei, m(new p(null, 2, [Bh, 0, bk, 20], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), Dh.b(e), m(new X(null, 2, 5, Y, [dj, [w(" ("), w(f), w(")")].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
+  null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)) : null, l = m(new X(null, 5, 5, Y, [oh, m(new p(null, 1, [Eg, "#device-list"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), $.a ? $.a(A(tn), 
+  Ng) : $.call(null, A(tn), Ng), " ", m(new X(null, 1, 5, Y, [Wh], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
   r(e) ? (e = np.b(null), a = m(new X(null, 5, 5, Y, [Ep, a, f, e, d], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))) : a = null;
-  return b(new X(null, 4, 5, c, [jj, g, l, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
-}, m(new p(null, 1, [mj, function(a) {
+  return b(new X(null, 4, 5, c, [fh, g, l, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
+}, m(new p(null, 1, [ih, function(a) {
   return a.getDOMNode().scrollTop = 0;
 }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
 function Gp() {
   var a = np.b(null), b = np.b(null), c = np.b(null);
   return function(d, e) {
-    var f = A(c), g = Ql.b(e);
-    null == f && Qn.e(yp.e(bk.b(e), L(["devices-list", d], 0)), L([m(new p(null, 2, [zl, function(a) {
+    var f = A(c), g = Mj.b(e);
+    null == f && (NProgress.start(), Qn.e(yp.e(Xh.b(e), L(["devices-list", d], 0)), L([m(new p(null, 2, [vj, function(a) {
+      NProgress.done();
       return bg(c, a);
-    }, ml, Wf], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], 0));
-    return Oc(f) ? m(new X(null, 2, 5, Y, [Xl, m(new X(null, 2, 5, Y, [Wl, m(new X(null, 3, 5, Y, [pl, $.a ? $.a(A(tn), Oj) : $.call(null, A(tn), Oj), m(new X(null, 3, 5, Y, [Vk, m(new p(null, 2, [Yl, function() {
+    }, ij, Wf], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], 0)));
+    return Oc(f) ? m(new X(null, 2, 5, Y, [Tj, m(new X(null, 2, 5, Y, [Sj, m(new X(null, 3, 5, Y, [lj, $.a ? $.a(A(tn), Kh) : $.call(null, A(tn), Kh), m(new X(null, 3, 5, Y, [Qi, m(new p(null, 2, [Uj, function() {
       return location.reload();
-    }, rk, $.a ? $.a(A(tn), bl) : $.call(null, A(tn), bl)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 1, 5, Y, [Oi], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 
-    1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)) : m(new X(null, 3, 5, Y, [Xl, m(new X(null, 3, 5, Y, [Kk, m(new p(null, 1, [jk, m(new p(null, 3, [Tl, [w("calc(100vh - "), 
-    w(g), w(")")].join(""), Jj, 0, Pk, "auto"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 6, 5, Y, [zp, d, f, b, a, e], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 
-    1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 3, 5, Y, [Il, m(new p(null, 1, [jk, m(new p(null, 2, [Tl, [w("calc(100vh - "), w(g), w(")")].join(""), Pk, "auto"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
+    }, mi, $.a ? $.a(A(tn), Xi) : $.call(null, A(tn), Xi)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 1, 5, Y, [Lg], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 
+    1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)) : m(new X(null, 3, 5, Y, [Tj, m(new X(null, 3, 5, Y, [Fi, m(new p(null, 1, [ei, m(new p(null, 3, [Pj, [w("calc(100vh - "), 
+    w(g), w(")")].join(""), Fh, 0, Ki, "auto"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 6, 5, Y, [zp, d, f, b, a, e], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 
+    1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 3, 5, Y, [Ej, m(new p(null, 1, [ei, m(new p(null, 2, [Pj, [w("calc(100vh - "), w(g), w(")")].join(""), Ki, "auto"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
     null)), m(new X(null, 5, 5, Y, [Fp, d, b, a, e], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
   };
 }
-var Hp = m(new p(null, 3, [Ql, "50px", bk, "/api/v1/", Mj, function(a) {
-  return r(Pl.b(a)) ? m(new X(null, 3, 5, Y, [jj, m(new p(null, 1, [jk, m(new p(null, 1, [Vj, "nowrap"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 3, 5, Y, [yk, m(new p(null, 1, [Yl, function() {
-    return qp.b(m(new X(null, 3, 5, Y, [jj, m(new X(null, 2, 5, Y, [sl, "Undefined"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), "Undefined function for this button."], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
-  }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 1, 5, Y, [fk], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
+var Hp = m(new p(null, 3, [Mj, "50px", Xh, "/api/v1/", Ih, function(a) {
+  return r(Lj.b(a)) ? m(new X(null, 3, 5, Y, [fh, m(new p(null, 1, [ei, m(new p(null, 1, [Rh, "nowrap"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 3, 5, Y, [ti, m(new p(null, 1, [Uj, function() {
+    return qp.b(m(new X(null, 3, 5, Y, [fh, m(new X(null, 2, 5, Y, [oj, "Undefined"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), "Undefined function for this button."], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)));
+  }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), m(new X(null, 1, 5, Y, [ai], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], 
   null)) : null;
 }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null)), Ip = function() {
   function a(a, b) {
-    return m(new X(null, 2, 5, Y, [jj, m(new X(null, 3, 5, Y, [Gp, a, yf.e(L([Hp, b], 0))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
+    return m(new X(null, 2, 5, Y, [fh, m(new X(null, 3, 5, Y, [Gp, a, yf.e(L([Hp, b], 0))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/target/cljsbuild-compiler-0/hvacio_ui/controllers.cljs"], null));
   }
   function b(a) {
     return c.a(a, null);
@@ -10474,23 +10478,23 @@ var Hp = m(new p(null, 3, [Ql, "50px", bk, "/api/v1/", Mj, function(a) {
 }();
 function Jp(a) {
   var b = Xc(a) ? U.a(uf, a) : a;
-  a = R.a(b, Lk);
-  var c = R.a(b, Ci), b = R.a(b, Jl);
-  return m(new X(null, 3, 5, Y, [jj, m(new X(null, 2, 5, Y, [Ak, m(new X(null, 4, 5, Y, [Ti, "Vigilia", " ", m(new X(null, 1, 5, Y, [ej], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [sk, m(new X(null, 
-  2, 5, Y, [fm, m(new p(null, 4, [Tl, "500px", hj, "100%", jk, m(new p(null, 1, [Mi, "none"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), qk, [w("https://hvac.io/vigilia/embed/g/"), w(b), w("?tab\x3d%3Atimeseries\x26bc%5B%5D\x3d%3Aa"), w(c), w(".."), w(a)].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+  a = R.a(b, Gi);
+  var c = R.a(b, zg), b = R.a(b, Fj);
+  return m(new X(null, 3, 5, Y, [fh, m(new X(null, 2, 5, Y, [vi, m(new X(null, 4, 5, Y, [Qg, "Vigilia", " ", m(new X(null, 1, 5, Y, [ah], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [ni, m(new X(null, 
+  2, 5, Y, [ck, m(new p(null, 4, [Pj, "500px", dh, "100%", ei, m(new p(null, 1, [Jg, "none"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), li, [w("https://hvac.io/vigilia/embed/g/"), w(b), w("?tab\x3d%3Atimeseries\x26bc%5B%5D\x3d%3Aa"), w(c), w(".."), w(a)].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
   null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
 }
 function Kp(a) {
-  return "number" === typeof Pl.b(a) ? m(new X(null, 3, 5, Y, [yk, m(new p(null, 1, [Yl, function() {
-    return qp.b(C.a("fake-project-id", Jl.b(a)) ? m(new X(null, 5, 5, Y, [jj, m(new p(null, 1, [jk, m(new p(null, 1, [hj, "100%"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 3, 5, Y, [Ak, m(new X(null, 4, 5, Y, [kk, m(new p(null, 2, [al, "button", nk, "modal"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
-    null)), m(new X(null, 2, 5, Y, [qj, m(new p(null, 1, [Qk, "true"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [Dj, "Close"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
-    null)), m(new X(null, 4, 5, Y, [Ti, "Vigilia", " ", m(new X(null, 1, 5, Y, [ej], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 3, 5, Y, [sk, m(new X(null, 2, 5, Y, [nl, wn.a ? wn.a(A(tn), Qj) : wn.call(null, 
-    A(tn), Qj)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 3, 5, Y, [Xl, m(new X(null, 2, 5, Y, [Dk, m(new X(null, 2, 5, Y, [Xi, m(new p(null, 2, [qk, "/img/graphs-views.png", jk, m(new p(null, 2, [lk, "100%", el, "100%"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
-    null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 5, 5, Y, [Bl, m(new p(null, 1, [jk, m(new p(null, 1, [Fj, "5em"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
-    null)), m(new X(null, 2, 5, Y, [am, wn.a ? wn.a(A(tn), Hk) : wn.call(null, A(tn), Hk)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [am, wn.a ? wn.a(A(tn), fl) : wn.call(null, A(tn), fl)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 3, 5, Y, [Uj, m(new p(null, 3, [Hi, "https://hvac.io", kj, "_blank", jk, m(new p(null, 1, [Fj, "2em"], 
-    null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), wn.a ? wn.a(A(tn), zk) : wn.call(null, A(tn), zk)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 
-    1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 1, 5, Y, [vj], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)) : Jp(a));
-  }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 1, 5, Y, [ej], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)) : null;
+  return "number" === typeof Lj.b(a) ? m(new X(null, 3, 5, Y, [ti, m(new p(null, 1, [Uj, function() {
+    return qp.b(C.a("fake-project-id", Fj.b(a)) ? m(new X(null, 5, 5, Y, [fh, m(new p(null, 1, [ei, m(new p(null, 1, [dh, "100%"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 3, 5, Y, [vi, m(new X(null, 4, 5, Y, [fi, m(new p(null, 2, [Wi, "button", ii, "modal"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+    null)), m(new X(null, 2, 5, Y, [mh, m(new p(null, 1, [Li, "true"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [zh, "Close"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+    null)), m(new X(null, 4, 5, Y, [Qg, "Vigilia", " ", m(new X(null, 1, 5, Y, [ah], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 3, 5, Y, [ni, m(new X(null, 2, 5, Y, [jj, wn.a ? wn.a(A(tn), Mh) : wn.call(null, 
+    A(tn), Mh)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 3, 5, Y, [Tj, m(new X(null, 2, 5, Y, [yi, m(new X(null, 2, 5, Y, [Ug, m(new p(null, 2, [li, "/img/graphs-views.png", ei, m(new p(null, 2, [gi, "100%", aj, "100%"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+    null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 5, 5, Y, [xj, m(new p(null, 1, [ei, m(new p(null, 1, [Bh, "5em"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+    null)), m(new X(null, 2, 5, Y, [Xj, wn.a ? wn.a(A(tn), Ci) : wn.call(null, A(tn), Ci)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [Xj, wn.a ? wn.a(A(tn), bj) : wn.call(null, A(tn), bj)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 3, 5, Y, [Qh, m(new p(null, 3, [Eg, "https://hvac.io", gh, "_blank", ei, m(new p(null, 1, [Bh, "2em"], 
+    null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), wn.a ? wn.a(A(tn), ui) : wn.call(null, A(tn), ui)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 
+    1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 1, 5, Y, [rh], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)) : Jp(a));
+  }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 1, 5, Y, [ah], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)) : null;
 }
 var Mp = function Lp(b) {
   return function d(b) {
@@ -10505,10 +10509,10 @@ var Mp = function Lp(b) {
               for (var b = 0;;) {
                 if (b < n) {
                   var d = x.a(l, b);
-                  Hd(y, m(new X(null, 4, 5, Y, [Xl, m(new p(null, 1, [jk, m(new p(null, 3, [Wi, "rgba(0,0,0,0.05)", jl, "3px", Ui, "2px"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [vk, m(new X(null, 2, 5, Y, [Pi, yd(Bb(d))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
-                  null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [Wk, function() {
+                  Hd(y, m(new X(null, 4, 5, Y, [Tj, m(new p(null, 1, [ei, m(new p(null, 3, [Tg, "rgba(0,0,0,0.05)", fj, "3px", Rg, "2px"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [qi, m(new X(null, 2, 5, Y, [Mg, yd(Bb(d))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+                  null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [Ri, function() {
                     var e = Cb(d);
-                    return Rc(e) ? Lp(e) : m(new X(null, 3, 5, Y, [am, m(new p(null, 1, [jk, m(new p(null, 1, [oj, "1em"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), e instanceof V ? yd(e) : Qc(e) && 2 < O(e) ? m(new X(null, 2, 5, Y, [Ri, function() {
+                    return Rc(e) ? Lp(e) : m(new X(null, 3, 5, Y, [Xj, m(new p(null, 1, [ei, m(new p(null, 1, [kh, "1em"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), e instanceof V ? yd(e) : Qc(e) && 2 < O(e) ? m(new X(null, 2, 5, Y, [Og, function() {
                       return function(b, d, e, f, g, l, n, v) {
                         return function $i(y) {
                           return new W(null, function() {
@@ -10521,7 +10525,7 @@ var Mp = function Lp(b) {
                                     a: {
                                       for (var g = 0;;) {
                                         if (g < e) {
-                                          var l = x.a(d, g), l = m(new X(null, 2, 5, Y, [Zl, "" + w(l)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
+                                          var l = x.a(d, g), l = m(new X(null, 2, 5, Y, [Vj, "" + w(l)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
                                           f.add(l);
                                           g += 1;
                                         } else {
@@ -10534,7 +10538,7 @@ var Mp = function Lp(b) {
                                     return d ? Gd(f.B(), $i(hc(b))) : Gd(f.B(), null);
                                   }
                                   f = H(b);
-                                  return N(m(new X(null, 2, 5, Y, [Zl, "" + w(f)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), $i(I(b)));
+                                  return N(m(new X(null, 2, 5, Y, [Vj, "" + w(f)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), $i(I(b)));
                                 }
                                 return null;
                               }
@@ -10552,10 +10556,10 @@ var Mp = function Lp(b) {
             }() ? Gd(y.B(), d(hc(g))) : Gd(y.B(), null);
           }
           var v = H(g);
-          return N(m(new X(null, 4, 5, Y, [Xl, m(new p(null, 1, [jk, m(new p(null, 3, [Wi, "rgba(0,0,0,0.05)", jl, "3px", Ui, "2px"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [vk, m(new X(null, 2, 5, Y, [Pi, yd(Bb(v))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
-          null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [Wk, function() {
+          return N(m(new X(null, 4, 5, Y, [Tj, m(new p(null, 1, [ei, m(new p(null, 3, [Tg, "rgba(0,0,0,0.05)", fj, "3px", Rg, "2px"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [qi, m(new X(null, 2, 5, Y, [Mg, yd(Bb(v))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+          null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [Ri, function() {
             var b = Cb(v);
-            return Rc(b) ? Lp(b) : m(new X(null, 3, 5, Y, [am, m(new p(null, 1, [jk, m(new p(null, 1, [oj, "1em"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), b instanceof V ? yd(b) : Qc(b) && 2 < O(b) ? m(new X(null, 2, 5, Y, [Ri, function() {
+            return Rc(b) ? Lp(b) : m(new X(null, 3, 5, Y, [Xj, m(new p(null, 1, [ei, m(new p(null, 1, [kh, "1em"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), b instanceof V ? yd(b) : Qc(b) && 2 < O(b) ? m(new X(null, 2, 5, Y, [Og, function() {
               return function(b, d, e, f) {
                 return function Da(g) {
                   return new W(null, function() {
@@ -10568,7 +10572,7 @@ var Mp = function Lp(b) {
                             a: {
                               for (var l = 0;;) {
                                 if (l < e) {
-                                  var n = x.a(d, l), n = m(new X(null, 2, 5, Y, [Zl, "" + w(n)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
+                                  var n = x.a(d, l), n = m(new X(null, 2, 5, Y, [Vj, "" + w(n)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
                                   f.add(n);
                                   l += 1;
                                 } else {
@@ -10581,7 +10585,7 @@ var Mp = function Lp(b) {
                             return d ? Gd(f.B(), Da(hc(b))) : Gd(f.B(), null);
                           }
                           f = H(b);
-                          return N(m(new X(null, 2, 5, Y, [Zl, "" + w(f)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), Da(I(b)));
+                          return N(m(new X(null, 2, 5, Y, [Vj, "" + w(f)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), Da(I(b)));
                         }
                         return null;
                       }
@@ -10599,34 +10603,36 @@ var Mp = function Lp(b) {
 };
 function Np(a) {
   a = A(a);
-  return m(new X(null, 2, 5, Y, [vl, Mp(a)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
+  return m(new X(null, 2, 5, Y, [rj, Mp(a)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
 }
 function Op(a) {
   var b = np.b(null);
-  return m(new X(null, 3, 5, Y, [yk, m(new p(null, 1, [Yl, function() {
-    Qn.e(yp.e("/api/v1/", L(["object-all-properties", Jl.b(a), Ci.b(a), Lk.b(a)], 0)), L([m(new p(null, 2, [zl, function(a) {
+  return m(new X(null, 3, 5, Y, [ti, m(new p(null, 1, [Uj, function() {
+    NProgress.start();
+    Qn.e(yp.e("/api/v1/", L(["object-all-properties", Fj.b(a), zg.b(a), Gi.b(a)], 0)), L([m(new p(null, 2, [vj, function(a) {
+      NProgress.done();
       return bg(b, a);
-    }, ml, Wf], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], 0));
-    return qp.b(m(new X(null, 3, 5, Y, [jj, m(new X(null, 3, 5, Y, [Ak, m(new X(null, 4, 5, Y, [kk, m(new p(null, 2, [al, "button", nk, "modal"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [qj, m(new p(null, 1, [Qk, "true"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
-    null)), m(new X(null, 2, 5, Y, [Dj, "Close"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 4, 5, Y, [yl, "Properties", " ", m(new X(null, 2, 5, Y, [hl, Hj.b(a)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
-    null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [sk, m(new X(null, 2, 5, Y, [Np, b], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)));
-  }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 1, 5, Y, [ak], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
+    }, ij, Wf], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], 0));
+    return qp.b(m(new X(null, 3, 5, Y, [fh, m(new X(null, 3, 5, Y, [vi, m(new X(null, 4, 5, Y, [fi, m(new p(null, 2, [Wi, "button", ii, "modal"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [mh, m(new p(null, 1, [Li, "true"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+    null)), m(new X(null, 2, 5, Y, [zh, "Close"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 4, 5, Y, [uj, "Properties", " ", m(new X(null, 2, 5, Y, [dj, Dh.b(a)], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+    null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 2, 5, Y, [ni, m(new X(null, 2, 5, Y, [Np, b], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)));
+  }], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 1, 5, Y, [Wh], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
 }
 function Pp(a) {
-  var b = m, c = Y, d = m(new p(null, 1, [jk, m(new p(null, 1, [Vj, "nowrap"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), e = Kp(a), f = Op(a);
-  if (C.a(Xj.b(a), "20")) {
+  var b = m, c = Y, d = m(new p(null, 1, [ei, m(new p(null, 1, [Rh, "nowrap"], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), e = Kp(a), f = Op(a);
+  if (C.a(Th.b(a), "20")) {
     var g;
-    g = Hj.b(a);
-    g = r(g) ? g : [w("trend-log-"), w(Sj.b(a))].join("");
-    a = m(new X(null, 3, 5, Y, [Kl, m(new p(null, 1, [Hi, [w("/api/v1/trend-log/fake-project/"), w(Ci.b(a)), w("/"), w(Sj.b(a)), w("/"), w(g), w(".csv")].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 1, 5, Y, [ql], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
+    g = Dh.b(a);
+    g = r(g) ? g : [w("trend-log-"), w(Oh.b(a))].join("");
+    a = m(new X(null, 3, 5, Y, [Gj, m(new p(null, 1, [Eg, [w("/api/v1/trend-log/fake-project/"), w(zg.b(a)), w("/"), w(Oh.b(a)), w("/"), w(g), w(".csv")].join("")], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null)), m(new X(null, 1, 5, Y, [mj], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], 
     null));
   } else {
     a = null;
   }
-  return b(new X(null, 5, 5, c, [jj, d, e, f, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
+  return b(new X(null, 5, 5, c, [fh, d, e, f, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
 }
 function Qp(a) {
-  return m(new X(null, 3, 5, Y, [Ip, r(a) ? a : "fake-project-id", m(new p(null, 1, [Mj, Pp], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
+  return m(new X(null, 3, 5, Y, [Ip, r(a) ? a : "fake-project-id", m(new p(null, 1, [Ih, Pp], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/explorer.cljs"], null));
 }
 ;var Rp = np.b(window.innerHeight), Sp = np.b(window.innerWidth), Tp = function() {
   var a = ag.b(null);
@@ -10647,7 +10653,7 @@ function Qp(a) {
     return bg(a, d);
   };
 }();
-zh(window, "resize", function() {
+kl(window, "resize", function() {
   return Tp.a ? Tp.a(function() {
     bg(Rp, window.innerHeight);
     return bg(Sp, window.innerWidth);
@@ -10676,7 +10682,7 @@ Sa = function() {
 }();
 function Up(a) {
   return window.onload = function() {
-    return mp.a(m(new X(null, 3, 5, Y, [vl, m(new X(null, 1, 5, Y, [pp], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/client.cljs"], null)), m(new X(null, 2, 5, Y, [Qp, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/client.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/client.cljs"], null)), ga("explorer-app") ? document.getElementById("explorer-app") : "explorer-app");
+    return mp.a(m(new X(null, 3, 5, Y, [rj, m(new X(null, 1, 5, Y, [pp], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/client.cljs"], null)), m(new X(null, 2, 5, Y, [Qp, a], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/client.cljs"], null))], null), new p(null, 1, [q, "/home/frozenlock/clojure/BACnet/wacnet/src/cljs/wacnet/client.cljs"], null)), ga("explorer-app") ? document.getElementById("explorer-app") : "explorer-app");
   };
 }
 var Vp = ["wacnet", "client", "run"], Wp = ba;

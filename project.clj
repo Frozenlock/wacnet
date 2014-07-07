@@ -1,4 +1,4 @@
-(defproject wacnet "1.1.0"
+(defproject wacnet "1.1.1"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -10,7 +10,7 @@
 
                  ;; Webserver
                  [ring "1.2.1"]
-                 [compojure "1.1.6"]
+                 [compojure "1.1.8"]
                  [hiccup "1.0.5"]
                  [lib-noir "0.8.3"] ;; sessions
 
@@ -45,7 +45,7 @@
                [com.taoensso/tower "2.1.0-RC1"]
 
                ;; ;; UI 
-               [hvacio/hvacio-ui "0.1.3" :exclusions [org.clojure/clojure]]]}
+               [hvacio/hvacio-ui "0.1.9" :exclusions [org.clojure/clojure]]]}
 
              :uberjar {:aot :all}}
 
@@ -65,7 +65,10 @@
                       :compiler {:output-to "resources/public/js/cljs-min.js"
                                  :optimizations :advanced
                                  :preamble ["reagent/react.min.js"]
-                                 :externs ["externs/jquery-1.9.js"]}}
+                                 :externs ["externs/jquery-1.9.js"
+                                           "hvacio-ui-resources/public/js/nprogress.js"]
+                                 :closure-warnings {:externs-validation :off
+                                                    :non-standard-jsdoc :off}}}
                :dev {
                      :source-paths ["src/cljs"]
                      :compiler {:output-to "resources/public/js/out-dev/cljs.js"

@@ -10,6 +10,7 @@
             [wacnet.views.eval :as eval]
             [wacnet.views.configs :as configs]
             [wacnet.views.vigilia-routes :as v]
+            [hvacio-ui.middleware :as m]
             ;; [wacnet.views.services :as services]
             [wacnet.api.v1 :as apiv1]
             
@@ -31,6 +32,7 @@
 
 (def handler
   (-> app-routes
+      (m/wrap-hvacio-ui-resources)
       (handler/site) ;; some default middleware
       (wrap-stacktrace)
       (wrap-request-bindings)

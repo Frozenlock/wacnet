@@ -5,6 +5,7 @@
             [hiccup.form :as hf]
             [wacnet.ring-utils :refer [*url*]]
             [wacnet.views.templates :as tp]
+            [hvacio-ui.page :as p]
             [noir.session :as session]))
 
 
@@ -83,6 +84,7 @@
              (hp/include-css "/css/font-awesome.min.css")
              (hp/include-js "/js/jquery-1.11.1.min.js")
              (hp/include-js "/js/bootstrap.min.js")
+             (p/include-hvacio-ui)
              (hp/include-js ;"/js/out-dev/cljs.js" 
                             "/js/cljs-min.js"
                             )

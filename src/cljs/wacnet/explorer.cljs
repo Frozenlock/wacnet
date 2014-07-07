@@ -3,6 +3,7 @@
            [goog.dom :as dom]
            [hvacio-ui.controllers :as ctrls]
            [hvacio-ui.templates.modals :as modal]
+           [hvacio-ui.templates.nprogress :as nprogress]
            [wacnet.translation2 :as t2]
            [ajax.core :refer [GET POST]]))
 
@@ -84,11 +85,13 @@
     [:button.btn.btn-default.btn-sm
      {:on-click (fn [e]
                   (do 
+                    (nprogress/start)
                     (GET (ctrls/api-path "/api/v1/" "object-all-properties" 
                                          (:project-id obj)
                                          (:device-id obj)
                                          (:object-id obj))
-                        {:handler #(reset! properties %)
+                        {:handler #(do (nprogress/done)
+                                       (reset! properties %))
                          :error-handler prn})
                     (modal/modal
                      [:div
