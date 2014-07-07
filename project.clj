@@ -31,7 +31,10 @@
                  [org.clojars.frozenlock/gzip64 "1.0.0"]
 
                  ;; recurring jobs
-                 [overtone/at-at "1.2.0"]]
+                 [overtone/at-at "1.2.0"]
+                 
+                 ;; ;; UI 
+               [hvacio/hvacio-ui "0.1.9" :exclusions [org.clojure/clojure]]]
 
   :profiles {:dev 
              {:dependencies
@@ -42,10 +45,7 @@
                [reagent "0.4.2"]
                
                ;; internationalization
-               [com.taoensso/tower "2.1.0-RC1"]
-
-               ;; ;; UI 
-               [hvacio/hvacio-ui "0.1.9" :exclusions [org.clojure/clojure]]]}
+               [com.taoensso/tower "2.1.0-RC1"]]}
 
              :uberjar {:aot :all}}
 
