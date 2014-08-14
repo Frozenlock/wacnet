@@ -26,7 +26,7 @@
     (menu-item "/explorer" "Explorer")
     (menu-item "/configs" "BACnet Configs")
     (menu-item "/repl" "REPL")
-    (menu-item "/vigilia/configs" "Vigilia configs")]
+    (menu-item "/vigilia/configs" "Vigilia Configs")]
    [:a.navbar-brand.navbar-right {:href "https://hvac.io"}
     "Powered by "[:img.img-rounded {:src "/img/HVACIO-logo.svg"
                        :style "height: 23px;"}]]])
