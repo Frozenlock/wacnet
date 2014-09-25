@@ -1,4 +1,4 @@
-(defproject wacnet "1.1.2"
+(defproject wacnet "1.1.3"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -34,7 +34,7 @@
                  [overtone/at-at "1.2.0"]
                  
                  ;; ;; UI 
-               [hvacio/hvacio-ui "0.1.9" :exclusions [org.clojure/clojure]]]
+               [hvacio/hvacio-ui "0.1.10" :exclusions [org.clojure/clojure]]]
 
   :profiles {:dev 
              {:dependencies

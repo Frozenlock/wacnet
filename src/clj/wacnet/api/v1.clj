@@ -29,6 +29,13 @@
   (let [[type instance] (decode-dotted-identifier (:object-id object-map))]
     (assoc object-map :object-type type :object-instance instance)))
 
+(defn convert-units
+  "Convert units keyword to their string value."[m]
+  (if-let [unit (find m :units)]
+    (-> (bacure.coerce/c-engineering-units (val unit))
+        ((fn [x] (assoc m :units (.toString x)))))
+    m))
+
 (defn get-device-summary
   "Make a map of useful device info: 
    {:objects ... :update ... :scan-duration ... :name ...}" 
@@ -42,11 +49,13 @@
 (defn get-objects [device-id]
   (binding [c/*drop-ambiguous* true]
     (for [object (b/remote-object-properties device-id (b/remote-objects device-id)
-                                             [:object-name :description :present-value])
+                                             [:object-name :description :present-value :units])
           :when (and (:object-name object)(:description object) 
                      (not-empty object))]
       (-> object
-          (clojure.set/rename-keys {:object-name :name :present-value :value})
+          (convert-units)
+          (clojure.set/rename-keys {:object-name :name :present-value :value
+                                    :units :unit})
           ;(dissoc :value)
           (make-dotted-identifier)
           (add-object-instance-and-type)
