@@ -173,7 +173,8 @@
      :max-range (helpfn/parse-or-nil max-range)
      :id-to-remove (seq (map helpfn/parse-or-nil (re-seq #"\d+" id-to-remove)))
      :id-to-keep (seq (map helpfn/parse-or-nil (re-seq #"\d+" id-to-keep)))
-     :time-interval (max (helpfn/parse-float-or-nil time-interval) 5)
+     :time-interval (when-let [t-i (helpfn/parse-float-or-nil time-interval)]
+                      (max t-i 5))
      :criteria-coll (seq (helpfn/safe-read (str "["criteria-coll"]")))
      :project-id (when-not (empty? project-id) (string/trim project-id))}))
 
