@@ -89,8 +89,9 @@
    (hf/text-field {:placeholder 10 :class "form-control"}
                   :time-interval (:time-interval logger-config))
    [:p.text-info (str "This is the time interval at which the BACnet network is scanned. "
-                      "Smaller interval means more precision, but also more storage usage. "
-                      "10 minutes is a great interval to see most HVAC behaviors.")]])
+                      "Smaller interval means more precision, but also more network utilization. "
+                      "10 minutes is a great interval to see most HVAC behaviors. "
+                      "(Minimum interval is 5 minutes.)")]])
 
 (defn range-form [logger-config]
   [:div.form-group
