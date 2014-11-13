@@ -5,9 +5,8 @@
   (:import java.io.StringWriter
            (java.util.concurrent TimeoutException TimeUnit FutureTask)))
 
-(wnrepl/start-nrepl) ;; start a "true" repl on port 47999
 
-;; Now initialize a poor man's REPL on the web interface
+;; Initialize a poor man's REPL on the web interface
 
 (defn remove-ns-future
   "Unmap a namespace after `delay' in ms."

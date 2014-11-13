@@ -121,6 +121,11 @@
    (pmap remove-device? (rd/remote-devices)))
    
 
+(defn reset-object-delay!
+  "Reset the object delay and replace it by the data in the
+   configuration file." []
+  (reset! encoding/read-delay (:object-delay (get-configs))))
+
 (defn find-id-to-scan
   "Check all the different filtering options and return a list of
    device-id to scan." []
@@ -154,19 +159,6 @@
                                              path))))]
     (filter #(re-find #"vigilia.*\.log" %) filename-list)))
 
-(defn send-to-remote-server 
-  "Send the data to remote servers. Return the result of the http POST
-  request."
-  [data]
-  (let [{:keys [logger-password project-id]} (get-configs)]
-    (try (client/post (str *base-url* "/api/v1/logger/post-to-project")
-                      {:form-params {:data data
-                                     :logger-version logger-version
-                                     :logger-password logger-password
-                                     :project-id project-id}
-                       :content-type "application/x-www-form-urlencoded"})
-         (catch Exception e))))
-
 
 (defn project-active?
   "Check with the remote servers if the project is currently in an
@@ -177,6 +169,22 @@
               (catch Exception e))
          :status
          (= 200))))
+
+
+(defn send-to-remote-server 
+  "Send the data to remote servers. Return the result of the http POST
+  request."
+  [data]
+  (when (project-active?) ;; dont' bother trying to send to remote
+                          ;; server if project is inactive
+    (let [{:keys [logger-password project-id]} (get-configs)]
+      (try (client/post (str *base-url* "/api/v1/logger/post-to-project")
+                        {:form-params {:data data
+                                       :logger-version logger-version
+                                       :logger-password logger-password
+                                       :project-id project-id}
+                         :content-type "application/x-www-form-urlencoded"})
+           (catch Exception e)))))
 
 
 (defn scan-and-send

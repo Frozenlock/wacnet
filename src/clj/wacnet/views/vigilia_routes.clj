@@ -140,6 +140,19 @@
            [:li (str p)])]]])
 
 
+(defn object-delay-form [logger-config]
+  (let [current-delay (or (:object-delay logger-config) 0)]
+    [:div.form-group
+     [:label "Read objects delay (milliseconds) " 
+      [:output.label.label-info 
+       {:id "rangevalue" :style "display: inline-block"} current-delay]]
+     [:input {:type :range :id :object-delay :value current-delay 
+              :name (reduce #(str %1 "[" %2 "]")
+                            (conj hf/*group* (name :object-delay)))
+              :onchange "rangevalue.value=value" :max 1000 :min 0 :step 50}]
+     [:p.text-info (str "Delay between each object scan of a device. This increases the total scan time. "
+                        "Use this if the scans cause you to lose connection with some devices.")]]))
+
 (defn advanced-configs-panel [configs]
   [:div.panel.panel-default
    [:div.panel-heading.panel-toggle {:data-toggle "collapse" :data-target "#advanded-configs"
@@ -154,7 +167,8 @@
        (range-form configs)]]
      [:div.row
       [:div.col-sm-6
-       (id-filter-form configs)]
+       (id-filter-form configs)
+       (object-delay-form configs)]
       [:div.col-sm-6
        (criteria-filter-form configs)]]]]])
 
@@ -167,7 +181,7 @@
   database."[config-map]
   (let [{:keys [logger-password min-range max-range id-to-remove
                 id-to-keep time-interval criteria-coll port device-id
-                project-id]}
+                project-id object-delay]}
         config-map]
     {:logger-password (if (empty? logger-password) nil (string/trim logger-password))
      :min-range (helpfn/parse-or-nil min-range)
@@ -177,7 +191,9 @@
      :time-interval (when-let [t-i (helpfn/parse-float-or-nil time-interval)]
                       (max t-i 5))
      :criteria-coll (seq (helpfn/safe-read (str "["criteria-coll"]")))
-     :project-id (when-not (empty? project-id) (string/trim project-id))}))
+     :project-id (when-not (empty? project-id) (string/trim project-id))
+     :object-delay (when-let [o-d (helpfn/parse-or-nil object-delay)]
+                     (when (> o-d 0) o-d))}))
 
 
                               
@@ -228,7 +244,7 @@
       [:div.row
        [:div.col-sm-2
         [:p "Last scan duration: "]]
-       [:div.col-sm-2 (format "%.1f" (double (/ (or @scan/last-scan-duration 0) 1000 60))) " min"]
+       [:div.col-sm-2 (format "%.3f" (double (/ (or @scan/last-scan-duration 0) 1000 60))) " min"]
        [:div.col-sm-8
         [:p "Please don't set a scanning interval smaller than this value. "
          "The time taken to do a scan is determined by your network. MS/TP devices WILL "

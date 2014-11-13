@@ -32,6 +32,7 @@
 (defn init
   "Reset the local device, make a list of remote devices and find
    those that should be excluded based on their properties."[]
+   (scan/reset-object-delay!)
    (ld/reset-local-device)
    (rd/discover-network)
    (Thread/sleep 5000)

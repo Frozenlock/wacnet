@@ -91,6 +91,10 @@
 ;; ======================= Data retrieval =========================
 ;; ================================================================
 
+(def read-delay
+  "Delay (in ms) between each objects when retrieving the properties."
+  (atom nil))
+  
 
 (defn get-properties-by-type
   "Get the properties and return them in the correct format.
@@ -123,6 +127,8 @@
   (let [grouped (group-by first object-identifiers)] ;; group by object type
     (into {}
           (mapcat (fn [[k v]]
+                    (when-let [delay @read-delay]
+                      (Thread/sleep delay))
                     (try {(keyword (str (.intValue (bacure.coerce/c-object-type k))))
                           (get-properties-by-type device-id k v)}
                          (catch Exception e))) grouped))))
