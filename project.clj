@@ -21,7 +21,6 @@
                  ;; REPL
                  [org.clojure/tools.nrepl "0.2.5"]
                  [cider/cider-nrepl "0.8.1"]
-                 [clojure-complete "0.2.4"] ;; necessary for embedded nREPL
 
                  ;; Misc.
                  [trptcolin/versioneer "0.1.1"]
