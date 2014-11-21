@@ -1,6 +1,7 @@
 (ns wacnet.nrepl
   (:require [clojure.tools.nrepl.server :refer [start-server stop-server]]
-            [clojure.tools.nrepl :as nrepl]))
+            [clojure.tools.nrepl :as nrepl]
+            [cider.nrepl :refer [cider-nrepl-handler]]))
 
 (def server (atom nil))
 
@@ -30,7 +31,7 @@
   "Start (or restart) a REPL on a given port. Default to 47999 if none provided."
   [& port]
   (stop-nrepl)
-  (reset! server (start-server :port (or port 47999)))
+  (reset! server (start-server :port (or port 47999) :handler cider-nrepl-handler))
   (server-eval repl-init))
 
 (defn stop-nrepl
