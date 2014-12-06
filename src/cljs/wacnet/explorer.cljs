@@ -1,8 +1,8 @@
 (ns wacnet.explorer
  (:require [reagent.core :as r]
            [goog.dom :as dom]
-           [hvacio-ui.controllers :as ctrls]
-           [hvacio-ui.templates.modals :as modal]
+           [hvacio-ui.controllers :as ctrls]           
+           [reagent-modals.modals :as modal]
            [hvacio-ui.templates.nprogress :as nprogress]
            [wacnet.translation2 :as t2]
            [ajax.core :refer [GET POST]]))
@@ -14,7 +14,7 @@
 (defn vigilia-non-active [obj]
   [:div {:style { :width "100%"}}
    [:div.modal-header
-    [:button.close {:type "button" :data-dismiss modal/modal-id}
+    [:button.close {:type "button" :data-dismiss "modal"}
      [:span.glyphicon.glyphicon-remove {:aria-hidden "true"}]
      [:span.sr-only "Close"]]
     [:h2.modal-title "Vigilia" " " [:i.fa.fa-bar-chart-o]]]
@@ -48,7 +48,7 @@
 
 
 (defn vigilia-modal [obj]
-  (modal/modal
+  (modal/modal!
    (if-not (= dummy-project-id (:project-id obj))
      (vigilia-active obj)
      (vigilia-non-active obj))))
@@ -93,10 +93,10 @@
                         {:handler #(do (nprogress/done)
                                        (reset! properties %))
                          :error-handler prn})
-                    (modal/modal
+                    (modal/modal!
                      [:div
                       [:div.modal-header
-                       [:button.close {:type "button" :data-dismiss modal/modal-id}
+                       [:button.close {:type "button" :data-dismiss "modal"}
                         [:span.glyphicon.glyphicon-remove {:aria-hidden "true"}]
                         [:span.sr-only "Close"]]
                        [:h2 "Properties" " "[:small (:name obj)]]]

@@ -5,6 +5,7 @@
             [bacure.local-device :as ld]
             [bacure.local-save :as local]
             [wacnet.vigilia.logger.encoding :as encoding]
+            [trptcolin.versioneer.core :as version]
             [clojure.java.io :as io]
             [gzip64.core :as g]))
 
@@ -22,7 +23,8 @@
 
 (def logger-version
   "The logger version used to check what data encoding is used."
-  "2.0.1")
+  (str "W-" (version/get-version "wacnet" "wacnet")))
+
 
 (def path (str local/path "logger/"))
 

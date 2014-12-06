@@ -1,12 +1,14 @@
-(defproject wacnet "1.1.5"
+(defproject wacnet "1.1.6-SNAPSHOT"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
             :url "http://www.gnu.org/licenses/gpl-3.0.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-
+                 [org.clojure/clojurescript "0.0-2173" :scope "provided"]
+                 
+                 
                  ;; BACnet
-                 [bacure "0.4.12"]
+                 [bacure "0.4.13"]
 
                  ;; Webserver
                  [ring "1.2.1"]
@@ -19,6 +21,7 @@
                  [org.clojure/data.csv "0.1.2"]
                  
                  ;; REPL
+                 [org.clojure/tools.trace "0.7.8"] ;; necessary for cider (bug?)
                  [org.clojure/tools.nrepl "0.2.5"]
                  [cider/cider-nrepl "0.8.1"]
 
@@ -34,20 +37,13 @@
                  [overtone/at-at "1.2.0"]
                  
                  ;; ;; UI 
-               [hvacio/hvacio-ui "0.1.10" :exclusions [org.clojure/clojure]]]
+                 [hvacio/hvacio-ui "0.1.12" :exclusions [org.clojure/clojure]]
+                 [org.clojars.frozenlock/reagent-modals "0.2.0"]
+                 [reagent "0.4.2"]
 
-  :profiles {:dev 
-             {:dependencies
-              [
-                 ;;; cljs
-               [org.clojure/clojurescript "0.0-2173" :scope "provided"]
+                 [com.taoensso/tower "3.0.2"]]
 
-               [reagent "0.4.2"]
-               
-               ;; internationalization
-               [com.taoensso/tower "2.1.0-RC1"]]}
-
-             :uberjar {:aot :all}
+  :profiles {:uberjar {:aot :all}
              }
 
 
@@ -62,7 +58,7 @@
   :cljsbuild {
               :builds
               {:main {
-                      :source-paths ["src/cljs" "src-cross/cljs" "src-cross/clj"]
+                      :source-paths ["src/cljs"]
                       :compiler {:output-to "resources/public/js/cljs-min.js"
                                  :optimizations :advanced
                                  :preamble ["reagent/react.min.js"]

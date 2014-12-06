@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [goog.dom :as dom]
             [hvacio-ui.controllers :as ctrls]
-            [hvacio-ui.templates.modals :as modal]
+            [reagent-modals.modals :as modal]
             [wacnet.explorer :as exp]))
 
 (enable-console-print!)
