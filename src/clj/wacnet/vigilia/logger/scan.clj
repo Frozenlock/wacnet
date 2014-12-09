@@ -141,9 +141,9 @@
      (-> (into #{} (filter rd/extended-information? (rd/remote-devices)))
          id-to-keep-fn
          id-to-remove-fn
-         remove-device
          min-fn
-         max-fn)))
+         max-fn
+         remove-device)))
 
 (def last-scan-duration (atom nil))
 
