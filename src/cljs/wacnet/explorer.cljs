@@ -109,8 +109,8 @@
   (when (= (:object-type obj) "20")
     (let [filename (or (:name obj) (str "trend-log-" (:object-instance obj)))]
          [:a.btn.btn-default.btn-sm
-          {:href (str "/api/v1/trend-log/fake-project/"(:device-id obj)"/"(:object-instance obj)"/"
-                      filename ".csv")}
+          {:href (str "/api/v1/trend-log/fake-project/"(:device-id obj)"/"(:object-instance obj))
+           :download (str filename ".csv")}
           [:i.fa.fa-download]])))
 
 (defn device-table-btns [obj]

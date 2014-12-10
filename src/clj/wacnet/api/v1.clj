@@ -145,6 +145,6 @@
     (device-summary project-id device-id))
 
   ;;; Wacnet only API
-  (comp/GET "/api/v1/trend-log/:project-id/:device-id/:trend-log-instance/:filename"
+  (comp/GET "/api/v1/trend-log/:project-id/:device-id/:trend-log-instance"
       [project-id device-id trend-log-instance]
          (trend-log device-id trend-log-instance)))
