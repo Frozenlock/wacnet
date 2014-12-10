@@ -37,7 +37,10 @@
             [:code "(square 10)"]]
 
            [:i
-            "Want a better experience? Use Emacs with nrepl.el (or any other nrepl interface) "
+            "Want a better experience? Use Emacs with "
+            [:a {:href "https://github.com/clojure-emacs/cider/blob/master/README.md"}
+             "cider"]
+            " (or any other nrepl interface) "
             "and connect to port 47999!"]]
 
           [:div.span6

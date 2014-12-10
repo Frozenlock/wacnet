@@ -86,19 +86,21 @@
   "Test the criteria maps agains a device ID and return :remove if any
   succeed, otherwise :keep. If the extended information is not yet
   available, simply return nil." [id criteria-coll]
-  (rd/extended-information id)
-  (when (rd/extended-information? id)
-    (let [remote-device-props
-          (bac/remote-object-properties id [:device id]
-                                        [:vendor-identifier :description :device-type
-                                         :vendor-name :object-name :model-name])]
-      ;;don't use `:all', it might not return the model-name if it's a
-      ;;device that doesn't support read-property-multiple.
-      (-> (filter (bac/where (first criteria-coll)) remote-device-props)
-          ((fn [x] (let [crits (next criteria-coll)]
-                     (cond (and (seq x) (seq (first criteria-coll))) :remove
-                           crits (filter-device id crits)
-                           :else :keep))))))))
+  (try
+    (do (rd/extended-information id)
+        (when (rd/extended-information? id)
+          (let [remote-device-props
+                (bac/remote-object-properties id [:device id]
+                                              [:vendor-identifier :description :device-type
+                                               :vendor-name :object-name :model-name])]
+            ;;don't use `:all', it might not return the model-name if it's a
+            ;;device that doesn't support read-property-multiple.
+            (-> (filter (bac/where (first criteria-coll)) remote-device-props)
+                ((fn [x] (let [crits (next criteria-coll)]
+                           (cond (and (seq x) (seq (first criteria-coll))) :remove
+                                 crits (filter-device id crits)
+                                 :else :keep))))))))
+    (catch Exception e nil)))
                      
 
 (def remove-device-table
@@ -114,9 +116,11 @@
    tested yet, test it and record the result." [id]
    (if-let [result (get @remove-device-table id)]
      result
-     (get (swap! remove-device-table #(->> (:criteria-coll (get-configs))
-                                       (filter-device id)
-                                       (assoc % id))) id)))
+     (if-let [criteria-coll (:criteria-coll (get-configs))]
+       (get (swap! remove-device-table #(->> criteria-coll
+                                             (filter-device id)
+                                             (assoc % id))) id)
+       :keep)));;if no criteria-coll, automatically keep
 
 (defn reset-devices-to-remove-table []
    (reset! remove-device-table {})
