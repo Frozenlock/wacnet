@@ -13,9 +13,9 @@
 
 
 (defn -main [& m]
+  (wnrepl/start-nrepl)
   (ld/initialize)
   (start-server)
-  (wnrepl/start-nrepl)
   (println (str "\n\n\n"
                 "---> \n"
                 "     See the web interface at http://localhost:47800.\n"

@@ -1,4 +1,4 @@
-(defproject wacnet "1.1.6-SNAPSHOT"
+(defproject wacnet "1.1.6"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -8,7 +8,7 @@
                  
                  
                  ;; BACnet
-                 [bacure "0.4.13"]
+                 [bacure "0.5.2"]
 
                  ;; Webserver
                  [ring "1.2.1"]
@@ -23,7 +23,7 @@
                  ;; REPL
                  [org.clojure/tools.trace "0.7.8"] ;; necessary for cider (bug?)
                  [org.clojure/tools.nrepl "0.2.5"]
-                 [cider/cider-nrepl "0.8.1"]
+                 [cider/cider-nrepl "0.8.2"]
 
                  ;; Misc.
                  [trptcolin/versioneer "0.1.1"]

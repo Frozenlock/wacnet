@@ -9,6 +9,8 @@
             [clojure.java.io :as io]
             [gzip64.core :as g]))
 
+(def last-scan-timestamp (atom nil))
+
 (def ^:dynamic *base-url*
   ;"https://hvac.io/api/v1"
   "https://hvac.io")
@@ -153,6 +155,7 @@
 
 (defn scan-network
   "Scan the network and return a `snapshot' for logging purposes."[]
+  (reset! last-scan-timestamp (encoding/iso-8601-timestamp)) ;; for debugging
   (->> (find-id-to-scan)
        (pmap encoding/scan-device) ;;use the power of parallelization!
        (apply merge)

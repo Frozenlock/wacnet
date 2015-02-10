@@ -3,6 +3,7 @@
             [liberator.core :as lib]
             [bacure.core :as b]
             [bacure.remote-device :as rd]
+            [bacure.read-properties-cached :as rpc]
             [bacure.coerce :as c]
             [clojure.edn :as edn]
             [clojure.set]
@@ -39,38 +40,44 @@
 (defn get-device-summary
   "Make a map of useful device info: 
    {:objects ... :update ... :scan-duration ... :name ...}" 
-  [project-id device-id]
-  (-> (map merge (b/remote-object-properties device-id [:device device-id] [:object-name :object-list]))
+  [projet-id device-id]
+  (-> (rpc/read-properties-cached device-id [[[:device device-id] :object-name :object-list]])
       (first)
       (clojure.set/rename-keys {:object-name :name :object-list :objects})
       (dissoc :object-identifier)
       (update-in [:objects] #(map oid->dotted-id %))))
 
+
+
 (defn get-objects [device-id]
   (binding [c/*drop-ambiguous* true]
-    (for [object (b/remote-object-properties device-id (b/remote-objects device-id)
-                                             [:object-name :description :present-value :units])
-          :when (and (:object-name object)(:description object) 
-                     (not-empty object))]
-      (-> object
-          (convert-units)
-          (clojure.set/rename-keys {:object-name :name :present-value :value
-                                    :units :unit})
-          ;(dissoc :value)
-          (make-dotted-identifier)
-          (add-object-instance-and-type)
-          ))))
+    (let [remote-objects (-> (rpc/read-properties-cached device-id [[[:device device-id] :object-list]])
+                             (first)
+                             (:object-list))]
+      (doall
+       (for [object remote-objects]
+        (let [object-p-values
+              (first (rpc/read-properties-cached device-id
+                                                 [[object :object-name :description :present-value :units]]))]
+          (when (and (:object-name object-p-values)
+                     (:description object-p-values)
+                     (not-empty object-p-values))
+            (-> (into {} (remove (comp nil? second) object-p-values)) ;; remove any nil values (read errors)
+                (convert-units)
+                (clojure.set/rename-keys {:object-name :name :present-value :value
+                                          :units :unit})
+                (make-dotted-identifier)
+                (add-object-instance-and-type)))))))))
   
 (defn get-object-all-properties
   [device-id dotted-id]
   (binding [c/*drop-ambiguous* true]
-    (-> (b/remote-object-properties device-id [(read-vector (decode-dotted-identifier dotted-id))] :all)
+    (-> (rpc/read-properties-cached device-id [[(read-vector (decode-dotted-identifier dotted-id)) :all]])
         (first)
         (clojure.set/rename-keys {:object-name :name :present-value :value})
                                         ;(dissoc :value)
         (make-dotted-identifier)
-        (add-object-instance-and-type)
-        )))
+        (add-object-instance-and-type))))
 
 ;;; the 'project-id' arguments are for compatibility with the HVAC.IO
 ;;; website.

@@ -9,6 +9,8 @@
 (defn timestamp []
   (.getMillis (time/now)))
 
+(defn iso-8601-timestamp []
+  (str (time/now)))
 
 ;; ================================================================
 ;; ======================= Data encoding ==========================
@@ -150,7 +152,7 @@
             object-identifiers (bac/remote-objects device-id)
             properties (get-properties device-id object-identifiers)]
         {(keyword (str device-id))
-         {:update (str (time/now))
+         {:update (iso-8601-timestamp)
           :name (get-in properties [:8 (keyword (str device-id)) :Object-name])
           :objects properties
           :scan-duration (- (timestamp) start-time)}}))

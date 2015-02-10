@@ -94,6 +94,6 @@
 
 * License
   
-  Copyright (C) 2014 Frozenlock
+  Copyright (C) 2015 Frozenlock
   
   GNU General Public License version 3.0 (GPLv3)
