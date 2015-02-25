@@ -14,7 +14,7 @@
 
 
   The main web interface is /read-only/.
-  However, it's possible to send commands via the [[Advanced usage][REPL]].
+  However, it's possible to send commands via the [[Advanced usage (REPL)][REPL]].
   
 * Rationale
   The purpose of BACnet is to provide interoperability between
@@ -92,9 +92,6 @@
 * Warnings
   This software isn't polished. You might see errors (in which case
   please send them to us).
-
-  There is also no caching, meaning that every time you browse a
-  device, it will re-fetch the data from it.
 
 * License
   
