@@ -1,4 +1,8 @@
 #+TITLE: Wacnet
+
+* Compiled Version
+  The compiled version can be found [[https://hvac.io/docs/wacnet][here]].
+
 * About
   
   Wacnet is a BACnet webserver and toolkit.
