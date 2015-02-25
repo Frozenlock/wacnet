@@ -1,4 +1,4 @@
-(defproject wacnet "1.1.6"
+(defproject wacnet "1.1.7"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -8,7 +8,7 @@
                  
                  
                  ;; BACnet
-                 [bacure "0.5.2"]
+                 [bacure "0.5.3"]
 
                  ;; Webserver
                  [ring "1.2.1"]
@@ -43,8 +43,9 @@
 
                  [com.taoensso/tower "3.0.2"]]
 
-  :profiles {:uberjar {:aot :all}
-             }
+  :profiles {:uberjar {:aot :all}}
+
+  :manifest {"SplashScreen-Image" "public/img/splash.png"}
 
 
 ;  :uberjar-name "wacnet-webserver.jar"

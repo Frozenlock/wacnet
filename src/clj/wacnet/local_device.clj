@@ -20,3 +20,18 @@
          "http://"(bacure.network/get-any-ip)":47800, "
          "or use the Clojure REPL on port " (:port @wacnet.nrepl/server)".")})
   (timed/maybe-start-logging))
+
+
+(defn initialize-with-exit-on-fail!
+  "Try to initialize the local device. If we can't bind to the BACnet
+  port, show a message to the user and then exit."
+  []
+  (try (initialize)
+       (catch java.net.BindException e
+         (do (javax.swing.JOptionPane/showMessageDialog
+              nil
+              (str "\n*Error*: The BACnet port ("(or (:port (ld/get-configs)) 47808)")"
+                   " is already bound to another software.\n\t Please close the other software and try again.\n")
+              "Error"
+              javax.swing.JOptionPane/ERROR_MESSAGE)
+             (System/exit 0)))))
