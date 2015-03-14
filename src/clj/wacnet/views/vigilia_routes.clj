@@ -325,7 +325,10 @@
     [:div.container
      [:div.row
       [:div.col-sm-6.col-sm-offset-3.text-center
-       [:div.hero-unit [:h1 "Vigilia" [:small " Quick and Easy Data Logging"]]
+       [:div.hero-unit
+        [:h1
+         [:div [:img.shadow {:src "/img/Vigilia-logo-name.svg" :alt "Vigilia" :style "max-height: 3em;"}]]
+         [:small "HVAC Logging and Remote Monitoring"]]
         [:div [:h3 "Ever found yourself wishing for more data while troubleshooting a system?"]
          [:h4 "Never again will you say "
           [:i "\"Oh gee, if only I had created a trend log for this object...\""]]]]]]

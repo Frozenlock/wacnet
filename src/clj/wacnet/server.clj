@@ -10,6 +10,7 @@
 
 (defn headless?
   "True if we are running without any graphical support."
+  []
   (java.awt.GraphicsEnvironment/isHeadless))
 
 
