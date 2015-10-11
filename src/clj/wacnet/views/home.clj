@@ -18,18 +18,12 @@
        (layout
         [:div.container
          [:div.jumbotron [:h1 "Wacnet: a BACnet webserver"]
-          [:h2 "But also a portable BACnet toolkit!"]
+          [:h2 "...and also portable BACnet toolkit!"]
           [:ul
            [:li "Easy to use - Can run on any computer with JAVA from a USB flash drive!"]
-           [:li "Made with bootstrap: tablet and cellphone ready!"]
            [:li (he/link-to "https://github.com/Frozenlock/wacnet" "Free and open source!")]]]
-         [:div.row
-          [:div.col-md-4 "This software is free to use. In exchange, if you see some errors, "
-           "please let us know!"]
-          [:div.col-md-8 (he/link-to "/explorer"
-                                     [:div.btn.btn-primary
-                                      "Understood, show me the network!"])]]
-         [:span.label.label-warning (get-wacnet-version)]
+         [:p "Current version : "
+          [:span.label.label-warning (get-wacnet-version)]]
          [:div.row
           [:p [:h4 "Messages:"]
            [:script {:src "https://gist.github.com/Frozenlock/8406e487ecc70ee204d0.js"}]]]])))

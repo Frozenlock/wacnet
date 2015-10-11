@@ -1,14 +1,14 @@
-(defproject wacnet "1.1.8-ALPHA"
+(defproject wacnet "1.1.8"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
             :url "http://www.gnu.org/licenses/gpl-3.0.html"}
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "0.0-2173" :scope "provided"]
                  
                  
                  ;; BACnet
-                 [bacure "0.5.3"]
+                 [bacure "0.5.5"]
 
                  ;; Webserver
                  [ring "1.2.1"]
@@ -21,23 +21,23 @@
                  [org.clojure/data.csv "0.1.2"]
                  
                  ;; REPL
-                 [org.clojure/tools.trace "0.7.8"] ;; necessary for cider (bug?)
-                 [org.clojure/tools.nrepl "0.2.5"]
-                 [cider/cider-nrepl "0.8.2"]
+                 ^:replace [org.clojure/tools.nrepl "0.2.10"]
+                 [cider/cider-nrepl "0.9.1"]
 
                  ;; Misc.
                  [trptcolin/versioneer "0.1.1"]
                  [com.draines/postal "1.11.0"] ;; for email support
 
-                 ;; communication with remote servers
-                 [clj-http "0.9.2"]
-                 [org.clojars.frozenlock/gzip64 "1.0.0"]
+                 ;; logging 
+                 [io.hvac.vigilia/vigilia-logger "1.0.4"]
 
                  ;; recurring jobs
+                 
+
                  [overtone/at-at "1.2.0"]
                  
                  ;; ;; UI 
-                 [hvacio/hvacio-ui "0.1.12" :exclusions [org.clojure/clojure]]
+                 [hvacio/hvacio-ui "0.1.13"]
                  [org.clojars.frozenlock/reagent-modals "0.2.0"]
                  [reagent "0.4.2"]
 

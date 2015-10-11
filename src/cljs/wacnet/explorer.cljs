@@ -5,11 +5,14 @@
            [reagent-modals.modals :as modal]
            [hvacio-ui.templates.nprogress :as nprogress]
            [wacnet.translation2 :as t2]
+           [clojure.string :as s]
            [ajax.core :refer [GET POST]]))
 
 (def dummy-project-id
   "A 'fake' project-id for when a project-id isn't provided."
   "fake-project-id")
+
+(def vigilia-server-url (atom nil))
 
 (defn vigilia-non-active [obj]
   [:div {:style { :width "100%"}}
@@ -41,8 +44,8 @@
       [:h2.modal-title "Vigilia" " " [:i.fa.fa-bar-chart-o]]]
      [:div.modal-body
       [:iframe {:height "500px" :width "100%" :style {:border "none"}
-                :src (str "https://hvac.io/vigilia/embed/g/" 
-                          project-id "?tab=%3Atimeseries&bc%5B%5D=%3Aa"
+                :src (str @vigilia-server-url "/embed/g/"
+                          project-id "?bc%5B%5D=%3Aa"
                           device-id ".."
                           object-id)}]]]))
 
@@ -115,9 +118,33 @@
 
 (defn device-table-btns [obj]
   [:div {:style {:white-space "nowrap"}}
-   (chart-btn obj)
+   (chart-btn obj) ;; removed iframe charts
    (properties-btn obj)
    (trend-log-btn obj)])
 
-(defn explorer [project-id]
-  [ctrls/controllers-view (or project-id dummy-project-id) {:device-table-btns device-table-btns}])
+(defn explorer [project-id vigilia-url]
+  (let [wiki-link (fn [& ns]
+                    (let [ns (->> (remove nil? ns)
+                                  (map s/lower-case)
+                                  (map #(s/replace % #" " "_"))
+                                  (map #(s/replace % #":" "_"))
+                                  (map #(s/replace % #"-" "_")))]
+                      (str "https://wiki.hvac.io/doku.php?id=" (s/join ":" ns))))]
+    (when vigilia-url
+      (reset! vigilia-server-url vigilia-url))
+    [ctrls/controllers-view (or project-id dummy-project-id)
+     {:device-table-btns device-table-btns
+      
+      :header-fn (fn [data]
+                   (let [{:keys [vendor-name model-name]} data]
+                     [:div.jumbotron {:style {:padding "20px"}}
+                      [:h3 {:style {:margin-top 0}}
+                       (:name data) " "[:small (str " (" (:device-id data) ")")]
+                       ]
+                      [:div "Vendor : "
+                       [:a {:href (wiki-link "suppliers" vendor-name) :target "_blank"} vendor-name]
+                       " "[:i.fa.fa-external-link]]
+                      [:div "Model : " [:a {:href (wiki-link "suppliers" vendor-name model-name)
+                                            :target "_blank"} model-name]
+                       " "[:i.fa.fa-external-link]]]))
+      }]))

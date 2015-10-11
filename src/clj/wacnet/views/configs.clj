@@ -2,10 +2,11 @@
   (:require [compojure.core :refer [defroutes GET POST]]
             [clojure.walk :as walk]
             [wacnet.views.common :refer [layout]]
-            [wacnet.vigilia.logger.timed :as timed]
+            [vigilia-logger.timed :as timed]
             [bacure.core :as bac]
             [bacure.local-device :as ld]
             [bacure.local-save :as save]
+            [bacure.read-properties-cached :as rpc]
             [bacure.network :as net]
             [hiccup.page :as hp]
             [hiccup.element :as he]
@@ -34,6 +35,7 @@
   (timed/stop-logging)
   (ld/reset-local-device (read-config config))
   (ld/save-local-device-backup)
+  (rpc/set-cache-ttl! (rpc/get-cache-ttl))
   (bac/boot-up))
 
 (defn reset-default
@@ -44,6 +46,7 @@
   (timed/stop-logging)
   (save/delete-configs)
   (ld/clear-all!)
+  (rpc/set-cache-ttl! (rpc/get-cache-ttl))
   (bac/boot-up))
 
 (defn config-to-bootstrap [config]
@@ -53,14 +56,18 @@
        [:label.control-label.col-md-4 n]
        [:div.col-md-8
         (let [v (val m)]
-          [:input.form-control {:type :text :name n :value v}])]])))
+          [:input.form-control {:type (if (number? v) :number :text)
+                                :name n :value v
+                                :required true}])]])))
 
 (defn make-configs-forms []
   (-> (merge {:device-id 1 :port 47808 
               :broadcast-address (net/get-broadcast-address (net/get-any-ip))
-              :local-address "0.0.0.0"}
+              :local-address "0.0.0.0"
+              :cache-ttl (rpc/get-cache-ttl) }
              (ld/local-device-backup))
-      (select-keys [:device-id :port :broadcast-address :local-address :apdu-timeout :apdu-segment-timeout])
+      (select-keys [:device-id :port :broadcast-address :local-address
+                    :apdu-timeout :apdu-segment-timeout :cache-ttl])
       config-to-bootstrap))
 
 (defn local-interfaces []

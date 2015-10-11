@@ -81,6 +81,7 @@
              [:style style]
              [:title "Wacnet - BACnet network explorer"]
              (hp/include-css "/css/bootstrap.min.css")
+             (hp/include-css "/css/bootstrap-theme.min.css")
              (hp/include-css "/css/font-awesome.min.css")
              (hp/include-js "/js/jquery-1.11.1.min.js")
              (hp/include-js "/js/bootstrap.min.js")

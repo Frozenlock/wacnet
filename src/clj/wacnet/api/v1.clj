@@ -41,7 +41,8 @@
   "Make a map of useful device info: 
    {:objects ... :update ... :scan-duration ... :name ...}" 
   [projet-id device-id]
-  (-> (rpc/read-properties-cached device-id [[[:device device-id] :object-name :object-list]])
+  (-> (rpc/read-properties-cached device-id [[[:device device-id] :object-name :object-list
+                                              :vendor-name :model-name]])
       (first)
       (clojure.set/rename-keys {:object-name :name :object-list :objects})
       (dissoc :object-identifier)

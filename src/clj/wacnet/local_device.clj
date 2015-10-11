@@ -1,7 +1,8 @@
 (ns wacnet.local-device
   (:require [bacure.core]
             [bacure.local-device :as ld]
-            [wacnet.vigilia.logger.timed :as timed]
+            [bacure.read-properties-cached :as rpc]
+            [vigilia-logger.timed :as timed]
             [trptcolin.versioneer.core :as version]
             [wacnet.nrepl]))
 
@@ -15,11 +16,17 @@
     :object-name "Wacnet webserver"
     :application-software-version (version/get-version "wacnet" "wacnet")
     :description 
-    (str "Wacnet: a BACnet webserver, but also a portable BACnet toolkit! \n"
+    (str "Wacnet: BACnet webserver and toolkit. \n"
          "Access the web interface at \n"
          "http://"(bacure.network/get-any-ip)":47800, "
-         "or use the Clojure REPL on port " (:port @wacnet.nrepl/server)".")})
+         "or use the Clojure nREPL on port " (:port @wacnet.nrepl/server)".")})
   (timed/maybe-start-logging))
+
+
+(defn headless?
+  "True if we are running without any graphical support."
+  []
+  (java.awt.GraphicsEnvironment/isHeadless))
 
 
 (defn initialize-with-exit-on-fail!
@@ -27,11 +34,16 @@
   port, show a message to the user and then exit."
   []
   (try (initialize)
+       (rpc/set-cache-ttl! (rpc/get-cache-ttl))
        (catch java.net.BindException e
-         (do (javax.swing.JOptionPane/showMessageDialog
-              nil
-              (str "\n*Error*: The BACnet port ("(or (:port (ld/get-configs)) 47808)")"
-                   " is already bound to another software.\n\t Please close the other software and try again.\n")
-              "Error"
-              javax.swing.JOptionPane/ERROR_MESSAGE)
-             (System/exit 0)))))
+         (let [err-msg (str "\n*Error*: The BACnet port ("(or (:port (ld/get-configs)) 47808)")"
+                            " is already bound to another software.\n\t "
+                            "Please close the other software and try again.\n")]
+           (do (if (headless?)
+                 (println err-msg) ;; print to console if headless
+                 (javax.swing.JOptionPane/showMessageDialog
+                  nil
+                  err-msg
+                  "Error"
+                  javax.swing.JOptionPane/ERROR_MESSAGE))
+               (System/exit 0))))))

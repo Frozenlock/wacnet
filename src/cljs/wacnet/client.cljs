@@ -10,12 +10,12 @@
 (defn by-id [id]
   (dom/getElement id))
 
-(defn render [project-id]
+(defn render [project-id vigilia-url]
   (r/render-component
    [:div.container-fluid
     [modal/modal-window]
-    [exp/explorer project-id]]
+    [exp/explorer project-id vigilia-url]]
    (by-id "explorer-app")))
 
-(defn ^:export run [project-id]
-  (aset js/window "onload" #(render project-id)))
+(defn ^:export run [project-id vigilia-url]
+  (aset js/window "onload" #(render project-id vigilia-url)))

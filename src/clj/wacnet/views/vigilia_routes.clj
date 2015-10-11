@@ -1,71 +1,42 @@
 (ns wacnet.views.vigilia-routes
   (:require [compojure.core :refer [defroutes GET POST context]]
             [wacnet.views.common :refer [layout with-sidebar]]
-            [wacnet.vigilia.logger.timed :as timed]
-            [wacnet.vigilia.logger.scan :as scan]
+            [vigilia-logger.timed :as timed]
+            [vigilia-logger.scan :as scan]
             [hiccup.page :as hp]
             [hiccup.element :as he]
             [hiccup.form :as hf]
             [ring.util.response :as resp]
             [clojure.string :as string]
             [wacnet.util.helperfn :as helpfn]
-            [clj-http.client :as client]
             [noir.session :as session]))
 
 ;;; First we should validate if the user can see the remote servers
 ;;; (is he even on the Internet?)
 
 
-(defn connection-status []
-  [:div.well
-    [:strong "Connection status: "] 
-    (if (scan/can-connect?) 
-      [:span.text-success [:strong "Good"]]
-      [:span [:strong.text-danger {:style "font-size: 1.5em"} "Can't connect!"]
-       [:div "We can't connect to the remote servers."]
-       [:div "Does this machine have an Internet access?"]
-       [:div "Refresh this page to retest the connection."]])])
+(defn connection-status [logger-config]
+  (let [api-root (scan/get-api-root)]
+    [:div.well
+     [:h3 "Step 1: Connect to a Vigilia server"]
+     [:strong "Vigilia server connection : "] 
+     (if (scan/can-connect? api-root)
+       [:span.text-success [:strong "Success"]
+        [:div "Connected to "(he/link-to api-root api-root)]]
+       [:span [:strong.text-danger {:style "font-size: 1.5em"} "Can't connect!"]
+        [:div "We can't connect to the Vigilia server at "
+         [:strong (he/link-to api-root api-root)]]
+        [:div "Does this machine have a network access?"]])
+       [:hr]
+       [:div.form-group
+        [:label "Vigilia API URL (leave empty for default)"]
+        (hf/text-field {:class "form-control"}
+                       :api-root (:api-root logger-config ))]
+       (hf/submit-button {:class "btn btn-primary"}
+                         "Update")]))
 
 
 
-(defn credentials-validation
-  "Test the credentials to see if they correctly give access to the
-  Vigilia account." []
-  [:div.well
-   [:strong "Credentials: "
-   (if (scan/credentials-valid?)
-     [:span.text-success "Valid; access to Vigilia account"]
-     [:div.bg-danger
-      [:span.text-danger 
-       [:p "Error! We could not connect to your account. "]
-       [:p "Check your connection status first."]
-       [:p "If everything is fine, check your "
-        "credentials in the configurations below."]]])]])
-
-
-(defn connection-and-access []
-  (list
-   (connection-status)
-   (credentials-validation)))
-
-
-;;;;;;;;;;;;;;;;;;;;;;
-
-
-(defn link-to-project []
-  (when-let [configs (scan/get-configs-only)]
-    [:div.text-center
-     [:span {:style "padding: 5px; border: 1px solid #cecece; border-radius:5px;"}
-      "See the logged data at your "
-      [:a {:href (str "https://hvac.io/vigilia/v/" (:project-id configs))
-           :target "_blank"}
-       "project page "[:i.fa.fa-external-link]]]]))
-
-
-
-;;; ===========================================
-
-;;; And now some of the configs
 
 (defn credentials-form [logger-config]
   [:div.row
@@ -76,22 +47,74 @@
                     :project-id (:project-id logger-config))]]
    [:div.col-sm-6
     [:div.form-group
-     [:label "Logging Password"]
+     [:label "Logger key"]
      (hf/text-field {:class "form-control"}
-                    :logger-password (:logger-password logger-config))
+                    :logger-key (:logger-key logger-config))
      [:p.text-info 
       "You can configure it in your Vigilia configuration page."]]]])
 
 
+(defn credentials-validation
+  "Test the credentials to see if they correctly give access to the
+  Vigilia account." [logger-config]
+  [:div.well
+   [:h3 "Step 2: Project credentials"]
+   [:strong "Credentials : "
+   (if (scan/credentials-valid?)
+     [:span.text-success "Valid; access to Vigilia account"]
+     [:strong.text-danger {:style "font-size: 1.5em"} "No access"])]
+   (credentials-form logger-config)
+   (hf/submit-button {:class "btn btn-primary"}
+                     "Update")])
+
+
+(defn connection-and-access []
+  (let [configs (scan/get-logger-configs)]
+    [:div 
+     ;[:p [:span.label.label-info scan/logger-version]]
+     (connection-status configs)
+     (credentials-validation configs)]))
+
+
+;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defn link-to-project []
+  (when-let [configs (scan/get-logger-configs)]
+    [:div.text-center
+     [:span {:style "padding: 5px; border: 1px solid #cecece; border-radius:5px;"}
+      "See the logged data at your "
+      [:a {:href (str "https://vigilia.hvac.io/v/" (:project-id configs))
+           :target "_blank"}
+       "project page "[:i.fa.fa-external-link]]]]))
+
+
+
+;;; ===========================================
+
+;;; And now some of the configs
+
+(defn logger-id-form [logger-config]
+  (let [l-id (or (:logger-id logger-config)
+                 (scan/new-logger-id!))]
+    [:div.form-group
+     [:label "Logger ID (ex: logger-first-floor)"]
+     (hf/text-field {:class "form-control"}
+                    :logger-id l-id)
+     [:p.text-info 
+      "When recording a network using multiple loggers, the logger ID "
+      "can help you with troubleshooting."]]))
+
 (defn interval-form [logger-config]  
   [:div.form-group
    [:label "Log interval (minutes)"]
-   (hf/text-field {:placeholder 10 :class "form-control"}
-                  :time-interval (:time-interval logger-config))
+   (hf/text-field {:class "form-control"}
+                  :time-interval (or (:time-interval logger-config) 10))
    [:p.text-info (str "This is the time interval at which the BACnet network is scanned. "
                       "Smaller interval means more precision, but also more network utilization. "
                       "10 minutes is a great interval to see most HVAC behaviors. "
-                      "(Minimum interval is 5 minutes.)")]])
+                      "(Minimum interval is 5 minutes.) Note that this is the minimum interval. "
+                      "It might take longer if you have a large or slow network.")]])
 
 (defn range-form [logger-config]
   [:div.form-group
@@ -157,11 +180,12 @@
   [:div.panel.panel-default
    [:div.panel-heading.panel-toggle {:data-toggle "collapse" :data-target "#advanded-configs"
                                      :style "cursor: pointer;"}
-    [:h4.panel-title.text-center "Advanced logging configurations " [:i.fa.fa-chevron-down]]]
+    [:h4.panel-title.text-center "Advanced configs " [:i.fa.fa-chevron-down]]]
    [:div.panel-collapse.collapse {:id "advanded-configs"}
     [:div.panel-body
      [:div.row
       [:div.col-sm-6
+       (logger-id-form configs)
        (interval-form configs)]
       [:div.col-sm-6
        (range-form configs)]]
@@ -178,12 +202,12 @@
 
 (defn prepare-configs
   "Prepare a raw config map (from a webform) to be stored into the
-  database."[config-map]
-  (let [{:keys [logger-password min-range max-range id-to-remove
+  config file."[config-map]
+  (let [{:keys [logger-key min-range max-range id-to-remove
                 id-to-keep time-interval criteria-coll port device-id
-                project-id object-delay]}
+                project-id object-delay api-root logger-id]}
         config-map]
-    {:logger-password (if (empty? logger-password) nil (string/trim logger-password))
+    {:logger-key (if (empty? logger-key) nil (string/trim logger-key))
      :min-range (helpfn/parse-or-nil min-range)
      :max-range (helpfn/parse-or-nil max-range)
      :id-to-remove (seq (map helpfn/parse-or-nil (re-seq #"\d+" id-to-remove)))
@@ -193,69 +217,94 @@
      :criteria-coll (seq (helpfn/safe-read (str "["criteria-coll"]")))
      :project-id (when-not (empty? project-id) (string/trim project-id))
      :object-delay (when-let [o-d (helpfn/parse-or-nil object-delay)]
-                     (when (> o-d 0) o-d))}))
+                     (when (> o-d 0) o-d))
+     :api-root (let [r (some-> api-root string/trim)]
+                 (when-not (empty? r) r))
+     :logger-id (let [r (some-> logger-id string/trim)]
+                  (when-not (empty? r) r))}))
 
-
+(defn logging-status []
+  [:div 
+   [:h3 "Status : "
+   [:span.small
+    (let [status @timed/logging-state
+          class (get {"Mapping network" "label-warning"
+                      "Logging" "label-success"
+                      "Stopped" "label-danger"} status "")]
+      [:span {:class (str "label " class) :style "font-size:1.3em;"} status])]
+    " "
+    (he/link-to "/vigilia/configs"
+                [:div.btn.btn-default.btn-sm 
+                 [:span [:i.fa.fa-refresh] " Refresh"]])]])
                               
 
 (defn ctrl-btn [param content]
   (he/link-to (hiccup.util/url "/vigilia" {param true}) content))
 
 (defn vigilia-controls []
-  (when (scan/get-configs-only)
+  (let [status @timed/logging-state
+        btn-disabled? (not (:project-id (scan/get-logger-configs)))]
     [:div.row
-     [:h3 "Vigilia Logging Controls"]
      [:div.col-md-4
+      [:h4 "Logging Controls"]
       [:div.btn-toolbar
        (he/link-to "/vigilia/configs/stop-vigilia"
-                   [:div.btn.btn-danger {:style "margin-left: 1em;"} "Stop"])
+                   [:div.btn.btn-danger {:style "margin-left: 1em;"
+                                         :disabled (= "Stopped" status)}
+                    "Stop"])
        (he/link-to "/vigilia/configs/start-vigilia"
-                   [:div.btn.btn-success {:style "margin-left: 1em;"} "Start"])]]
+                   [:div.btn.btn-success {:style "margin-left: 1em;"
+                                          :disabled 
+                                          (if (= "Stopped" status)
+                                            btn-disabled?
+                                            true)}
+                    "Start"])]]
      [:div.col-sm-6
       [:p "Wacnet will start the Vigilia logging automatically on startup if a "
        "Vigilia configuration file is found."]]]))
 
 (defn vigilia-status []
-  (when (scan/get-configs-only)
+  (when (scan/get-logger-configs)
     [:div
-      [:div.row
-       [:h3 "Vigilia Logging Status"]
-       [:div.col-sm-2
-        (let [status @timed/logging-state
-              class (get {"Mapping network" "label-warning"
-                          "Logging" "label-success"
-                          "Stopped" "label-danger"} status "")]
-          [:span {:class (str "label " class) :style "font-size:1.3em;"} status])]
-       [:div.col-sm-2
-        (he/link-to "/vigilia/configs"
-                    [:div.btn.btn-default "Refresh"])]
-       [:div.col-sm-6
-        [:p "Initial mapping of the network can take longer (minutes) if you have a large network. "
-         "Also note that devices can be discovered after the initial mapping and will be scanned as required." ]]]
-      [:div.row
-       [:div.col-sm-2
-        [:p "Local logs: "]]
-       [:div.col-sm-2
-        (str (count (scan/find-unsent-logs)))]
-       [:div.col-sm-8
-        [:p "Local logs are logs that weren't sent back (yet) to the remote servers. "
-         "Perhaps a connection problem? If they start to accumulate, "
-         "you should investigate your Internet access."]]]
-      [:div.row
-       [:div.col-sm-2
-        [:p "Last scan duration: "]]
-       [:div.col-sm-2 (format "%.3f" (double (/ (or @scan/last-scan-duration 0) 1000 60))) " min"]
-       [:div.col-sm-8
-        [:p "Please don't set a scanning interval smaller than this value. "
-         "The time taken to do a scan is determined by your network. MS/TP devices WILL "
-         "take longer than IP or Ethernet devices."]]]
-      (when (not= @timed/logging-state "Stopped")
+     (logging-status)
+     [:div.panel.panel-default
+      [:div.panel-heading.panel-toggle {:data-toggle "collapse" :data-target "#logging-status"
+                                        :style "cursor: pointer;"}
+       [:h4.panel-title.text-center "Details " [:i.fa.fa-chevron-down]]]
+      [:div.panel-collapse.collapse {:id "logging-status"}
+       [:div.panel-body
         [:div.row
-         [:div.col-sm-6.col-sm-offset-3.well
-          [:h4 "Device IDs to scan" [:small " Can be influenced by the advanced configurations"]]
-          (if (= @timed/logging-state "Mapping network")
-            [:p "Still mapping the network..."]
-            [:p (string/join ", "(sort (scan/find-id-to-scan)))"."])]])]))
+         [:div.col-sm-6.col-sm-offset-3.text-center
+          [:p.text-info "Initial mapping of the network can take some time (minutes)"
+           " if you have a large network. "
+           "Also note that devices can be discovered after the initial mapping and will be scanned as required." ]]]
+        [:hr]
+        [:div.row
+         [:div.col-sm-2
+          [:p "Local logs: "]]
+         [:div.col-sm-2
+          (str (count (scan/find-unsent-logs)))]
+         [:div.col-sm-8
+          [:p "Local logs are logs that weren't sent back (yet) to the remote servers. "
+           "Perhaps a connection problem? If they start to accumulate, "
+           "you should investigate your network access."]]]
+        [:div.row
+         [:div.col-sm-2
+          [:p "Last scan duration: "]]
+         [:div.col-sm-2 (format "%.3f" (double (/ (or @scan/last-scan-duration 0) 1000 60))) " min"]
+         [:div.col-sm-8
+          [:p "Don't set a scanning interval smaller than this value. "
+           "The time taken to do a scan is determined by your network. MS/TP devices WILL "
+           "take longer than IP or Ethernet devices."]]]
+        (when (not= @timed/logging-state "Stopped")
+          [:div.row
+           [:div.col-sm-6.col-sm-offset-3.well
+            [:h4 "Device IDs to scan" [:small " Can be influenced by the advanced configurations"]]
+            (if (= @timed/logging-state "Mapping network")
+              [:p "Still mapping the network..."]
+              [:p (string/join ", "(sort (scan/find-id-to-scan)))"."])]])
+        [:hr]
+        (vigilia-controls)]]]]))
 
 
 (defn config-to-bootstrap-form [config]
@@ -284,23 +333,13 @@
 
 
 (defn configurations []
-  (let [configs (scan/get-configs-only)]
+  (let [configs (scan/get-logger-configs)]
     (list
-     [:div.row
-      [:div.col-sm-12
-       [:h3 "Configurations"]
-       (hf/form-to [:post "/vigilia/configs"]
-                   (hf/with-group :config
-                     [:div
-                      [:div.panel.panel-default
-                       [:div.panel-heading [:h3.panel-title.text-center "Credentials"]]
-                       [:div.panel-body (credentials-form configs)]]
-                      (advanced-configs-panel configs)])
-                     
-
-                     [:div.text-center {:style "margin-top: 1em;"}
-                      (hf/submit-button {:class "btn btn-primary"}
-                                        "Update the configurations")])]]
+     [:div.well
+      [:h3 "Step 3: Advanced configurations (optional)"]
+      (advanced-configs-panel configs)
+      (hf/submit-button {:class "btn btn-primary"}
+                        "Update")]
      (when configs
        [:div.row
         [:div.col-sm-12
@@ -331,16 +370,21 @@
          [:small "HVAC Logging and Remote Monitoring"]]
         [:div [:h3 "Ever found yourself wishing for more data while troubleshooting a system?"]
          [:h4 "Never again will you say "
-          [:i "\"Oh gee, if only I had created a trend log for this object...\""]]]]]]
-     [:hr]
-     (connection-and-access)
-     (link-to-project)
-     [:hr]
-     (configurations)
+          [:i "\"Oh gee, if only I had created a trend log for this object...\""]]]
+        [:div (he/link-to "https://hvac.io/services/vigilia"
+                          "Learn more")]]]]
      [:hr]
      (vigilia-status)
+
      [:hr]
-     (vigilia-controls)
+     (hf/form-to [:post "/vigilia/configs"]
+                 (hf/with-group :config
+                                        ;(link-to-project)
+                   (connection-and-access)
+                   
+                   [:hr]
+                   (configurations)
+                   ))
      [:div {:style "min-height: 10em;"}]]]))
 
 (defroutes vigilia-routes
@@ -354,13 +398,13 @@
       (timed/stop-logging)
       (resp/redirect "/vigilia/configs"))
     (GET "/configs/delete-configs" []
-      (scan/delete-configs)
+      (scan/delete-logger-configs!)
       (resp/redirect "/vigilia/configs"))
     (POST "/configs" [config :as args]
       (when config
         (session/put! :msg (str "Configurations updated. "
-                                (when (timed/is-logging?) "Vigilia logging stopped.")))
+                                (when (timed/is-logging?) "We stopped the logging as a precaution.")))
         (timed/stop-logging)
         (-> (prepare-configs config)
-            (scan/save-configs)))
+            (scan/save-logger-configs!)))
       (resp/redirect-after-post "/vigilia/configs"))))

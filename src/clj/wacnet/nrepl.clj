@@ -31,7 +31,7 @@
   "Start (or restart) a REPL on a given port. Default to 47999 if none provided."
   [& port]
   (stop-nrepl)
-  (reset! server (start-server :port (or port 47999) :handler cider-nrepl-handler))
+  (reset! server (start-server :port (or (first port) 47999) :handler cider-nrepl-handler))
   (server-eval repl-init))
 
 (defn stop-nrepl

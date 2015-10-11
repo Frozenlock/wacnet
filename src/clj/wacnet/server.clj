@@ -26,8 +26,9 @@
 
 (defn -main [& m]
   (close-splash-screen!) ;; first thing to do once clojure is loaded.
+  (wnrepl/start-nrepl) ;; start the nrepl first so we can get its port
+                       ;; for the local-device description
   (ld/initialize-with-exit-on-fail!) ;; we possibly exit at this point
-  (wnrepl/start-nrepl)
   (start-server)
   (println (str "\n\n\n"
                 "---> \n"

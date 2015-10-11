@@ -42,23 +42,15 @@
              "cider"]
             " (or any other nrepl interface) "
             "and connect to port 47999!"]]
-
-          [:div.span6
-           [:h2 "Power user!"]
-           [:p
-            "We decided to give you the same power that we have: "
-            "You have access to the same functions than those on "
-            "which this webserver is built!"]
-
-           [:p "Have some \"special\" needs? Write your own custom function and take "
-            "control of the BACnet network!"]
-
-           [:p "Be sure to check the "
-            (he/link-to "http://frozenlock.github.com/bacure/bacure.core.html" "documentation")"!"]]]
+]
 
          [:div.row-fluid
           [:div.span12
            [:h3 "Examples"]
+           [:p
+            "Check the "[:a {:href "https://wiki.hvac.io/doku.php?id=suppliers:hvac.io:wacnet#scripts"}
+                         "Wiki"]
+            " to see scripts made by users."]
            [:p
             [:h4 "List of remote devices"]
             "This one is simple enough: "
