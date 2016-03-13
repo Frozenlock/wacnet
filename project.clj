@@ -1,10 +1,11 @@
-(defproject wacnet "1.1.8"
+(defproject wacnet "1.1.9"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
             :url "http://www.gnu.org/licenses/gpl-3.0.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "0.0-2173" :scope "provided"]
+[org.clojure/clojurescript "1.7.228" :scope "provided"]
+                 ;[org.clojure/clojurescript "0.0-2173" :scope "provided"]
                  
                  
                  ;; BACnet
@@ -51,7 +52,7 @@
 ;  :uberjar-name "wacnet-webserver.jar"
   :min-lein-version "2.0.0"
 
-  :plugins [[lein-cljsbuild "1.0.2"]
+  :plugins [[lein-cljsbuild "1.1.2"]
             [lein-ring "0.8.10"]]
   :hooks [;leiningen.cljsbuild
           ]
