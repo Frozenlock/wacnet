@@ -7,7 +7,7 @@
   
   Wacnet is a BACnet webserver and toolkit.
 
-  [[http://youtu.be/ehvGvz0xIgE?list=PLFjgTgYSkyZBLhakIQu3GwKpIuxU5Ho1N][./img/youtube.png]]
+  [[http://youtu.be/ehvGvz0xIgE?list=PLFjgTgYSkyZBLhakIQu3GwKpIuxU5Ho1N][./resources/public/img/youtube.png]]
 
 
   The main web interface is /read-only/.
