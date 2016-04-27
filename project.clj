@@ -1,22 +1,10 @@
-<<<<<<< HEAD
 (defproject wacnet "2.0.0-beta"
-=======
-(defproject wacnet "1.1.9"
->>>>>>> a158b2ec3d69c935755f7647a2a18a78a29ea22e
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
             :url "http://www.gnu.org/licenses/gpl-3.0.html"}
-<<<<<<< HEAD
   :dependencies [[org.clojure/clojure "1.8.0"]
 
-=======
-  :dependencies [[org.clojure/clojure "1.7.0"]
-[org.clojure/clojurescript "1.7.228" :scope "provided"]
-                 ;[org.clojure/clojurescript "0.0-2173" :scope "provided"]
-                 
-                 
->>>>>>> a158b2ec3d69c935755f7647a2a18a78a29ea22e
                  ;; BACnet
                  [bacure "1.0.0"]
 
@@ -54,45 +42,6 @@
             [lein-externs "0.1.5"]] 
 
   :manifest {"SplashScreen-Image" "public/img/splash.png"}
-
-
-<<<<<<< HEAD
-=======
-;  :uberjar-name "wacnet-webserver.jar"
-  :min-lein-version "2.0.0"
-
-  :plugins [[lein-cljsbuild "1.1.2"]
-            [lein-ring "0.8.10"]]
-  :hooks [;leiningen.cljsbuild
-          ]
-  :source-paths ["src/clj" "src-cross/clj"]
-  :cljsbuild {
-              :builds
-              {:main {
-                      :source-paths ["src/cljs"]
-                      :compiler {:output-to "resources/public/js/cljs-min.js"
-                                 :optimizations :advanced
-                                 :preamble ["reagent/react.min.js"]
-                                 :externs ["externs/jquery-1.9.js"
-                                           "hvacio-ui-resources/public/js/nprogress.js"]
-                                 :closure-warnings {:externs-validation :off
-                                                    :non-standard-jsdoc :off}}}
-               :dev {
-                     :source-paths ["src/cljs"]
-                     :compiler {:output-to "resources/public/js/out-dev/cljs.js"
-                                
-                                :output-dir "resources/public/js/out-dev"
-                                ;:source-map-path "js/out-dev"
-                                :source-map "resources/public/js/out-dev/cljs.js.map"
-
-
-                                :preamble ["reagent/react.js"]
-                                :optimizations :simple
-                                :pretty-print true}}}}
-
-  :ring {:handler wacnet.handler/handler :port 3000}
-  :main wacnet.server)
->>>>>>> a158b2ec3d69c935755f7647a2a18a78a29ea22e
 
   :main wacnet.server
 
