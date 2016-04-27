@@ -6,9 +6,6 @@
 * About
   
   Wacnet is a BACnet webserver and toolkit.
-  
-  #+ATTR_HTML: style="width: 30em;"
-  [[./img/wacnet-print-screen.png]]
 
   [[http://youtu.be/ehvGvz0xIgE?list=PLFjgTgYSkyZBLhakIQu3GwKpIuxU5Ho1N][./img/youtube.png]]
 
