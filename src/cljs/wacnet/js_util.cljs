@@ -1,5 +1,17 @@
 (ns wacnet.js-util
-  (:require [goog.Timer :as timer]))
+  (:require [goog.Timer :as timer]            
+            [clojure.string :as s]))
+
+
+
+(defn evt-add-class [event class]
+  (.add (.-classList (.-target event)) class))
+
+(defn evt-remove-class [event class]
+  (.remove (.-classList (.-target event)) class))
+
+(defn evt-set-attr [event attr attr-value]
+  (.setAttribute (.-target event) attr attr-value))
 
 
 (defn debounce-factory
@@ -11,8 +23,6 @@
       (when @f
         (timer/clear @f))
       (reset! f (timer/callOnce func ttime)))))
-
-
 
 
 (defn- where*
@@ -45,9 +55,11 @@
   (where* criteria false))
 
 (defn make-fuzzy-regex [s]
-  (->> (map #(str ".*" %) s)
-      (apply str)
-      (#(str "(?i)" % ".*"))))
+  (->> (for [splitted (s/split s #"\.")]
+         (->> (map #(str ".*" %) splitted)
+              (apply str)))
+       (s/join "\\.")
+       (#(str "(?i)" % ".*"))))
 
 
 (defn is-embed?

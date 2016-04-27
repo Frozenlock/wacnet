@@ -1,25 +1,25 @@
 (ns wacnet.local-device
   (:require [bacure.core]
             [bacure.local-device :as ld]
-            [bacure.read-properties-cached :as rpc]
+            ;[bacure.read-properties-cached :as rpc]
             [vigilia-logger.timed :as timed]
-            [trptcolin.versioneer.core :as version]
-            [wacnet.nrepl]))
+            [trptcolin.versioneer.core :as version]            
+            ))
 
-(defn initialize
+(defn initialize!
   "Initialize the local BACnet device." []
-  ;(when-not (logger/maybe-start-logging) ;; start logging
-  (bacure.core/boot-up
+  (bacure.core/boot-up!
    {:vendor-name "HVAC.IO"
     :vendor-identifier 697
     :model-name "Wacnet"
     :object-name "Wacnet webserver"
     :application-software-version (version/get-version "wacnet" "wacnet")
     :description 
-    (str "Wacnet: BACnet webserver and toolkit. \n"
-         "Access the web interface at \n"
+    (str "Wacnet: BACnet webserver and toolkit. "
+         "Access the web interface at "
          "http://"(bacure.network/get-any-ip)":47800, "
-         "or use the Clojure nREPL on port " (:port @wacnet.nrepl/server)".")})
+         "or use the Clojure nREPL on port 47999" 
+         ".")})
   (timed/maybe-start-logging))
 
 
@@ -33,10 +33,10 @@
   "Try to initialize the local device. If we can't bind to the BACnet
   port, show a message to the user and then exit."
   []
-  (try (initialize)
-       (rpc/set-cache-ttl! (rpc/get-cache-ttl))
+  (try (initialize!)
+       ;(rpc/set-cache-ttl! (rpc/get-cache-ttl))
        (catch java.net.BindException e
-         (let [err-msg (str "\n*Error*: The BACnet port ("(or (:port (ld/get-configs)) 47808)")"
+         (let [err-msg (str "\n*Error*: The BACnet port ("(or (:port (:init-configs (ld/get-local-device nil))) 47808)")"
                             " is already bound to another software.\n\t "
                             "Please close the other software and try again.\n")]
            (do (if (headless?)

@@ -1,10 +1,9 @@
 (ns wacnet.server
-  (:require [ring.adapter.jetty :refer [run-jetty]]
-            [wacnet.handler :as h]
-            [wacnet.local-device :as ld]
-            [wacnet.nrepl :as wnrepl]
+  (:require [wacnet.handler :as h]
             [wacnet.systray :as st]
-            [clojure.java.browse])
+            [wacnet.local-device :as ld]
+            [wacnet.nrepl :as nrepl]
+            [aleph.http :refer [start-server]])
   (:gen-class :main true))
 
 
@@ -14,8 +13,8 @@
   (java.awt.GraphicsEnvironment/isHeadless))
 
 
-(defn start-server []
-  (run-jetty #'h/handler {:port 47800 :join? false}))
+(defn start-webserver []
+  (start-server h/handler {:port 47800}))
 
 (defn close-splash-screen!
   "Close the splash screen, if present."[]
@@ -26,10 +25,11 @@
 
 (defn -main [& m]
   (close-splash-screen!) ;; first thing to do once clojure is loaded.
-  (wnrepl/start-nrepl) ;; start the nrepl first so we can get its port
+  ;(wnrepl/start-nrepl) ;; start the nrepl first so we can get its port
                        ;; for the local-device description
   (ld/initialize-with-exit-on-fail!) ;; we possibly exit at this point
-  (start-server)
+  (nrepl/start-nrepl!)
+  (start-webserver)
   (println (str "\n\n\n"
                 "---> \n"
                 "     See the web interface at http://localhost:47800.\n"

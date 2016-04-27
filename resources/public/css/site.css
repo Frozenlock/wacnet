@@ -1,0 +1,111 @@
+
+ * {
+    min-height: 0;
+    min-width: 0;
+}
+
+html {
+    height:100%;
+
+}
+
+body {
+    height: 100%;
+    font-size: 14px;
+     }
+
+.navbar-header .navbar-brand {
+    color: #3366CC;
+}
+
+.navbar-header .navbar-brand:hover {
+    color: #3366CC;
+}
+
+
+
+.summary-detail {
+    background-color: rgba(255,153,0,.1);
+    padding: 20px;
+    border: 1px rgba(255,153,0,1) solid;
+    box-shadow: 0 3px 7px rgba(0,0,0,.2);
+    }
+
+.summary-detail .separator {
+    background-color: rgba(255,153,0,1);
+    }
+
+.left-side-navbar {
+    margin-top: 1px;
+}
+
+.left-side-navbar .separator {
+    background-color: rgba(255,153,0,1);
+    }
+
+
+.left-side-navbar > .nav-item {
+    background-color: rgba(255,153,0,.1);
+    padding-top: 5px;
+    border-bottom: 1px rgba(255,153,0,.15) solid;
+    padding-left: 8px;
+    padding-bottom: 5px;
+    cursor: pointer;
+}
+
+.left-side-navbar > .nav-item:hover {
+    background-color: rgba(255,153,0,.15);
+    
+    }
+
+
+.left-side-navbar > .nav-item.selected {
+    background-color: rgba(255,153,0,.15);
+    border: 1px rgba(255,153,0,1) solid;
+    border-left: 5px rgba(255,153,0,1) solid;
+    margin: -1px;
+    margin-right: 0px;
+    padding-bottom: 6px;
+    font-weight: bold;
+    box-shadow: 0 3px 7px rgba(0,0,0,.3);
+}
+
+.device-id {
+    display: inline-block;
+    height: 100%;
+    overflow: hidden;
+    transition: max-width 0.5s ease-in-out;
+    vertical-align: middle;
+    padding-top: 6px;
+    padding-bottom: 5px;
+    margin: -10px;
+    margin-top: -11px;
+    margin-left: -8px;
+    margin-right: 5px;
+}
+    
+
+.left-side-navbar .nav-ids {
+    background-color: rgba(255,153,0,0.3);
+    padding: 8px;
+    /* margin: -5px; */
+    margin-right: 3px;
+    }
+
+
+.flash {
+    animation-name: flash-animation;
+    animation-duration: 1s;
+}
+
+@keyframes flash-animation {  
+    from { background: rgba(255,255,0,.30); }
+    to   { background: default; }
+}
+
+.message {
+    position: fixed; 
+    top: 20px;
+    right: 1em;
+    min-width: 10em;
+    z-index: 15;}

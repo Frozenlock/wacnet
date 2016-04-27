@@ -1,6 +1,6 @@
 (ns wacnet.core-test
-  (:use clojure.test
-        wacnet.core))
+  (:require [clojure.test :refer :all]
+            [wacnet.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
