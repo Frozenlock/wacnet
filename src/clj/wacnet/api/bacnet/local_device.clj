@@ -28,8 +28,9 @@
     "application/edn"})
 
 (def allowed-configs-keys
-  #{:broadcast-address :device-id :local-address :port
-    :apdu-timeout :apdu-segment-timeout :description
+  #{:broadcast-address :device-id :port
+    :apdu-timeout
+    :number-of-apdu-retries :description
     :object-name :device-name})
 
 (defn remove-nils [m]
@@ -43,9 +44,8 @@
   configuration file."
   [local-device-id]
   (select-keys (merge ld/default-configs 
-                      (remove-nils 
-                       (or (ld/local-device-backup)
-                           (save/get-configs))))
+                      (or (ld/local-device-backup)
+                          (save/get-configs)))
                allowed-configs-keys))
 
 (defn reset-and-save!
@@ -59,13 +59,15 @@
     (select-keys (ld/save-local-device-backup!)
                  allowed-configs-keys)))
 
-(s/defschema Configs
+
+(s/defschema LocalConfigs
   {(s/optional-key :broadcast-address) s/Str
    (s/optional-key :device-id) s/Int
    (s/optional-key :port) s/Int
    (s/optional-key :description) s/Str
    (s/optional-key :apdu-timeout) s/Int
    (s/optional-key :apdu-segment-timeout) s/Int
+   (s/optional-key :number-of-apdu-retries) s/Int
    (s/optional-key :object-name) s/Str
    (s/optional-key :device-name) s/Str})
 
@@ -83,7 +85,7 @@
               :post {:description (str "Update the provided fields in the local device configs. "
                                        "Will automatically reboot the local device with the new configs.")
                      :swagger/tags ["Local Device"]
-                     :parameters {:body Configs}
+                     :parameters {:body LocalConfigs}
                      :response (fn [ctx]
                                  (let [new-configs (some-> ctx :parameters :body)]
                                    (when new-configs

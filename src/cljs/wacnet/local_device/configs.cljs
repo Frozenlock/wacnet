@@ -7,7 +7,7 @@
 (defn get-configs [configs-a loading-a error-a]
   (reset! loading-a true)
   (reset! error-a nil)
-  (GET "/api/v1/local-device/configs"
+  (GET "/api/v1/bacnet/local-device/configs"
       {:handler (fn [response]
                   (reset! loading-a nil)
                   (reset! configs-a response))
@@ -19,7 +19,7 @@
 (defn summary [config-a]
   (let [ld-summary (r/atom nil)
         get-summary! (fn []
-                       (GET "/api/v1/local-device"
+                       (GET "/api/v1/bacnet/local-device"
                            {:response-format :transit
                             :handler #(reset! ld-summary %)
                             :error-handler (fn [%]
@@ -43,14 +43,24 @@
              [:div "Broadcast address : " (:broadcast-address interface)]]])])})))
 
 
+(defn parse-configs
+  "Parse some config fields into integers."
+  [configs-map]
+  (let [parse-maybe (fn [str-or-num]
+                      (if (number? str-or-num) str-or-num
+                          (js/parseInt str-or-num)))]
+    (-> configs-map 
+        (update-in [:device-id] parse-maybe)
+        (update-in [:port] parse-maybe))))
+
 (defn update-configs-btn [configs-a]
   (let [error? (r/atom nil)
         loading? (r/atom nil)
         success? (r/atom nil)
         update-configs! (fn [config-map]
                             (reset! loading? true)
-                            (POST "/api/v1/local-device/configs"
-                                {:params config-map
+                            (POST "/api/v1/bacnet/local-device/configs"
+                                {:params (parse-configs config-map)
                                  :response-format :transit
                                  :keywords? true
                                  :handler (fn [resp]
@@ -72,7 +82,9 @@
                         [:div "The server encountered an error. Double check the configuration."]]])
        [:button.btn.btn-primary 
         {:on-click #(update-configs! (-> @configs-a 
-                                         (select-keys [:description :broadcast-address :device-id :port])))}
+                                         (select-keys [:description :broadcast-address :device-id :port
+                                                       :apdu-timeout
+                                                       :number-of-apdu-retries])))}
         "Update / Reboot device"]])))
 
 
@@ -88,8 +100,7 @@
       ;:should-component-update (fn [_ _ _] true)
       :reagent-render 
       (fn []
-        [:div.container
-         
+        [:div.container         
          [:h3.text-center "Local Device Configurations"]
          [:hr]
          [:div.form-horizontal          

@@ -45,27 +45,37 @@
             top (.-top (.getBoundingClientRect node))]
         (set! (.-style.height node) (str "calc(100vh - "top"px)")))}))
 
+;; (defn scrollable [attr content]
+;;   [:div (merge {:style {;:overflow-y "auto"
+;;                         ;; :height "100%"
+;;                         }} attr)
+;;    content])
+
 
 ;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defn input [{:keys [text on-save on-stop input-type]}]
-  (let [val (r/atom text)
-        stop #(do ;(reset! val "")
-                  (if on-stop (on-stop)))
-        save #(let [v (-> @val str clojure.string/trim)]
-                (on-save v))]
-    (fn [props]
-      [input-type (merge
-                  {:value @val :on-blur save
-                   :class "form-control"
-                   :style {:width "100%"}
-                   :on-change #(reset! val (-> % .-target .-value))
-                   :on-key-up #(case (.-which %)
-                                 13 (save) ; enter
-                                 27 (stop) ; esc 
-                                 nil)}
-                  props)])))
+(defn input 
+  ([{:keys [text on-save on-stop input-type] :as args}]
+   (input args "form-control"))
+  ([{:keys [text on-save on-stop input-type]} class]
+   (let [val (r/atom text)
+         stop #(do ;(reset! val "")
+                 (if on-stop (on-stop)))
+         save #(let [v (-> @val str clojure.string/trim)]
+                 (when on-save
+                   (on-save v)))]
+     (fn [props]
+       [input-type (merge
+                    {:value @val :on-blur save
+                     :class class
+                     :style {:width "100%"}
+                     :on-change #(reset! val (-> % .-target .-value))
+                     :on-key-up #(case (.-which %)
+                                   13 (save) ; enter
+                                   27 (stop) ; esc 
+                                   nil)}
+                    props)]))))
 
 (def edit
   (-> input
@@ -106,10 +116,17 @@
 (defn live-edit
   "Same as editable, but immediately updates the atom."
   [input-type atom key]
-  [input-type {:value (get @atom key)
-               :class "form-control"
-               :style {:width "100%"}
-               :on-change #(swap! atom assoc key (-> % .-target .-value))}])
+  (let [value (get @atom key)]
+    [input-type {:value value
+                 :class "form-control"
+                 :style {:width "100%"}
+                 :on-change (fn [evt]
+                              (let [temp-val (-> evt .-target .-value)
+                                    new-val (if (number? value) 
+                                              (js/parseInt temp-val) temp-val)]
+                                (if (empty? temp-val)
+                                  (swap! atom dissoc key)
+                                  (swap! atom assoc key new-val))))}]))
 
 ;;; bootstrap 
 

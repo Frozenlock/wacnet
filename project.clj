@@ -1,4 +1,4 @@
-(defproject wacnet "2.0.0-beta"
+(defproject wacnet "2.0.0"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -6,15 +6,15 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
 
                  ;; BACnet
-                 [bacure "1.0.0"]
+                 [bacure "1.0.1"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.0.5"]
+                 [io.hvac.vigilia/vigilia-logger "1.0.7"]
 
                  ;; webserver stuff
-                 [bidi "2.0.6"]      ; routing
-                 [aleph "0.4.1-beta5"] ; server
+                 [bidi "2.0.9"]      ; routing
+                 [aleph "0.4.1"] ; server
                  [aleph-middleware "0.1.1"]
-                 [yada "1.1.6"];[yada "1.1.5" :exclusions [org.bouncycastle/bcprov-jdk15on]] ; api
+                 [yada "1.1.14"];[yada "1.1.5" :exclusions [org.bouncycastle/bcprov-jdk15on]] ; api
                  
                  [trptcolin/versioneer "0.2.0"]
                  
@@ -34,8 +34,11 @@
 
                  [org.clojars.frozenlock/reagent-modals "0.2.5"]
                  [cljs-ajax "0.3.9"]
-                 [re-com "0.8.0"]
-                 [cljsjs/fixed-data-table "0.6.0-1"]]
+                 [re-com "0.8.3"]
+                 [cljsjs/fixed-data-table "0.6.0-1"]
+
+                 [org.webjars/swagger-ui "2.1.3"] ;; required until yada corrects its dependencies
+                 ]
 
   :plugins [[lein-environ "1.0.1"]
             [lein-cljsbuild "1.1.1"]            
@@ -140,4 +143,4 @@
                                               :pretty-print false}
                                              }}}}}
   
-  :source-paths ["src/clj" "src/cljs"])
+  :source-paths ["src/clj" "src/cljs" "src/cljc"])

@@ -4,7 +4,8 @@
             [hiccup.page :as hp :refer [html5 include-css include-js]]
             [yada.yada :as yada :refer [yada resource]]
             [aleph.middleware.content-type :refer [wrap-content-type]]
-            [aleph.middleware.session :refer [wrap-session]]))
+            [aleph.middleware.session :refer [wrap-session]]
+            [trptcolin.versioneer.core :as version]))
 
 (def mount-target
   [:div#app {:style "width:100%;height:100%"}
@@ -35,8 +36,10 @@
     (include-css "/css/fixed-data-table.min.css")
     
     (include-js "/bootstrap-3.3.6-dist/js/jquery-2.2.0.min.js")
-    (include-js "/bootstrap-3.3.6-dist/js/bootstrap.min.js")]
-
+    (include-js "/bootstrap-3.3.6-dist/js/bootstrap.min.js")
+    [:script {:type "text/javascript"}
+     (str "var WacnetVersion = \"" (version/get-version "wacnet" "wacnet") "\"")]]
+   
    [:body
     mount-target
     (include-js "/js/app.js")
@@ -68,7 +71,7 @@
 
 (comment
   (def server
-    (aleph.http/start-server handler {:port 3000})))
+    (aleph.http/start-server handler {:port 3449})))
 
 
 ;;; dev functions

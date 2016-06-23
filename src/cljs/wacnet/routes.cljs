@@ -9,7 +9,7 @@
          [["" :devices]
           [["/" :device-id] (bidi/tag :devices :devices-with-id)]
           [["/" :device-id "/" :object-type "/" :object-instance]
-           (bidi/->TaggedMatch :devices :devices-with-object)]]]
+           (bidi/tag :devices :devices-with-object)]]]
         ["vigilia"
          [["" :vigilia]]]
         ["configs" :local-device-configs]

@@ -3,7 +3,9 @@
             [wacnet.systray :as st]
             [wacnet.local-device :as ld]
             [wacnet.nrepl :as nrepl]
-            [aleph.http :refer [start-server]])
+            [yada.yada :refer [listener] :as yada]
+            ;; [aleph.http :refer [start-server]]
+            )
   (:gen-class :main true))
 
 
@@ -14,7 +16,7 @@
 
 
 (defn start-webserver []
-  (start-server h/handler {:port 47800}))
+  (yada/listener h/routes {:port 47800}))
 
 (defn close-splash-screen!
   "Close the splash screen, if present."[]

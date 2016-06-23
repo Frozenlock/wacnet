@@ -8,7 +8,8 @@
             [clojure.set :as cs]
             [vigilia-logger.scan :as scan]
             [vigilia-logger.timed :as timed]
-            [wacnet.api.util :as u]))
+            [wacnet.api.util :as u]
+            [wacnet.bacnet-utils :as bu]))
 
 
 
@@ -68,6 +69,8 @@
    :criteria-coll
    :object-delay])
 
+(s/defschema TargetObjects
+  {s/Str [s/Str]})
 
 
 (s/defschema Configs
@@ -82,11 +85,33 @@
    (s/optional-key :id-to-keep) [s/Int]
    (s/optional-key :time-interval) s/Int
    (s/optional-key :criteria-coll) s/Any
-   (s/optional-key :object-delay) s/Int})
+   (s/optional-key :object-delay) s/Int
+   (s/optional-key :target-objects) TargetObjects})
+
+(defn decode-target-objects [config-map]
+  (if (:target-objects config-map)
+    (update-in config-map [:target-objects]
+               (fn [target-map]
+                 (->> (for [[device-id obj-id-coll] target-map]
+                        [(Integer/parseInt device-id)
+                         (vec (map bu/short-id-to-identifier obj-id-coll))])
+                      (into {}))))
+    config-map))
+
+(defn encode-target-objects [config-map]
+  (if (:target-objects config-map) 
+    (update-in config-map [:target-objects]
+               (fn [target-map]
+                 (->> (for [[device-id obj-id-coll] target-map]
+                        [(str device-id)
+                         (vec (map bu/identifier-to-short-id obj-id-coll))])
+                      (into {}))))
+    config-map))
 
 (def configs
   (let [response-map-fn (fn [ctx]                
-                          (let [configs (scan/get-logger-configs)]
+                          (let [configs (-> (scan/get-logger-configs)
+                                            (encode-target-objects))]
                             {:href (u/make-link ctx)
                              :vigilia {:href (when-let [p-id (:project-id configs)] 
                                                (str (->> (scan/get-api-root)
@@ -114,7 +139,8 @@
                        :swagger/tags ["Vigilia"]
                        :parameters {:body Configs}
                        :response (fn [ctx]
-                                   (when-let [new-configs (some-> ctx :parameters :body)]
+                                   (when-let [new-configs (some-> ctx :parameters :body
+                                                                  decode-target-objects)]
                                      (scan/save-logger-configs! (->> (for [[k v] new-configs]
                                                                        (when-not (when (or (coll? v) (string? v))
                                                                                    (empty? v))

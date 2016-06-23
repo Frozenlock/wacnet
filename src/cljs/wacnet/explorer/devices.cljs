@@ -12,6 +12,7 @@
             [goog.Timer :as timer]
             [cljsjs.fixed-data-table]
             [clojure.set :as cset]            
+            [reagent-modals.modals :as mod]
             [cljs.core.async :as async :refer [<! >! chan put! onto-chan]])
   (:import [goog.events EventType])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -47,7 +48,7 @@
 
 
 (defn nav-item
-  [tab selected-tab-id show-ids? ids-length local-click]
+  [tab selected-tab-id show-ids? ids-length local-click configs]
   (let [this-id (atom (:id tab))] ;; keep track manually through updates
     ;; -> component-did-update does not receive the new arguments
     (r/create-class
@@ -71,8 +72,10 @@
             :title (:name tab)
 
             :on-click (handler-fn (do (reset! local-click (:id tab))
-                                      (routes/goto-hash!
-                                       (routes/path-for :devices-with-id :device-id (:id tab)))))}
+                                      (if-not (:vigilia-mode configs)                                        
+                                        (routes/goto-hash!
+                                         (routes/path-for :devices-with-id :device-id (:id tab)))
+                                        (reset! selected-tab-id (:id tab)))))}
             [:div.device-id
              {:style {:max-width (if-not ids? "0px" (* ids-length 12))}}
              [:strong.nav-ids 
@@ -137,7 +140,7 @@
         loading-a (:loading-a devices-list-m)
         error-a (:error-a devices-list-m)]
     [re/button
-     :tooltip "Check for new devices"
+     :tooltip "Check for new devices (WhoIs)"
      :tooltip-position :below-right
      :on-click (fn [] (when refresh-fn
                         (refresh-fn)))
@@ -157,8 +160,10 @@
         manipulated-devices-list (r/atom {:devices @devices-list
                                           :previous-filter ""})
         select-device! (fn [id]
-                         (do (routes/replace-hash! 
-                              (routes/path-for :devices-with-id :device-id id))
+                         (do 
+                           (when-not (:vigilia-mode configs) 
+                             (routes/replace-hash! 
+                              (routes/path-for :devices-with-id :device-id id)))
                              (reset! selected-device-id id)))]
                            
     (fn [dev-list selected-device-id configs]
@@ -176,7 +181,7 @@
          :children [[re/title 
                      :level :level2
                      :underline? true
-                     :label [:span "Devices " 
+                     :label [:span {:style {:white-space :nowrap}} "Devices " 
                              [:small "("
                               (count (:devices @manipulated-devices-list))"/"(count devices)")"]]]
                     [re/h-box
@@ -200,17 +205,19 @@
                                             :previous-filter %})
                      :placeholder "Filter"]
                     [re/gap :size "5px"]
-                    [common/scrollable 
+                    [re/scroller ;common/scrollable 
+                     :size "1"
+                     :child
                      
                      [:div 
                       {:class "left-side-navbar"
                        :style {:white-space "nowrap"}}
-                      (if (seq devices) 
+                      (if (seq devices)
                         (doall 
                          (for [tab (:devices @manipulated-devices-list)]
-                           ^{:key (:id tab)}
+                           ^{:key (gensym (:id tab))}
                            [nav-item tab selected-device-id show-ids? 
-                            visible-ids-max-length local-click]))
+                            visible-ids-max-length local-click configs]))
                         [:div [:div "No devices found."]
                          [:div " Check the local device "
                           [:a {:href (routes/path-for :local-device-configs)} "configs"]]])]]]]))))
@@ -228,44 +235,49 @@
      icon]))
 
 
-(defn cell-and-title [string]
-  [:span {:title string
-          :style {:white-space "nowrap"
-                  :margin-left 5}}
-   string])
 
+(defn properties-btn [vigilia-object configs]
+  (let [ok-btn [:button {:on-click mod/close-modal!
+                         :style {:margin-right "15px"}
+                         :class "btn btn-primary"}
+                "Ok"]]
+    [:button {:class "btn btn-default btn-sm"
+              :title "Properties"
+              :on-click (fn []
+                          (mod/modal!
+                           [wo/prop-modal vigilia-object configs ok-btn]
+                           {:size :lg}))}
+     [:i.fa.fa-list]]))
 
-;; (defn properties-btn [vigilia-object modal-content show?]
-;;   (let [ok-btn [:button {:on-click #(reset! show? false)
-;;                          :style {:margin-right "15px"}
-;;                          :class "btn btn-primary"}
-;;                 "Ok"]]
-;;     [:button {:class "btn btn-default btn-sm"
-;;               :title (t/t @t/locale :vigilia/details)
-;;               :on-click (fn []
-;;                           (reset! modal-content
-;;                                   [re/v-box
-;;                                    :children [[bf/prop-table vigilia-object]
-;;                                               [re/gap :size "5px"]
-;;                                      [re/h-box
-;;                                       :children [[re/gap :size "1"]
-;;                                                  ok-btn]]]])
-;;                           (reset! show? true))}
-;;      [:i.fa.fa-list]]))
-
-(defn action-btns [row modal-content show?]
-  [:div {:style {:margin-left "10px"}}
-   ;; [graph-btn v-object modal-content show?]
-   ;; [properties-btn v-object modal-content show?]
-   ;; [briefcase-btn v-object]
-   ]
-  )
+(defn action-btns [row modal-content show? configs all-objects-a]
+  (let [object row]
+    [:div
+     ;[graph-btn v-object modal-content show?]
+     [properties-btn object configs]
+     (when-not (= (:object-type object) "8")
+       [:button.btn.btn-default.btn-sm
+        {:title "Delete"
+         :on-click (fn []
+                     (let [callback (fn []
+                                      (swap! all-objects-a update-in [:objects]
+                                             (fn [objs]
+                                               (prn objs)
+                                               (remove #(= (:object-id %)
+                                                           (:object-id object)) objs)))
+                                      (mod/close-modal!))]
+                       (mod/modal! [wo/delete-object-modal object
+                                    configs callback mod/close-modal!])))}
+        [:i.fa.fa-trash]])]))
 
 
 
 (def Table (r/adapt-react-class js/FixedDataTable.Table))
 (def Column (r/adapt-react-class js/FixedDataTable.Column))
 (def Cell (r/adapt-react-class js/FixedDataTable.Cell))
+
+(defn actions-cell [bacnet-object modal-content show? configs all-objects-a]
+  [Cell [action-btns bacnet-object modal-content show? configs all-objects-a]])
+
 
 
 (defn inside-value-cell [bacnet-object cell-comp current-value-a loading-a error-a]
@@ -318,7 +330,7 @@
         reload-loop! (fn []
                        (go 
                          (while (not @forget-me?)                           
-                           (async/alts! [reload-chan (async/timeout 10000)])
+                           (async/alts! [reload-chan (async/timeout 20000)])
                            (when (not @forget-me?)
                              (get-new-value!)))))]
     (r/create-class
@@ -344,8 +356,7 @@
 
 
 
-
-(defn make-table [visible-objects-a project-id device-id configs]
+(defn make-table [all-objects-a visible-objects-a device-id configs]
   (let [component (atom nil)
         width (r/atom 0)
         height (r/atom 0)
@@ -353,11 +364,12 @@
         ;;;;
         show-modal? (r/atom nil)
         modal-content (r/atom "")
+        vigilia-mode (:vigilia-mode configs)
         ;; because fixeddatatable isn't reponsive, we have to make
         ;; sure to resize it manually whenever the user resize
         ;; something.
         resize-fn (fn this-fn [old-width old-height node]
-                    (when-not @forget-me?
+                    (when-not (or @forget-me? vigilia-mode)
                       (let [new-width (.-offsetWidth node)
                             new-height (.-offsetHeight node)]
                         (timer/callOnce
@@ -377,7 +389,7 @@
                               (resize-fn w h node))
       :component-will-unmount #(reset! forget-me? true)
       :reagent-render
-      (fn [visible-objects-a project-id device-id configs]
+      (fn [all-objects-a visible-objects-a device-id configs]
         (let [table-data (vec (sort-by :object-name (:objects @visible-objects-a)))
               this-c (r/current-component)
               make-cell (fn [component-fn]
@@ -394,8 +406,7 @@
                                    (r/as-element 
                                     [Cell (merge {:style (merge {:white-space "nowrap"
                                                                  :width "100%"}
-                                                                (when draggable? {:cursor :move}))
-                                                  :on-click #(prn (into {} cell-value))}
+                                                                (when draggable? {:cursor :move}))}
                                                  (when draggable?
                                                    {:draggable true
                                                     :on-drag-start #(-> (.-dataTransfer %)
@@ -417,28 +428,62 @@
                                                            cell-value)]
                                           [Cell {:title cell-value
                                                  :style {:white-space "nowrap"
-                                                         :margin-left 5}} cell-value])))
+                                                         :margin-left 5}} cell-value])))              
+              cell-actions (fn [args]
+                             (let [{:strs [rowIndex]} (js->clj args)
+                                   cell-value (get-in table-data [rowIndex])]
+                               (r/as-element [actions-cell cell-value modal-content show-modal? configs
+                                              all-objects-a])))
               cell-present-value (fn [args]
                                    (let [{:strs [rowIndex]} (js->clj args)
                                          cell-value (get-in table-data [rowIndex])]
-                                     (r/as-element [value-cell cell-value])))]
+                                     (r/as-element [value-cell cell-value])))
+
+              vigilia-mode (:vigilia-mode configs)
+              cell-checkbox (make-cell (fn [cell-value]
+                                         (let [o-id cell-value
+                                               ids-record-a (r/cursor vigilia-mode [:target-objects 
+                                                                                    device-id])]
+                                           [Cell [:span
+                                                  [:input 
+                                                   {:type :checkbox
+                                                    :checked (some #{o-id} @ids-record-a)
+                                                    :on-change #(swap! ids-record-a
+                                                                       (fn [ids-record]
+                                                                         (-> (if (-> % .-target .-checked)
+                                                                               (conj ids-record o-id)
+                                                                               (remove #{o-id} ids-record))
+                                                                             (vec))))}]]])))
+
+              ]
           (reset! component this-c)
-          [common/scrollable {:style {:width "100%"}}
-           [:div
-            {:style {;:width "100%"
-                     :visibility (when-not (> @width 1) ;; don't show when the table is 0 px (initiating)
-                                   "hidden")}}
-            (when @show-modal?
+          ;(prn @all-objects-a)
+          ;(prn @vigilia-mode)
+          
+          [re/v-box
+           :size "1"
+           :style {;:width "100%"
+                   :visibility (when-not (> @width 1) ;; don't show when the table is 0 px (initiating)
+                                 "hidden")}
+           :children 
+           [(when @show-modal?
               [re/modal-panel
                :backdrop-on-click (handler-fn (do (reset! show-modal? false)
                                                   (reset! modal-content "")))
-               :child @modal-content])
+               :child @modal-content])            
             [Table
              {:width        @width
               :max-height   @height
               :rows-count    (count table-data)
               :header-height 40
               :row-height    40}
+             (when vigilia-mode 
+               [Column {:header "Record?"
+                        :cell cell-checkbox
+                        :columnKey :object-id
+                        :width 100
+                                        ;:flex-grow 1
+                        }])
              [Column {:header "Type" 
                       :cell cell-type
                       :columnKey :object-type
@@ -453,18 +498,36 @@
                       :columnKey :description
                       :cell cell-generic
                       :width 100 :flex-grow 2}]
-             [Column {:header "Value"
-                      ;:columnKey :present-value
-                      :cell cell-present-value
-                      :width 100}]
-             [Column {:header "Units"
-                      :cell cell-generic
-                      :columnKey :units
-                      :width 75}]
-             [Column
-              {:header "Action"
-               ;:dataKey 4
-               :width 130}]]]]))})))
+             (when-not vigilia-mode 
+               [Column {:header "Value"
+                                        ;:columnKey :present-value
+                        :cell cell-present-value
+                        :width 100}])
+             (when-not vigilia-mode 
+               [Column {:header "Units"
+                        :cell cell-generic
+                        :columnKey :units
+                        :width 75}])
+             (when-not vigilia-mode
+               [Column
+                {:header (r/as-element 
+                          [Cell [:span "Action"
+                                 [:button.btn.btn-default.btn-xs 
+                                  {:style {:margin-left "10px"}
+                                   :title "Create object"
+                                   :on-click 
+                                   (fn []
+                                     (mod/modal!
+                                      [wo/create-new-object-modal device-id configs
+                                              (fn [resp]
+                                                (let [{:keys [object-instance object-type]} resp]
+                                                  (swap! all-objects-a update-in [:objects]
+                                                         conj resp))
+                                                (mod/close-modal!))
+                                       mod/close-modal!]))}
+                                  "+"]]])
+                 :cell cell-actions
+                 :width 130}])]]]))})))
 
 
 
@@ -601,7 +664,8 @@
 (defn objects-table [selected-device-id configs]
   (let [objects-a (r/atom {})
         get-objects! (fn [device-id]
-                       (GET (api-path (:api-root configs) 
+                       (GET (api-path (:api-root configs)
+                                      "bacnet"
                                       "devices" device-id
                                       "objects")
                            {:handler #(reset! objects-a 
@@ -628,35 +692,38 @@
     (fn []
       (let [{:keys [id objects]} @objects-a
             device-id @selected-device-id            
-            current-id? (= id device-id)]
+            current-id? (= id device-id)]        
         (when-not current-id?
           (get-objects! device-id))
         (let [filtered-objects (-> (filter-fn objects @filter-string)
                                    (filter-by-type @type-filter))]
           (reset! visible-objects-a {:id id :objects filtered-objects})
-          [:div
-           [re/v-box
-            :class (when objects (if-not (seq filtered-objects) "bg-danger"))
-            :style {:padding "10px"
-                    :padding-top "0px"}
-            :children [[filtering-bar filter-string]
-                       [object-type-filter type-filter]
-                       [re/label :label [:span
-                                         {:class (or (when objects (if-not (seq filtered-objects) 
-                                                                     "text-danger"))
-                                                     "field-label")}
-                                         "Visible objects "
-                                         ": "(count filtered-objects) "/" (count objects) ]]]]
-           [re/box
-            :style {:opacity (when-not current-id? "0.5")}
-            :size "1"
-            :child (if-not current-id?
-                     [re/throbber]
-                     ;[:span "hello"]
-                     ;[:div "Insert Table"]
-                     [make-table visible-objects-a device-id configs]
-                     ;[home-page]
-                     )]])))))
+          [re/v-box
+           :size "1"
+           :children 
+           [[re/v-box
+             :class (when objects (if-not (seq filtered-objects) "bg-danger"))
+             :style {:padding "10px"
+                     :padding-top "0px"}
+             :children [[filtering-bar filter-string]
+                        [object-type-filter type-filter]
+                        [re/label :label [:span
+                                          {:class (or (when objects (if-not (seq filtered-objects) 
+                                                                      "text-danger"))
+                                                      "field-label")}
+                                          "Visible objects "
+                                          ": "(count filtered-objects) "/" (count objects) ]]]]
+            [re/box
+             :style {:opacity (when-not current-id? "0.5")}
+             :size "1"
+             :child (if-not current-id?
+                      [re/throbber]
+                                        ;[:span "hello"]
+                                        ;[:div "Insert Table"]
+                      
+                      [make-table objects-a visible-objects-a device-id configs]
+                                        ;[home-page]
+                      )]]])))))
 
     
 
@@ -664,7 +731,8 @@
 (defn objects-view [selected-device-id configs]
   (let [device-summary (r/atom {:id nil :summary {}})
         get-summary! (fn [id]
-                       (GET (api-path (:api-root configs)                    
+                       (GET (api-path (:api-root configs)
+                                      "bacnet"
                                       "devices" id)
                            {:handler #(reset! device-summary {:id id :summary %})
                             :response-format :transit
@@ -679,7 +747,7 @@
          :size "1"
          :style {:opacity (when-not correct-summary? "0.5")
                  :margin-right "10px"
-                 :margin-left "10px"}
+                 :margin-left "5px"}
          :children [
                     [re/title
                      :level :level2
@@ -689,7 +757,8 @@
                     [re/gap :size "20px"]
                     ;; only show table after we loaded the summary
                     (when correct-summary?
-                      [objects-table selected-device-id configs])
+                      [objects-table selected-device-id configs]
+                      )
                     ]]))))
 
 
@@ -704,7 +773,7 @@
                              ([force-refresh?]
                               (reset! error? nil)
                               (reset! loading? true)
-                              (GET (api-path (:api-root configs) "devices")
+                              (GET (api-path (:api-root configs) "bacnet" "devices")
                                   {:handler (fn [response] 
                                               (js/setTimeout #(reset! loading? nil) 500)
                                               (reset! dev-list-a (:devices response)))
@@ -719,19 +788,17 @@
       (fn [selected-device-id configs]
         (let [devices-list @dev-list-a]
           (cond
-
             devices-list
-            [:div.row {:style {:margin "0px"}}
-             [:div.col-sm-3 {:style {:padding-right "0px"                                    
-                                     :overflow-x "hidden"}}
-              [left-side-nav-bar devices-list selected-device-id 
-               (assoc configs :devices-list {:device-list-a dev-list-a
-                                             :refresh-fn #(load-devices-list! :refresh)
-                                             :loading-a loading?
-                                             :error-a error?})]]
-             [:div.col-sm-9 {:style {:padding-left "0px"
-                                     :overflow-x "hidden"}}
-              [common/scrollable [objects-view selected-device-id configs]]]]
+            [re/h-split
+             ;:size "grow"
+             :initial-split 20
+             :panel-1 [left-side-nav-bar devices-list selected-device-id 
+                       (assoc configs :devices-list {:device-list-a dev-list-a
+                                                     :refresh-fn #(load-devices-list! :refresh)
+                                                     :loading-a loading?
+                                                     :error-a error?})]
+             :panel-2 [objects-view selected-device-id configs]
+             ]
 
             @error? [re/alert-box
                      :alert-type :warning
@@ -740,7 +807,10 @@
                             [:div (or (some-> @error? :response :error)
                                       (str @error?))]
                             [:div [:a {:href "#"
-                                       :on-click load-devices-list!} "Retry"]]]]
+                                       :on-click load-devices-list!} "Retry"]
+                             " or change the "
+                             [:a {:href (routes/path-for :local-device-configs)}
+                              "configs"]]]]
             @loading? [:div [re/throbber]]
             ;; when devices are found
 

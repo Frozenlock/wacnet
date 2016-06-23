@@ -5,7 +5,8 @@
             [re-com.core :as re]
             [wacnet.templates.common :as common]
             [clojure.string :as s]
-            [goog.string :as gstring]))
+            [goog.string :as gstring]            
+            [wacnet.explorer.devices :as dev]))
 
 (def configs-api-url "/api/v1/vigilia/logger/configs")
 
@@ -330,8 +331,39 @@
          (js/setTimeout #(reset! error? nil) 3000)
          [:div.message [:div.alert.alert-danger "Error : " (:status-text @error?)]])
        [:button.btn.btn-danger {:on-click #(clear-configs! logger-config-a success? error?)
-                                :disabled disabled?}
+                                :disabled disabled?
+                                :style {:margin-bottom "20px"}}
         "Delete configurations " (when @loading? [:i.fa.fa-spinner.fa-pulse])]])))
+
+
+(defn explorer-form [configs-a]
+  (let [show-explorer? (r/atom nil)]
+    (fn [configs-a]
+      [:div.form-group
+       [:div [:label "Filter individual objects"]]
+       [:div.text-info 
+        "You can select individual objects to be recorded (assuming the devices go through the previous "
+        "filters.)"]
+       [:div.text-info
+        "If no object is selected in a device, all of them are recorded."]
+       [:div.text-right 
+        [:button.btn.btn-danger {:on-click #(swap! configs-a dissoc :target-objects)
+                                 :disabled (when-not (seq (:target-objects @configs-a)) true)} "Clear all"]
+        [:button.btn.btn-default {:on-click #(reset! show-explorer? true)} "Open explorer"]
+        ]       
+       
+       (when @show-explorer?
+         [re/modal-panel
+          :backdrop-on-click #(reset! show-explorer? nil)
+          :child [re/v-box
+                  :height "90vh"
+                  :width "90vw"
+                                        ;:width "900px"
+                  :children
+                  [[:div.text-right
+                    [:button.btn.btn-primary {:on-click #(reset! show-explorer? nil)} "Close"]]
+                   [dev/controllers-view nil {:vigilia-mode configs-a}]]]])])))
+
 
 
 (defn advanced-configs-panel [configs-a]
@@ -353,8 +385,12 @@
        [object-delay-form configs-a]]
       [:div.col-sm-6
        [criteria-filter-form configs-a]]]
+     [:div.row
+      [:div.col-sm-6 [explorer-form configs-a]]]
      [:div.text-right
-      [save-btn configs-a nil]]]]])
+      [save-btn configs-a nil]]
+     ;; [:div (str @configs-a)]
+     ]]])
 
 
 (defn configs-steps [configs-a]
@@ -508,7 +544,8 @@
   (let [configs-a (r/atom nil)]
     (fn []
       [common/scrollable
-       [:div.container
+       [:div.container                
+        ;(when @configs-a [explorer-modal configs-a])
         [heading]
         [:hr]
         [vigilia-status configs-a]
