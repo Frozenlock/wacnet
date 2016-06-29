@@ -115,8 +115,11 @@
                        [mod/close-button]]
     [:div "Version : " js/WacnetVersion]]
    [:div.modal-body 
-    [:p "Wacnet is a free and open source application (GPLv3) built by "
-     [:a {:href "https://hvac.io"} "HVAC.IO"] "."]    
+    [:p "Wacnet is "
+     [:a {:href "https://github.com/Frozenlock/wacnet" :target "_blank"} "free and open source"] 
+     ", provided to you by " [:a {:href "https://hvac.io" :target "_blank"} "HVAC.IO"]]
+    [:p "Additional info is available on the " 
+     [:a {:href "https://wiki.hvac.io/doku.php?id=suppliers:hvac.io:wacnet"} "Wiki"] "."]
     [:p "If you'd like to have a feature implemented, or need your own BACnet application, "
      "contact us at " [:a {:href "mailto:contact@hvac.io"} "contact@hvac.io"] "."]
     [:hr]

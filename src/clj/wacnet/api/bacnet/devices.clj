@@ -163,6 +163,7 @@
   ([local-device-id device-id] (object-list local-device-id device-id nil))
   ([local-device-id device-id desired-properties]
    (let [get-prop-fn (fn [obj-id props]
+                       ;(println obj-id)
                        (b/remote-object-properties 
                         local-device-id device-id obj-id props))
          object-identifiers (-> (get-prop-fn [:device device-id] :object-list)
@@ -285,8 +286,8 @@
                                                       (dissoc :object-type :object-instance)))}))))}}}))
 
 (s/defschema PropertyValue
-  [(s/one s/Keyword "Property Identifier") ;; property identifier
-   (s/one s/Any "Property Value")]) ;; prop value
+  {s/Keyword  ;; property identifier
+   s/Any}) ;; prop value
 
 
 (def object
@@ -297,11 +298,13 @@
                 :charset "UTF-8"}]
     :access-control {:allow-origin "*"}
     :methods {:put {:summary "Update object"
-                    :description (str "Update object properties.\n\n The properties expected are of the form:\n"
-                                      "[ [property-identifier property-value] ...]")
+                    :description (str "Update object properties.\n\n The properties expected are of the form :"
+                                      "\n\n"
+                                      "{property-identifier1 property-value1, "
+                                      "property-identifier2 property-value2}")
                     :swagger/tags ["BACnet"]
                     :parameters {:path {:device-id Long :object-id String}
-                                 :body {:properties [PropertyValue]}}
+                                 :body {:properties PropertyValue}}
                     :response (fn [ctx]
                                 (let [device-id (get-in ctx [:parameters :path :device-id])
                                       o-id (get-in ctx [:parameters :path :object-id])

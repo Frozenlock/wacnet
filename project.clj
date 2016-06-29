@@ -1,4 +1,4 @@
-(defproject wacnet "2.0.0"
+(defproject wacnet "2.0.1"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
 
                  ;; BACnet
-                 [bacure "1.0.1"]
+                 [bacure "1.0.3"]
 
                  [io.hvac.vigilia/vigilia-logger "1.0.7"]
 
@@ -14,7 +14,7 @@
                  [bidi "2.0.9"]      ; routing
                  [aleph "0.4.1"] ; server
                  [aleph-middleware "0.1.1"]
-                 [yada "1.1.14"];[yada "1.1.5" :exclusions [org.bouncycastle/bcprov-jdk15on]] ; api
+                 [yada "1.1.26"]
                  
                  [trptcolin/versioneer "0.2.0"]
                  
@@ -24,20 +24,19 @@
                  [cider/cider-nrepl "0.11.0"]
 
                  ;; cljs
-                 [org.clojure/clojurescript "1.7.228" :scope "provided"]
-                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [org.clojure/clojurescript "1.9.89"]
+                 [org.clojure/core.async "0.2.385"];[org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  
-                 [reagent "0.6.0-alpha"
-                  :exclusions [org.clojure/tools.reader]]
-                 [cljsjs/react "0.14.3-0"]
-                 [cljsjs/react-dom-server "0.14.3-0"]
+                 [reagent "0.6.0-rc"]
 
-                 [org.clojars.frozenlock/reagent-modals "0.2.5"]
+                 [org.clojars.frozenlock/reagent-modals "0.2.5"
+                  :exclusions [reagent]]
                  [cljs-ajax "0.3.9"]
-                 [re-com "0.8.3"]
-                 [cljsjs/fixed-data-table "0.6.0-1"]
+                 [re-com "0.8.3" :exclusions [reagent]]
+                 [cljsjs/fixed-data-table "0.6.0-1"
+                  :exclusions [cljsjs/react]]
 
-                 [org.webjars/swagger-ui "2.1.3"] ;; required until yada corrects its dependencies
+                 ;[org.webjars/swagger-ui "2.1.3"] ;; required until yada corrects its dependencies
                  ]
 
   :plugins [[lein-environ "1.0.1"]
@@ -45,6 +44,8 @@
             [lein-externs "0.1.5"]] 
 
   :manifest {"SplashScreen-Image" "public/img/splash.png"}
+
+  :min-lein-version "2.5.0"
 
   :main wacnet.server
 
@@ -77,17 +78,17 @@
                                                 org.clojure/clojurescript
                                                 org.clojure/core.async
                                                 org.clojure/tools.analyzer.jvm]]
-                                  [org.clojure/clojurescript "1.7.170"
-                                   :exclusions [org.clojure/clojure org.clojure/tools.reader]]
+                                  ;; [org.clojure/clojurescript "1.7.170"
+                                  ;;  :exclusions [org.clojure/clojure org.clojure/tools.reader]]
                                   [org.clojure/tools.nrepl "0.2.12"]
                                   [com.cemerick/piggieback "0.2.1"]
-                                  [devcards "0.2.0-8"
+                                  [devcards "0.2.1-7"
                                    :exclusions [org.clojure/tools.reader]]
                                   [pjstadig/humane-test-output "0.7.1"]
                                   ]
 
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.0-2"
+                   :plugins [[lein-figwheel "0.5.4-5"
                               :exclusions [org.clojure/core.memoize
                                            ring/ring-core
                                            org.clojure/clojure
@@ -97,8 +98,8 @@
                                            org.clojure/clojurescript
                                            org.clojure/core.async
                                            org.clojure/tools.analyzer.jvm]]
-                             [org.clojure/clojurescript "1.7.170"]
-                             [cider/cider-nrepl "0.11.0"]
+                             ;[org.clojure/clojurescript "1.7.170"]
+                             ;[cider/cider-nrepl "0.11.0"]
                              [org.clojure/tools.namespace "0.3.0-alpha2"
                               :exclusions [org.clojure/tools.reader]]
                              [refactor-nrepl "2.0.0"

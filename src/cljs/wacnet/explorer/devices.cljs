@@ -492,7 +492,7 @@
                       :cell cell-object-name
                       :columnKey :object-name
                       :width 150 
-                                        ;:flex-grow 1
+                      :flex-grow 1
                       }]
              [Column {:header "Description"
                       :columnKey :description
@@ -662,21 +662,29 @@
 
 
 (defn objects-table [selected-device-id configs]
-  (let [objects-a (r/atom {})
+  (let [error? (r/atom nil)
+        loading? (r/atom nil)
+        objects-a (r/atom {})
         get-objects! (fn [device-id]
+                       (reset! error? nil)
+                       (reset! loading? true)
                        (GET (api-path (:api-root configs)
                                       "bacnet"
                                       "devices" device-id
                                       "objects")
-                           {:handler #(reset! objects-a 
-                                              {:id device-id
-                                               :objects (for [o (:objects %)]
-                                                          (let [[o-type o-inst] 
-                                                                (s/split (:object-id o) #"\.")]
-                                                            (assoc o :object-type o-type :object-instance o-inst)))})
+                           {:handler #(do 
+                                        (reset! loading? nil)
+                                        (reset! objects-a 
+                                                {:id device-id
+                                                 :objects (for [o (:objects %)]
+                                                            (let [[o-type o-inst] 
+                                                                  (s/split (:object-id o) #"\.")]
+                                                              (assoc o :object-type o-type :object-instance o-inst)))}))
                             :response-format :transit
                             :params {:properties [:object-name :description :units :present-value]}
-                            :error-handler prn}))
+                            :error-handler #(do
+                                              (reset! loading? nil)
+                                              (reset! error? %))}))
         filter-string (r/atom "")
         filter-fn (fn [objects filter-string]
                     (let [regexp (re-pattern (util/make-fuzzy-regex filter-string))]
@@ -693,7 +701,7 @@
       (let [{:keys [id objects]} @objects-a
             device-id @selected-device-id            
             current-id? (= id device-id)]        
-        (when-not current-id?
+        (when-not (or current-id? @error? @loading?)
           (get-objects! device-id))
         (let [filtered-objects (-> (filter-fn objects @filter-string)
                                    (filter-by-type @type-filter))]
@@ -714,16 +722,12 @@
                                           "Visible objects "
                                           ": "(count filtered-objects) "/" (count objects) ]]]]
             [re/box
-             :style {:opacity (when-not current-id? "0.5")}
+             ;:style {:opacity (when-not current-id? "0.5")}
              :size "1"
-             :child (if-not current-id?
-                      [re/throbber]
-                                        ;[:span "hello"]
-                                        ;[:div "Insert Table"]
-                      
-                      [make-table objects-a visible-objects-a device-id configs]
-                                        ;[home-page]
-                      )]]])))))
+             :child (cond @loading? [re/throbber]
+                          @error? [:div.alert.alert-danger "Unable to retrieve remote device data."]
+                          current-id? [make-table objects-a visible-objects-a device-id configs])
+             ]]])))))
 
     
 
@@ -745,21 +749,18 @@
         (when-not correct-summary? (get-summary! selected-id))
         [re/v-box 
          :size "1"
-         :style {:opacity (when-not correct-summary? "0.5")
-                 :margin-right "10px"
+         :style {:margin-right "10px"
                  :margin-left "5px"}
          :children [
                     [re/title
                      :level :level2
                      :underline? true
                      :label [:span [:i.fa.fa-caret-right] " " (:device-name summary)]]
-                    [summary-detail summary]
+                    [re/box 
+                     :style {:opacity (when-not correct-summary? 0.5)}
+                     :child [summary-detail summary]]
                     [re/gap :size "20px"]
-                    ;; only show table after we loaded the summary
-                    (when correct-summary?
-                      [objects-table selected-device-id configs]
-                      )
-                    ]]))))
+                    [objects-table selected-device-id configs]]]))))
 
 
     
