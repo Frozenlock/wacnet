@@ -146,8 +146,9 @@
         [obj-type obj-inst] object-identifier
         obj-id (object-identifier-to-obj-id object-identifier)]
     (-> (dissoc obj-map :object-identifier)
-        (update-in [:units] #(when % (-> (name %)
-                                         (string/replace #"-" " "))))
+        (update-in [:units] #(when (keyword? %) 
+                               (-> (name %)
+                                   (string/replace #"-" " "))))
         (assoc :object-id obj-id
                :object-instance (str (last object-identifier))
                :object-type (->> (first object-identifier)
