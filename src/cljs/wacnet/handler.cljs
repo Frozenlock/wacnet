@@ -19,8 +19,10 @@
 
 
 (defn make-device-tab [params]
-  (let [device-id (:device-id params)]
-    [d/controllers-view device-id]))
+  (let [selected-device-id (r/atom (:device-id params))]
+    (fn [params]
+      (reset! selected-device-id (:device-id params))
+      [d/controllers-view selected-device-id])))
 
 
 (defn logo []
@@ -35,7 +37,7 @@
 (defn default-tab-content []
   [:div "empty tab"])
 
-(defonce current-tab-fn (r/atom default-tab-content))
+(defonce current-tab-content (r/atom [default-tab-content]))
 
 (defn make-configs-tab [params]
   [cf/configs-form params])
@@ -61,18 +63,16 @@
     (routes/goto-hash! url)))
 
 (defn navigate! [url]
-  (prn "navigating to " url)
   (let [url-sans-hash (s/replace url "#" "")
         matched-route (bidi/match-route routes/app-routes url-sans-hash)]
-    (do (print (str "matching "url-sans-hash " ----> " matched-route))
-        (let [{:keys [handler route-params]} matched-route]
-          (if-not handler
-            (goto-tab! :devices) ;; default tab
-            (do 
-              (reset! current-tab-id handler)
-              (reset! current-tab-fn
-                      (partial (:content (get tabs handler))
-                               route-params))))))))
+    (let [{:keys [handler route-params]} matched-route]
+      (if-not handler
+        (goto-tab! :devices) ;; default tab
+        (do 
+          (reset! current-tab-id handler)
+          (reset! current-tab-content
+                  [(:content (get tabs handler))
+                   route-params]))))))
 
 
 
@@ -98,7 +98,7 @@
 ;;        :error-handler prn}))
 
 (defn main-tab []
-  [@current-tab-fn])
+  @current-tab-content)
 
 
 (defn dark-mode-css []

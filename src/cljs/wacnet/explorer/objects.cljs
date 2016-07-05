@@ -62,11 +62,11 @@
       :else [:div])
     ;; other objects
     [:span {:style {:text-align "right"}}
-     (if-let [v present-value]
-       (if (number? v)
-         (gstring/format "%.2f" v)
-         (name v))
-       "---")]))
+     (let [v present-value]
+       (cond 
+         (number? v) (gstring/format "%.2f" v)
+         (or (nil? v) (coll? v)) "---"
+         :else (name v)))]))
 
 
 

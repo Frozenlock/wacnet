@@ -27,7 +27,6 @@
   (str api-root (s/join "/" args)))
 
 
-
 ;=======================================================
 ;================== Devices overview ===================
 ;=======================================================
@@ -152,11 +151,9 @@
 
 
 (defn left-side-nav-bar
-  [dev-list selected-device-id configs]
+  [devices-list selected-device-id configs]
   (let [show-ids? (r/atom nil)
         local-click (r/atom nil)
-        devices-list (r/atom (for [{:keys [device-id device-name]} dev-list]
-                               {:id device-id :name device-name}))
         manipulated-devices-list (r/atom {:devices @devices-list
                                           :previous-filter ""})
         select-device! (fn [id]
@@ -166,61 +163,69 @@
                               (routes/path-for :devices-with-id :device-id id)))
                              (reset! selected-device-id id)))]
                            
-    (fn [dev-list selected-device-id configs]
-      (let [ids? @show-ids?
-            devices @devices-list
-            visible-ids (map :id (:devices @manipulated-devices-list))
-            visible-ids-max-length (apply max (map count visible-ids))]
-        (when-not (some #{@selected-device-id} (map :id devices))
-          (when (seq devices)
-            (select-device! (:id (first devices)))))
-        [re/v-box
-         :class    "noselect"
-         :size     "1"
-         :gap      "5px"
-         :children [[re/title 
-                     :level :level2
-                     :underline? true
-                     :label [:span {:style {:white-space :nowrap}} "Devices " 
-                             [:small "("
-                              (count (:devices @manipulated-devices-list))"/"(count devices)")"]]]
-                    [re/h-box
-                     :gap "3px"
-                     :children [[re/button 
-                                 :label            (if ids? [:i.fa.fa-dedent] [:i.fa.fa-indent])
-                                 :on-click         #(do (reset! local-click true)
-                                                        (swap! show-ids? not))
-                                 :tooltip          "Show device IDs"
-                                 :tooltip-position :below-right]
-                                [refresh-btn configs]
-                                [re/gap :size "1"]
-                                [sort-by-id-btn manipulated-devices-list local-click]
-                                [sort-by-name-btn manipulated-devices-list local-click]]]
-                    [re/input-text 
-                     :model       ""
-                     :width       "100%" 
-                     :change-on-blur? false
-                     :on-change   #(reset! manipulated-devices-list 
-                                           {:devices (filter-devices @devices-list %)
-                                            :previous-filter %})
-                     :placeholder "Filter"]
-                    [re/gap :size "5px"]
-                    [re/scroller ;common/scrollable 
-                     :size "1"
-                     :child
-                     
-                     [:div 
-                      {:class "left-side-navbar"
-                       :style {:white-space "nowrap"}}
-                      (if (seq devices)
-                        (doall 
-                         (for [tab (:devices @manipulated-devices-list)]
-                           ^{:key (gensym (:id tab))}
-                           [nav-item tab selected-device-id show-ids? 
-                            visible-ids-max-length local-click configs]))
-                        [:div [:div "No devices found."]
-                         [:div " Check the local device "
-                          [:a {:href (routes/path-for :local-device-configs)} "configs"]]])]]]]))))
+    (r/create-class
+     {:component-will-update (fn [this args]
+                               (let [[devices-list & rest] (rest args)]
+                                 (swap! manipulated-devices-list
+                                        assoc :devices 
+                                        (filter-devices @devices-list
+                                                        (:previous-filter @manipulated-devices-list)))))
+      :reagent-render
+      (fn [devices-list selected-device-id configs]
+        (let [ids? @show-ids?
+              devices @devices-list
+              visible-ids (map :id (:devices @manipulated-devices-list))
+              visible-ids-max-length (apply max (map count visible-ids))]
+          (when-not (some #{@selected-device-id} (map :id devices))
+            (when (seq devices)
+              (select-device! (:id (first devices)))))
+          [re/v-box
+           :class    "noselect"
+           :size     "1"
+           :gap      "5px"
+           :children [[re/title 
+                       :level :level2
+                       :underline? true
+                       :label [:span {:style {:white-space :nowrap}} "Devices " 
+                               [:small "("
+                                (count (:devices @manipulated-devices-list))"/"(count devices)")"]]]
+                      [re/h-box
+                       :gap "3px"
+                       :children [[re/button 
+                                   :label            (if ids? [:i.fa.fa-dedent] [:i.fa.fa-indent])
+                                   :on-click         #(do (reset! local-click true)
+                                                          (swap! show-ids? not))
+                                   :tooltip          "Show device IDs"
+                                   :tooltip-position :below-right]
+                                  [refresh-btn configs]
+                                  [re/gap :size "1"]
+                                  [sort-by-id-btn manipulated-devices-list local-click]
+                                  [sort-by-name-btn manipulated-devices-list local-click]]]
+                      [re/input-text 
+                       :model       ""
+                       :width       "100%" 
+                       :change-on-blur? false
+                       :on-change   #(reset! manipulated-devices-list 
+                                             {;:devices (filter-devices @devices-list %) ;<- comp-will-update
+                                              :previous-filter %})
+                       :placeholder "Filter"]
+                      [re/gap :size "5px"]
+                      [re/scroller     ;common/scrollable 
+                       :size "1"
+                       :child
+                       
+                       [:div 
+                        {:class "left-side-navbar"
+                         :style {:white-space "nowrap"}}
+                        (if (seq devices)
+                          (doall 
+                           (for [tab (:devices @manipulated-devices-list)]
+                             ^{:key (gensym (:id tab))}
+                             [nav-item tab selected-device-id show-ids? 
+                              visible-ids-max-length local-click configs]))
+                          [:div [:div "No devices found."]
+                           [:div " Check the local device "
+                            [:a {:href (routes/path-for :local-device-configs)} "configs"]]])]]]]))})))
 
 
 
@@ -261,7 +266,6 @@
                      (let [callback (fn []
                                       (swap! all-objects-a update-in [:objects]
                                              (fn [objs]
-                                               (prn objs)
                                                (remove #(= (:object-id %)
                                                            (:object-id object)) objs)))
                                       (mod/close-modal!))]
@@ -665,26 +669,31 @@
   (let [error? (r/atom nil)
         loading? (r/atom nil)
         objects-a (r/atom {})
+        current-loaded-id (r/atom nil)
         get-objects! (fn [device-id]
                        (reset! error? nil)
                        (reset! loading? true)
-                       (GET (api-path (:api-root configs)
-                                      "bacnet"
-                                      "devices" device-id
-                                      "objects")
-                           {:handler #(do 
-                                        (reset! loading? nil)
-                                        (reset! objects-a 
-                                                {:id device-id
-                                                 :objects (for [o (:objects %)]
-                                                            (let [[o-type o-inst] 
-                                                                  (s/split (:object-id o) #"\.")]
-                                                              (assoc o :object-type o-type :object-instance o-inst)))}))
-                            :response-format :transit
-                            :params {:properties [:object-name :description :units :present-value]}
-                            :error-handler #(do
-                                              (reset! loading? nil)
-                                              (reset! error? %))}))
+                       (let [d-id @selected-device-id]
+                         (GET (api-path (:api-root configs)
+                                        "bacnet"
+                                        "devices" device-id
+                                        "objects")
+                             {:handler #(when (= @selected-device-id device-id)
+                                          ;; only update if we are still looking at the same device
+                                          (reset! loading? nil)
+                                          (reset! current-loaded-id device-id)
+                                          (reset! objects-a 
+                                                  {:id device-id
+                                                   :objects (for [o (:objects %)]
+                                                              (let [[o-type o-inst] 
+                                                                    (s/split (:object-id o) #"\.")]
+                                                                (assoc o :object-type o-type :object-instance o-inst)))}))
+                              :response-format :transit
+                              :params {:properties [:object-name :description :units :present-value]}
+                              :error-handler #(when (= @selected-device-id device-id)
+                                                (reset! current-loaded-id device-id)
+                                                (reset! loading? nil)
+                                                (reset! error? %))})))
         filter-string (r/atom "")
         filter-fn (fn [objects filter-string]
                     (let [regexp (re-pattern (util/make-fuzzy-regex filter-string))]
@@ -699,10 +708,11 @@
         visible-objects-a (r/atom @objects-a)]
     (fn []
       (let [{:keys [id objects]} @objects-a
-            device-id @selected-device-id            
-            current-id? (= id device-id)]        
-        (when-not (or current-id? @error? @loading?)
-          (get-objects! device-id))
+            device-id @selected-device-id
+            current-id? (= @current-loaded-id @selected-device-id)
+            all-ok (and current-id? (not (or @error? @loading?)))]
+        (when-not current-id?
+          (get-objects! device-id))        
         (let [filtered-objects (-> (filter-fn objects @filter-string)
                                    (filter-by-type @type-filter))]
           (reset! visible-objects-a {:id id :objects filtered-objects})
@@ -712,7 +722,8 @@
            [[re/v-box
              :class (when objects (if-not (seq filtered-objects) "bg-danger"))
              :style {:padding "10px"
-                     :padding-top "0px"}
+                     :padding-top "0px"
+                     :opacity (when-not current-id? 0.5)}
              :children [[filtering-bar filter-string]
                         [object-type-filter type-filter]
                         [re/label :label [:span
@@ -720,14 +731,16 @@
                                                                       "text-danger"))
                                                       "field-label")}
                                           "Visible objects "
-                                          ": "(count filtered-objects) "/" (count objects) ]]]]
+                                          ": " (if all-ok (count filtered-objects) "- ") "/" 
+                                          (if all-ok (count objects) " -") ]]]]
             [re/box
              ;:style {:opacity (when-not current-id? "0.5")}
              :size "1"
              :child (cond @loading? [re/throbber]
-                          @error? [:div.alert.alert-danger "Unable to retrieve remote device data."]
-                          current-id? [make-table objects-a visible-objects-a device-id configs])
-             ]]])))))
+                          @error? [:div.alert.alert-danger "Unable to retrieve remote device data. "
+                                   [:a {:on-click #(get-objects! device-id)
+                                        :style {:cursor :pointer}} "Retry"]]
+                          current-id? [make-table objects-a visible-objects-a device-id configs])]]])))))
 
     
 
@@ -775,7 +788,7 @@
                               (reset! error? nil)
                               (reset! loading? true)
                               (GET (api-path (:api-root configs) "bacnet" "devices")
-                                  {:handler (fn [response] 
+                                  {:handler (fn [response]
                                               (js/setTimeout #(reset! loading? nil) 500)
                                               (reset! dev-list-a (:devices response)))
                                    :params (when force-refresh? {:refresh true})
@@ -793,7 +806,9 @@
             [re/h-split
              ;:size "grow"
              :initial-split 20
-             :panel-1 [left-side-nav-bar devices-list selected-device-id 
+             :panel-1 [left-side-nav-bar (r/atom (for [{:keys [device-id device-name]} devices-list]
+                                                   {:id device-id :name device-name}))
+                       selected-device-id 
                        (assoc configs :devices-list {:device-list-a dev-list-a
                                                      :refresh-fn #(load-devices-list! :refresh)
                                                      :loading-a loading?
@@ -837,16 +852,11 @@
 
 
 (defn controllers-view
-  ([device-id] (controllers-view device-id nil))
-  ([device-id configs]
+  ([selected-device-id] (controllers-view selected-device-id nil))
+  ([selected-device-id configs]
    (r/create-class
     {:display-name "controllers-view"
-     ;; :should-component-update (fn [_ _ _]
-     ;;                            true)
      :reagent-render
-     (fn [device-id configs]
-       ;; DON'T deref in this function, otherwise we always reset the
-       ;; atom to the initial value.
-                                        ;(reset! selected-device-id device-id)
-       [devices (r/atom device-id) (merge default-configs configs)])})))
+     (fn [selected-device-id configs]
+       [devices selected-device-id (merge default-configs configs)])})))
 

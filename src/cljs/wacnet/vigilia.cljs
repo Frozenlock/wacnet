@@ -337,7 +337,8 @@
 
 
 (defn explorer-form [configs-a]
-  (let [show-explorer? (r/atom nil)]
+  (let [show-explorer? (r/atom nil)
+        selected-device-id (r/atom nil)]
     (fn [configs-a]
       [:div.form-group
        [:div [:label "Filter individual objects"]]
@@ -362,7 +363,7 @@
                   :children
                   [[:div.text-right
                     [:button.btn.btn-primary {:on-click #(reset! show-explorer? nil)} "Close"]]
-                   [dev/controllers-view nil {:vigilia-mode configs-a}]]]])])))
+                   [dev/controllers-view selected-device-id {:vigilia-mode configs-a}]]]])])))
 
 
 
