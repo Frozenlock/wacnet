@@ -92,7 +92,7 @@
                  (re-find regexp (or (:name %) "< no name >"))) devices-list)))
 
 
-(defn sort-by-id-btn [manipulated-devices-list local-click]
+(defn sort-by-id-btn [sort-fn-a local-click]
   (let [ascending? (r/atom true)]
     (fn []
       (let [asc? @ascending?]
@@ -100,22 +100,21 @@
          :tooltip          "Sort by device ID"
          :tooltip-position :below-left
          :on-click         #(do (reset! local-click true)
-                                (swap! manipulated-devices-list
-                                       update-in [:devices]
-                                       (fn [coll]
-                                         (sort-by :id
-                                                  (fn [id-str1 id-str2]
-                                                    ((if asc? compare (comp (fn [n] (* -1 n)) compare))
-                                                     (reader/read-string id-str1)
-                                                     (reader/read-string id-str2)))
-                                                  coll)))
+                                (reset! sort-fn-a
+                                        (fn [coll]
+                                          (sort-by :id
+                                                   (fn [id-str1 id-str2]
+                                                     ((if asc? compare (comp (fn [n] (* -1 n)) compare))
+                                                      (reader/read-string id-str1)
+                                                      (reader/read-string id-str2)))
+                                                   coll)))
                                 (swap! ascending? not))
          :label            (if asc? 
                              [:i.fa.fa-sort-numeric-asc] 
                              [:i.fa.fa-sort-numeric-desc])]))))
 
 
-(defn sort-by-name-btn [manipulated-devices-list local-click]
+(defn sort-by-name-btn [sort-fn-a local-click]
   (let [ascending? (r/atom true)]
     (fn []
       (let [asc? @ascending?]
@@ -123,12 +122,11 @@
          :tooltip          "Sort by device name"
          :tooltip-position :below-left
          :on-click         #(do (reset! local-click true)
-                                (swap! manipulated-devices-list
-                                       update-in [:devices]
-                                       (fn [coll]
-                                         (sort-by :name
-                                                  (if asc? compare (comp (fn [n] (* -1 n)) compare))
-                                                  coll)))
+                                (reset! sort-fn-a
+                                        (fn [coll]
+                                          (sort-by :name
+                                                   (if asc? compare (comp (fn [n] (* -1 n)) compare))
+                                                   coll)))
                                 (swap! ascending? not))
          :label            (if asc? 
                              [:i.fa.fa-sort-alpha-asc] 
@@ -153,11 +151,19 @@
 
 
 (defn left-side-nav-bar
-  [devices-list selected-device-id configs]
+  [dev-list-a selected-device-id configs]
   (let [show-ids? (r/atom nil)
         local-click (r/atom nil)
-        manipulated-devices-list (r/atom {:devices @devices-list
-                                          :previous-filter ""})
+        clean-list-fn (fn [list-a] (for [{:keys [device-id device-name]} @list-a]
+                                     {:id device-id :name device-name}))
+        filter-a (r/atom "")
+        sort-fn-a (r/atom nil)
+        get-visible-devices (fn [] 
+                              {:devices (let [d (filter-devices (clean-list-fn dev-list-a)
+                                                                @filter-a)]
+                                          (if-let [f @sort-fn-a]
+                                            (f d) d))})
+        manipulated-devices-list (r/track get-visible-devices)
         select-device! (fn [id]
                          (do 
                            (when-not (:vigilia-mode configs) 
@@ -166,17 +172,16 @@
                              (reset! selected-device-id id)))]
                            
     (r/create-class
-     {:reagent-render
-      (fn [devices-list selected-device-id configs]
+     {:component-did-update #()
+      :reagent-render
+      (fn [dev-list-a selected-device-id configs]
         (let [ids? @show-ids?
-              devices @devices-list
+              devices (clean-list-fn dev-list-a)
               visible-ids (map :id (:devices @manipulated-devices-list))
               visible-ids-max-length (apply max (map count visible-ids))]
           (when-not (some #{@selected-device-id} (map :id devices))
             (when (seq devices)
               (select-device! (:id (first devices)))))
-          (prn "nav bar")
-          (prn visible-ids)
           [re/v-box
            :class    "noselect"
            :size     "1"
@@ -197,15 +202,13 @@
                                    :tooltip-position :below-right]
                                   [refresh-btn configs]
                                   [re/gap :size "1"]
-                                  [sort-by-id-btn manipulated-devices-list local-click]
-                                  [sort-by-name-btn manipulated-devices-list local-click]]]
+                                  [sort-by-id-btn sort-fn-a local-click]
+                                  [sort-by-name-btn sort-fn-a local-click]]]
                       [re/input-text 
                        :model       ""
                        :width       "100%" 
                        :change-on-blur? false
-                       :on-change   #(reset! manipulated-devices-list 
-                                             {:devices (filter-devices @devices-list %)
-                                              :previous-filter %})
+                       :on-change   #(reset! filter-a %)
                        :placeholder "Filter"]
                       [re/gap :size "5px"]
                       [re/scroller     ;common/scrollable 
@@ -804,10 +807,7 @@
             [re/h-split
              ;:size "grow"
              :initial-split 20
-             :panel-1 [left-side-nav-bar (r/atom (conj (for [{:keys [device-id device-name]} devices-list]
-                                                         {:id device-id :name device-name})
-                                                       {:id "1111" :name "test device"}
-                                                       {:id "2222" :name "another device"}))
+             :panel-1 [left-side-nav-bar dev-list-a
                        selected-device-id 
                        (assoc configs :devices-list {:device-list-a dev-list-a
                                                      :refresh-fn #(load-devices-list! :refresh)
