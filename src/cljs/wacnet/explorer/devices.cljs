@@ -64,11 +64,13 @@
       :reagent-render
       (fn [tab selected-tab-id show-ids? ids-length on-select-tab]
         (let [selected?   (= @selected-tab-id (:id tab))
+              tab-name (let [n (:name tab)]
+                         (if (empty? n) "< no name >" n))
               ids? @show-ids?]
           (reset! this-id (:id tab))
           [:div.nav-item
            {:class (when selected? "selected")
-            :title (:name tab)
+            :title tab-name
 
             :on-click (handler-fn (do (reset! local-click (:id tab))
                                       (if-not (:vigilia-mode configs)                                        
@@ -80,7 +82,7 @@
              [:strong.nav-ids 
               (pad-id-length (:id tab) ids-length)]]
            ;(when ids? [re/line :class "separator" :color nil])
-           [:span (or (:name tab) "< no name >")]]))})))
+           [:span tab-name]]))})))
 
 
 
@@ -164,13 +166,7 @@
                              (reset! selected-device-id id)))]
                            
     (r/create-class
-     {:component-will-update (fn [this args]
-                               (let [[devices-list & rest] (rest args)]
-                                 (swap! manipulated-devices-list
-                                        assoc :devices 
-                                        (filter-devices @devices-list
-                                                        (:previous-filter @manipulated-devices-list)))))
-      :reagent-render
+     {:reagent-render
       (fn [devices-list selected-device-id configs]
         (let [ids? @show-ids?
               devices @devices-list
@@ -179,6 +175,8 @@
           (when-not (some #{@selected-device-id} (map :id devices))
             (when (seq devices)
               (select-device! (:id (first devices)))))
+          (prn "nav bar")
+          (prn visible-ids)
           [re/v-box
            :class    "noselect"
            :size     "1"
@@ -206,7 +204,7 @@
                        :width       "100%" 
                        :change-on-blur? false
                        :on-change   #(reset! manipulated-devices-list 
-                                             {;:devices (filter-devices @devices-list %) ;<- comp-will-update
+                                             {:devices (filter-devices @devices-list %)
                                               :previous-filter %})
                        :placeholder "Filter"]
                       [re/gap :size "5px"]
@@ -806,8 +804,10 @@
             [re/h-split
              ;:size "grow"
              :initial-split 20
-             :panel-1 [left-side-nav-bar (r/atom (for [{:keys [device-id device-name]} devices-list]
-                                                   {:id device-id :name device-name}))
+             :panel-1 [left-side-nav-bar (r/atom (conj (for [{:keys [device-id device-name]} devices-list]
+                                                         {:id device-id :name device-name})
+                                                       {:id "1111" :name "test device"}
+                                                       {:id "2222" :name "another device"}))
                        selected-device-id 
                        (assoc configs :devices-list {:device-list-a dev-list-a
                                                      :refresh-fn #(load-devices-list! :refresh)
