@@ -164,7 +164,6 @@
   ([local-device-id device-id] (object-list local-device-id device-id nil))
   ([local-device-id device-id desired-properties]
    (let [get-prop-fn (fn [obj-id props]
-                       ;(println obj-id)
                        (b/remote-object-properties 
                         local-device-id device-id obj-id props))
          object-identifiers (-> (get-prop-fn [:device device-id] :object-list)
@@ -176,6 +175,7 @@
          (-> raw-obj-map
              (assoc :device-id (str device-id))
              (prepare-obj-map)))))))
+
 
 (defn get-object-properties
   "Get and prepare the object properties."
