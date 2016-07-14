@@ -149,6 +149,10 @@
         (update-in [:units] #(when (keyword? %) 
                                (-> (name %)
                                    (string/replace #"-" " "))))
+        ((fn [o] (->> (for [[k v] o]
+                         (when v [k v]))
+                       (remove nil?)
+                       (into {}))))
         (assoc :object-id obj-id
                :object-instance (str (last object-identifier))
                :object-type (->> (first object-identifier)
