@@ -160,25 +160,73 @@
                                  (str)))
         binary-to-int)))
 
-(defn object-list
+
+(defn get-object-quantity [local-device-id device-id]
+  (-> (b/remote-object-properties 
+       local-device-id device-id [:device device-id] [[:object-list 0]])
+      first
+      :object-list))
+
+(defn get-object-list [local-device-id device-id]
+  (-> (b/remote-object-properties 
+       local-device-id device-id [:device device-id] :object-list)
+      first
+      :object-list))
+
+
+(defn paginated-object-list
   "Return a collection of object maps. Each one has, in addition to the
   given properties, the :object-id, :object-type
   and :object-instance.
-  If no properties are given, only retreive the name."
-  ([local-device-id device-id] (object-list local-device-id device-id nil))
-  ([local-device-id device-id desired-properties]
-   (let [get-prop-fn (fn [obj-id props]
+  If no properties are given, only retrieve the name."
+  ([local-device-id device-id] (paginated-object-list local-device-id device-id nil 20 1))
+  ([local-device-id device-id desired-properties limit page]
+   (let [obj-qty (get-object-quantity local-device-id device-id)
+         all-array-indexes (range 1 (inc obj-qty))
+         cursor-pos (* limit (dec page))
+         after-cursor (drop cursor-pos all-array-indexes)
+         remaining? (> (count after-cursor) limit)
+         desired-array (for [i (take limit after-cursor)]
+                         [:object-list i])
+         get-prop-fn (fn [obj-ids props]
                        (b/remote-object-properties 
-                        local-device-id device-id obj-id props))
-         object-identifiers (-> (get-prop-fn [:device device-id] :object-list)
+                        local-device-id device-id obj-ids props))
+         object-identifiers (-> (if (> obj-qty limit)
+                                  (get-prop-fn [:device device-id] desired-array)
+                                  (get-prop-fn [:device device-id] :object-list))
                                 first
                                 :object-list)]
      (when object-identifiers 
-       (for [raw-obj-map (get-prop-fn object-identifiers 
-                                      (or desired-properties :object-name))]
-         (-> raw-obj-map
-             (assoc :device-id (str device-id))
-             (prepare-obj-map)))))))
+       {:objects (for [raw-obj-map (get-prop-fn object-identifiers 
+                                                (or desired-properties :object-name))]
+                   (-> raw-obj-map
+                       (assoc :device-id (str device-id))
+                       (prepare-obj-map)))
+        :limit limit
+        :next-page (when remaining? (inc page))
+        :current-page page
+        :previous-page (when (> page 1) (dec page))}))))
+
+
+;; (defn object-list
+;;   "Return a collection of object maps. Each one has, in addition to the
+;;   given properties, the :object-id, :object-type
+;;   and :object-instance.
+;;   If no properties are given, only retrieve the name."
+;;   ([local-device-id device-id] (object-list local-device-id device-id nil))
+;;   ([local-device-id device-id desired-properties]
+;;    (let [get-prop-fn (fn [obj-id props]
+;;                        (b/remote-object-properties 
+;;                         local-device-id device-id obj-id props))
+;;          object-identifiers (-> (get-prop-fn [:device device-id] :object-list)
+;;                                 first
+;;                                 :object-list)]
+;;      (when object-identifiers 
+;;        (for [raw-obj-map (get-prop-fn object-identifiers 
+;;                                       (or desired-properties :object-name))]
+;;          (-> raw-obj-map
+;;              (assoc :device-id (str device-id))
+;;              (prepare-obj-map)))))))
 
 
 (defn get-object-properties
@@ -231,6 +279,22 @@
          (into {}))
     b-error))
 
+(defn make-page-link [ctx page-num limit]
+  (def bbb ctx)
+  (when page-num
+    (let [params (:parameters ctx)
+          query (:query params)]
+      (make-link ctx (str (:uri (:request ctx)) 
+                          "?"
+                          (string/join "&"
+                                       (for [[k v] (assoc query :limit limit :page page-num)]
+                                         (if (coll? v)
+                                           (string/join "&"
+                                                        (for [i v]
+                                                          (str (name k) "=" 
+                                                               (name i))))
+                                           (str (name k) "="v)))))))))
+
 
 (def objects
   (resource
@@ -273,7 +337,11 @@
                                             {:status 500
                                              :body (clean-errors result)})))))))}
               :get {:parameters {:path {:device-id Long}
-                                 :query {(s/optional-key :properties)
+                                 :query {(s/optional-key :limit) 
+                                         (rs/field Long
+                                                   {:description "Maximum number of objects per page."})
+                                         (s/optional-key :page) Long
+                                         (s/optional-key :properties)
                                          (rs/field [s/Keyword]
                                                    {:description "List of wanted properties."})}}
                     :summary "Objects list, optionally with all their properties."
@@ -281,14 +349,24 @@
                     :swagger/tags ["BACnet"]
                     :response (fn [ctx]
                                 (let [device-id (some-> ctx :parameters :path :device-id)
+                                      limit (or (some-> ctx :parameters :query :limit) 20)
+                                      page (or (some-> ctx :parameters :query :page) 1)
                                       properties (some-> ctx :parameters :query :properties)]
                                   (with-bacnet-device ctx nil
-                                    (let [o-l (object-list nil device-id properties)]
-                                      {:href (make-link ctx)
-                                       :objects (for [o o-l]
-                                                  (-> (assoc o :href (make-link ctx (str (:uri (:request ctx)) 
-                                                                                         "/" (:object-id o))))
-                                                      (dissoc :object-type :object-instance)))}))))}}}))
+                                    (let [p-o-l (paginated-object-list nil device-id properties limit page)
+                                          {:keys [next-page previous-page current-page objects]} p-o-l]
+                                      (merge {:device
+                                              {:href (make-link ctx
+                                                                (string/replace (:uri (:request ctx)) 
+                                                                                "/objects" ""))}
+                                              :objects (for [o objects]
+                                                         (assoc o :href (make-link ctx (str (:uri (:request ctx)) 
+                                                                                            "/" (:object-id o)))))
+                                              :href (make-page-link ctx current-page limit)}
+                                             (when-let [l (make-page-link ctx next-page limit)]
+                                               {:next {:href l}})
+                                             (when-let [l (make-page-link ctx previous-page limit)]
+                                               {:previous {:href l}}))))))}}}))
 
 (s/defschema PropertyValue
   {s/Keyword  ;; property identifier
