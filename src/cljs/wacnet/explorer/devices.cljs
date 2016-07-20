@@ -395,7 +395,7 @@
       :component-will-unmount #(reset! forget-me? true)
       :reagent-render
       (fn [all-objects-a visible-objects-a device-id configs]
-        (let [table-data (vec (sort-by :object-name (:objects @visible-objects-a)))
+        (let [table-data (vec (:objects @visible-objects-a))
               this-c (r/current-component)
               make-cell (fn [component-fn]
                           (fn [args]
@@ -670,31 +670,48 @@
   (let [error? (r/atom nil)
         loading? (r/atom nil)
         objects-a (r/atom {})
+        all-loaded? (r/atom nil)
         current-loaded-id (r/atom nil)
-        get-objects! (fn [device-id]
-                       (reset! error? nil)
-                       (reset! loading? true)
-                       (let [d-id @selected-device-id]
-                         (GET (api-path (:api-root configs)
-                                        "bacnet"
-                                        "devices" device-id
-                                        "objects")
-                             {:handler #(when (= @selected-device-id device-id)
-                                          ;; only update if we are still looking at the same device
-                                          (reset! loading? nil)
-                                          (reset! current-loaded-id device-id)
-                                          (reset! objects-a 
-                                                  {:id device-id
-                                                   :objects (for [o (:objects %)]
-                                                              (let [[o-type o-inst] 
-                                                                    (s/split (:object-id o) #"\.")]
-                                                                (assoc o :object-type o-type :object-instance o-inst)))}))
-                              :response-format :transit
-                              :params {:properties [:object-name :description :units :present-value]}
-                              :error-handler #(when (= @selected-device-id device-id)
-                                                (reset! current-loaded-id device-id)
-                                                (reset! loading? nil)
-                                                (reset! error? %))})))
+        get-remaining-objects! 
+        (fn get-remaining-objects! 
+          ([device-id]
+           (reset! error? nil)
+           (reset! loading? true)
+           (get-remaining-objects! device-id 1))
+          ([device-id page]
+           (when-not (= @current-loaded-id device-id)
+             (reset! objects-a {}))
+           (reset! current-loaded-id device-id)           
+           (GET (api-path (:api-root configs)
+                          "bacnet"
+                          "devices" device-id
+                          "objects")
+               {:handler #(do 
+                            (when (= @selected-device-id device-id)
+                              (if-let [n-page (get-in % [:next :page])]
+                                (get-remaining-objects! device-id n-page)
+                                (reset! all-loaded? true))
+                              ;; only update if we are still looking at the same device
+                              (reset! loading? nil)
+                              (let [o-to-add (for [o (:objects %)]
+                                               (let [[o-type o-inst] 
+                                                     (s/split (:object-id o) #"\.")]
+                                                 (assoc o :object-type o-type :object-instance o-inst)))]
+                                (if (= device-id (:id @objects-a))
+                                  (swap! objects-a update-in [:objects]
+                                         (fn [objs]
+                                           (distinct (concat objs o-to-add))))
+                                  (reset! objects-a {:id device-id
+                                                     :objects o-to-add})))))
+                :response-format :transit
+                :params {:properties [:object-name :description :units :present-value]
+                         :limit 50
+                         :page page}
+                :error-handler #(when (= @selected-device-id device-id)
+                                  (reset! loading? nil)
+                                  (reset! error? {:page page
+                                                  :device-id device-id}))})))
+
         filter-string (r/atom "")
         filter-fn (fn [objects filter-string]
                     (let [regexp (re-pattern (util/make-fuzzy-regex filter-string))]
@@ -707,41 +724,55 @@
                              :input nil
                              :output nil})
         visible-objects-a (r/atom @objects-a)]
-    (fn []
-      (let [{:keys [id objects]} @objects-a
-            device-id @selected-device-id
-            current-id? (= @current-loaded-id @selected-device-id)
-            all-ok (and current-id? (not (or @error? @loading?)))]
-        (when-not current-id?
-          (get-objects! device-id))        
-        (let [filtered-objects (-> (filter-fn objects @filter-string)
-                                   (filter-by-type @type-filter))]
-          (reset! visible-objects-a {:id id :objects filtered-objects})
-          [re/v-box
-           :size "1"
-           :children 
-           [[re/v-box
-             :class (when objects (if-not (seq filtered-objects) "bg-danger"))
-             :style {:padding "10px"
-                     :padding-top "0px"
-                     :opacity (when-not current-id? 0.5)}
-             :children [[filtering-bar filter-string]
-                        [object-type-filter type-filter]
-                        [re/label :label [:span
-                                          {:class (or (when objects (if-not (seq filtered-objects) 
-                                                                      "text-danger"))
-                                                      "field-label")}
-                                          "Visible objects "
-                                          ": " (if all-ok (count filtered-objects) "- ") "/" 
-                                          (if all-ok (count objects) " -") ]]]]
-            [re/box
-             ;:style {:opacity (when-not current-id? "0.5")}
+    (r/create-class
+     {:component-did-mount (fn [] 
+                             (let [current-id? (= @current-loaded-id @selected-device-id)
+                                   device-id @selected-device-id]
+                               (when-not current-id?
+                                 (get-remaining-objects! device-id))))
+      :component-did-update (fn [] 
+                             (let [current-id? (= @current-loaded-id @selected-device-id)
+                                   device-id @selected-device-id]
+                               (when-not current-id?
+                                 (get-remaining-objects! device-id))))
+      :reagent-render
+      (fn []        
+        (let [{:keys [id objects]} @objects-a
+              device-id @selected-device-id
+              current-id? (= @current-loaded-id @selected-device-id)
+              all-ok (and current-id? (not (or @error? @loading?)))]          
+          (let [filtered-objects (-> (filter-fn objects @filter-string)
+                                     (filter-by-type @type-filter))]
+            (reset! visible-objects-a {:id id :objects filtered-objects})
+            [re/v-box
              :size "1"
-             :child (cond @loading? [re/throbber]
-                          @error? [:div.alert.alert-danger "Unable to retrieve remote device data. "
-                                   [:a {:on-click #(get-objects! device-id)
-                                        :style {:cursor :pointer}} "Retry"]]
-                          current-id? [make-table objects-a visible-objects-a device-id configs])]]])))))
+             :children 
+             [[re/v-box
+               :class (when objects (if-not (seq filtered-objects) "bg-danger"))
+               :style {:padding "10px"
+                       :padding-top "0px"
+                       :opacity (when-not current-id? 0.5)}
+               :children [[filtering-bar filter-string]
+                          [object-type-filter type-filter]
+                          [re/label :label [:div {:class (or (when objects (if-not (seq filtered-objects) 
+                                                                             "text-danger"))
+                                                             "field-label")}
+                                            [:span "Visible objects "
+                                             ": " (count filtered-objects) "/" 
+                                             (count objects) " "
+                                             (when-not (or @error? @all-loaded?)
+                                               [:i.fa.fa-spinner.fa-pulse])]]]]]
+              [re/v-box
+                                        ;:style {:opacity (when-not current-id? "0.5")}
+               :size "1"
+               :children [;(when @loading? [re/throbber])
+                          (when-let [err @error?] 
+                            [:div.alert.alert-danger "Error while trying to load objects page " (:page err) ". "
+                             [:a {:on-click #(do (reset! error? nil)
+                                                 (get-remaining-objects! device-id (:page err)))
+                                  :style {:cursor :pointer}} "Retry"]])
+                          (when (= id @selected-device-id)
+                            [make-table objects-a visible-objects-a device-id configs])]]]])))})))
 
     
 

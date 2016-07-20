@@ -310,7 +310,9 @@
                                  "the object-instance itself.\n\n"
                                  "The object-type can be the integer value or the keyword. "
                                  "(Ex: \"0\" or \"analog-input\" for an analog input)\n\n"
-                                 "It is possible to give additional properties (such as object-name).")
+                                 "It is possible to give additional properties (such as object-name)."
+                                 "\n\n"
+                                 "Unless specified, the page will default to 1 and limit to 20 objects.")
                :swagger/tags ["BACnet"]
                :parameters {:path {:device-id Long}
                             :body BACnetObject}
@@ -364,9 +366,11 @@
                                                                                             "/" (:object-id o)))))
                                               :href (make-page-link ctx current-page limit)}
                                              (when-let [l (make-page-link ctx next-page limit)]
-                                               {:next {:href l}})
+                                               {:next {:href l
+                                                       :page next-page}})
                                              (when-let [l (make-page-link ctx previous-page limit)]
-                                               {:previous {:href l}}))))))}}}))
+                                               {:previous {:href l
+                                                           :page previous-page}}))))))}}}))
 
 (s/defschema PropertyValue
   {s/Keyword  ;; property identifier
