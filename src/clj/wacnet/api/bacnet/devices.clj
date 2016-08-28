@@ -312,7 +312,7 @@
                                  "(Ex: \"0\" or \"analog-input\" for an analog input)\n\n"
                                  "It is possible to give additional properties (such as object-name)."
                                  "\n\n"
-                                 "Unless specified, the page will default to 1 and limit to 20 objects.")
+                                 "Unless specified, the page will default to 1 and limit to 50 objects.")
                :swagger/tags ["BACnet"]
                :parameters {:path {:device-id Long}
                             :body BACnetObject}
@@ -351,7 +351,7 @@
                     :swagger/tags ["BACnet"]
                     :response (fn [ctx]
                                 (let [device-id (some-> ctx :parameters :path :device-id)
-                                      limit (or (some-> ctx :parameters :query :limit) 20)
+                                      limit (or (some-> ctx :parameters :query :limit) 50)
                                       page (or (some-> ctx :parameters :query :page) 1)
                                       properties (some-> ctx :parameters :query :properties)]
                                   (with-bacnet-device ctx nil
@@ -386,19 +386,25 @@
     :access-control {:allow-origin "*"}
     :methods {:put {:summary "Update object"
                     :description (str "Update object properties.\n\n The properties expected are of the form :"
-                                      "\n\n"
+                                      "\n"
                                       "{property-identifier1 property-value1, "
-                                      "property-identifier2 property-value2}")
+                                      "property-identifier2 property-value2}"
+                                      "\n\n"
+                                      "WARNING : you can specify the priority, but you should ONLY do so"
+                                      " if you understand the consequences.")
                     :swagger/tags ["BACnet"]
                     :parameters {:path {:device-id Long :object-id String}
-                                 :body {:properties PropertyValue}}
+                                 :body {:properties PropertyValue
+                                        (s/optional-key :priority) Long}}
                     :response (fn [ctx]
                                 (let [device-id (get-in ctx [:parameters :path :device-id])
                                       o-id (get-in ctx [:parameters :path :object-id])
-                                      properties (get-in ctx [:parameters :body :properties])]
+                                      properties (get-in ctx [:parameters :body :properties])
+                                      priority (get-in ctx [:parameters :body :priority] nil)]
                                   (with-bacnet-device ctx nil
                                     (let [write-access-spec {(obj-id-to-object-identifier o-id)
-                                                             properties}]                                      
+                                                             (for [[k v] properties]
+                                                               [k (rd/advanced-property v priority nil)])}]
                                       (let [result (rd/set-remote-properties! nil device-id write-access-spec)]
                                         (if (:success result)
                                           result

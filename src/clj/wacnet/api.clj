@@ -28,7 +28,7 @@
             ["multi-objects" [["" bd/multi-objects]]]]]
           log/api-route]]
     {:info {:title "Wacnet API"
-            :version "1.0"
+            :version "1.1"
             :description "API for Wacnet multiple features"
             :contact {:name "HVAC.IO"
                       :email "contact@hvac.io"

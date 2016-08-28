@@ -680,7 +680,8 @@
            (get-remaining-objects! device-id 1))
           ([device-id page]
            (when-not (= @current-loaded-id device-id)
-             (reset! objects-a {}))
+             (reset! objects-a {})
+             (reset! all-loaded? nil))
            (reset! current-loaded-id device-id)           
            (GET (api-path (:api-root configs)
                           "bacnet"

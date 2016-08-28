@@ -67,7 +67,7 @@
         matched-route (bidi/match-route routes/app-routes url-sans-hash)]
     (let [{:keys [handler route-params]} matched-route]
       (if-not handler
-        (goto-tab! :devices) ;; default tab
+        (goto-tab! :local-device-configs) ;; default tab
         (do 
           (reset! current-tab-id handler)
           (reset! current-tab-content
@@ -119,7 +119,8 @@
      [:a {:href "https://github.com/Frozenlock/wacnet" :target "_blank"} "free and open source"] 
      ", provided to you by " [:a {:href "https://hvac.io" :target "_blank"} "HVAC.IO"]]
     [:p "Additional info is available on the " 
-     [:a {:href "https://wiki.hvac.io/doku.php?id=suppliers:hvac.io:wacnet"} "Wiki"] "."]
+     [:a {:href "https://wiki.hvac.io/doku.php?id=suppliers:hvac.io:wacnet"
+          :target "_blank"} "Wiki"] "."]
     [:p "If you'd like to have a feature implemented, or need your own BACnet application, "
      "contact us at " [:a {:href "mailto:contact@hvac.io"} "contact@hvac.io"] "."]
     [:hr]

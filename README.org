@@ -3,16 +3,6 @@
 * Compiled Version
   The compiled version can be found [[https://hvac.io/docs/wacnet][here]].
 
-* About
-  
-  Wacnet is a BACnet webserver and toolkit.
-
-  [[http://youtu.be/ehvGvz0xIgE?list=PLFjgTgYSkyZBLhakIQu3GwKpIuxU5Ho1N][./resources/public/img/youtube.png]]
-
-
-  The main web interface is /read-only/.
-  However, it's possible to send commands via the [[Advanced usage (REPL)][REPL]].
-  
 * Rationale
   The purpose of BACnet is to provide interoperability between
   devices from multiple manufacturers. 
