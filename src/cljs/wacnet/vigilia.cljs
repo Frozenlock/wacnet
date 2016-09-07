@@ -5,7 +5,7 @@
             [re-com.core :as re]
             [wacnet.templates.common :as common]
             [clojure.string :as s]
-            [goog.string :as gstring]            
+            [goog.string :as gstring]
             [wacnet.explorer.devices :as dev]))
 
 (def configs-api-url "/api/v1/vigilia/logger/configs")
@@ -32,12 +32,14 @@
 (defn form-group 
   ([value-atom label info]
    (form-group value-atom label info {:type :text}))
-  ([value-atom label info attrs]
+  ([value-atom label info attrs] 
+   (form-group value-atom label info attrs identity))
+  ([value-atom label info attrs parse-fn]
    [:div.form-group
     [:label label]
     [:input.form-control (merge attrs 
                                 {:value @value-atom
-                                 :on-change #(let [v (-> % .-target .-value)]
+                                 :on-change #(let [v (-> % .-target .-value parse-fn)]
                                                (reset! value-atom v))})]
     [:p.text-info info]]))
 
@@ -57,7 +59,9 @@
                       "10 minutes is a great interval to see most HVAC behaviors. "
                       "(Minimum interval is 5 minutes.) Note that this is the minimum interval. "
                       "It might take longer if you have a large or slow network.")
-   {:type :number :min 5}])
+   {:type :number :min 5}
+   (fn [value] (when-not (empty? value)
+                 (js/parseInt value)))])
 
 
 (defn range-form [logger-config-a]
@@ -156,6 +160,9 @@
               :max 1000 :min 0 :step 50}]
      [:p.text-info (str "Delay between each object scan of a device. This increases the total scan time. "
                         "Use this if the scans cause you to lose connection with some devices.")]]))
+
+
+
 
 (defn load! [url params result-a loading-a error-a]
   (reset! loading-a true)
@@ -366,6 +373,47 @@
                    [dev/controllers-view selected-device-id {:vigilia-mode configs-a}]]]])])))
 
 
+(defn proxy-form [logger-config-a]
+  (let [proxy-host (r/cursor logger-config-a [:proxy-host])
+        proxy-port (r/cursor logger-config-a [:proxy-port])
+        proxy-user (r/cursor logger-config-a [:proxy-user])
+        proxy-password (r/cursor logger-config-a [:proxy-password])]
+    [:div.form-group
+     [:h4 "Vigilia Server Proxy"]
+     [:div.text-right
+      [:button.btn.btn-sm.btn-danger
+       {:disabled (when-not (or @proxy-host @proxy-port @proxy-user @proxy-password) true)
+        :on-click (fn [_] 
+                    (reset! proxy-host nil)
+                    (reset! proxy-port nil)
+                    (reset! proxy-user nil)
+                    (reset! proxy-password nil))}
+       "Clear proxy"]]
+     [:div.row
+      [:div.col-md-6
+       [:label (str "Proxy host" " (ex: http://127.0.0.1)")]
+       [:input.form-control {:value @proxy-host
+                             :on-change #(let [v (some-> % .-target .-value)]
+                                           (reset! proxy-host v))}]]
+      [:div.col-md-6
+       [:label (str "Proxy port" " (ex: 4341)")]
+       [:input.form-control {:value @proxy-port
+                             :type :number :min 0
+                             :on-change #(let [v (some-> % .-target .-value js/parseInt)]
+                                           (reset! proxy-port v))}]]]
+     [:div.row
+      [:div.col-md-6
+       [:label (str "Proxy username")]
+       [:input.form-control {:value @proxy-user
+                             :on-change #(let [v (some-> % .-target .-value)]
+                                           (reset! proxy-user v))}]]
+      [:div.col-md-6
+       [:label (str "Proxy password")]
+       [:input.form-control {:value @proxy-password
+                             :on-change #(let [v (some-> % .-target .-value)]
+                                           (reset! proxy-password v))}]]]     
+     [:p.text-info (str "Some networks require to use a proxy to communicate to the Internet.")]]))
+
 
 (defn advanced-configs-panel [configs-a]
   [:div.panel.panel-default
@@ -374,23 +422,28 @@
     [:h4.panel-title.text-center "Advanced configs (optional) " [:i.fa.fa-chevron-down]]]
    [:div.panel-collapse.collapse {:id "advanded-configs"}
     [:div.panel-body
-     [:div.row
-      [:div.col-sm-6
-       [logger-id-form configs-a]
-       [interval-form configs-a]]
-      [:div.col-sm-6
-       [range-form configs-a]]]
-     [:div.row
-      [:div.col-sm-6
-       [id-filter-form configs-a]
-       [object-delay-form configs-a]]
-      [:div.col-sm-6
-       [criteria-filter-form configs-a]]]
-     [:div.row
-      [:div.col-sm-6 [explorer-form configs-a]]]
-     [:div.text-right
-      [save-btn configs-a nil]]
-     ;; [:div (str @configs-a)]
+     [re/h-box
+      :size "1"
+      :gap "10px"
+      :children 
+      [[re/v-box
+        :size "1"
+        :children [[logger-id-form configs-a]
+                   [interval-form configs-a]
+                   [range-form configs-a]
+                   [id-filter-form configs-a]
+                   [explorer-form configs-a]]]
+       [re/v-box
+        :size "1"
+        :children [                   [proxy-form configs-a]
+                   [object-delay-form configs-a]
+                   [criteria-filter-form configs-a]
+                   [re/gap :size "1"]
+                   [re/box :child 
+                    [:div.text-right [save-btn configs-a nil]]]]]
+       ]]
+     
+
      ]]])
 
 
