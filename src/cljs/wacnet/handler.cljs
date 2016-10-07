@@ -148,10 +148,10 @@
            [horizontal-tabs tabs]
            [re/gap :size "1"]
            [:div {:style {:margin "10px"
-                                 :margin-left "50px"
-                                 :display "inline-block"
-                                 :vertical-align "middle"}}
-                   [:a.text-sm {:href "/api/v1" :target "_blank"} "API "[:i.fa.fa-external-link]]]
+                          :margin-left "50px"
+                          :display "inline-block"
+                          :vertical-align "middle"}}
+            [:a.text-sm {:href "/api/v1" :target "_blank"} "API "[:i.fa.fa-external-link]]]
            [:button.btn.btn-sm.btn-default 
             {:on-click #(mod/modal! [about-modal])} "About "[:i.fa.fa-question-circle]]
            [re/gap :size "10px"]]]
