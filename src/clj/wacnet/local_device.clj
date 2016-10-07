@@ -1,26 +1,28 @@
 (ns wacnet.local-device
   (:require [bacure.core]
             [bacure.local-device :as ld]
+            [bacure.local-save :as ls]
             ;[bacure.read-properties-cached :as rpc]
             [vigilia-logger.timed :as timed]
             [trptcolin.versioneer.core :as version]            
-            [clojure.stacktrace :as st]
-            ))
+            [clojure.stacktrace :as st]))
 
 (defn initialize!
   "Initialize the local BACnet device." []
-  (bacure.core/boot-up!
-   {:vendor-name "HVAC.IO"
-    :vendor-identifier 697
-    :model-name "Wacnet"
-    :object-name "Wacnet webserver"
-    :application-software-version (version/get-version "wacnet" "wacnet")
-    :description 
-    (str "Wacnet: BACnet webserver and toolkit. "
-         "Access the web interface at "
-         "http://"(bacure.network/get-any-ip)":47800, "
-         "or use the Clojure nREPL on port 47999" 
-         ".")})
+  (let [saved-configs (ls/get-configs)
+        {:keys [object-name description]} saved-configs]
+    (bacure.core/boot-up!
+     {:vendor-name "HVAC.IO"
+      :vendor-identifier 697
+      :model-name "Wacnet"
+      :object-name (or object-name "Wacnet webserver")
+      :application-software-version (version/get-version "wacnet" "wacnet")
+      :description (or description
+                       (str "Wacnet: BACnet webserver and toolkit. "
+                            "Access the web interface at "
+                            "http://"(bacure.network/get-any-ip)":47800, "
+                            "or use the Clojure nREPL on port 47999" 
+                            "."))}))
   (timed/maybe-start-logging))
 
 (defn java-version
