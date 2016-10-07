@@ -213,6 +213,7 @@
                       [re/gap :size "5px"]
                       [re/scroller     ;common/scrollable 
                        :size "1"
+                       :class "left-side-navbar-container"
                        :child
                        
                        [:div 
@@ -771,7 +772,9 @@
                             [:div.alert.alert-danger "Error while trying to load objects page " (:page err) ". "
                              [:a {:on-click #(do (reset! error? nil)
                                                  (get-remaining-objects! device-id (:page err)))
-                                  :style {:cursor :pointer}} "Retry"]])
+                                  :style {:cursor :pointer}} "Retry"]
+                             [:div (str "You can also check the model link above to see if there are " 
+                                        "known BACnet issues with this product.")]])
                           (when (= id @selected-device-id)
                             [make-table objects-a visible-objects-a device-id configs])]]]])))})))
 
