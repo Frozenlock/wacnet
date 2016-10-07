@@ -31,7 +31,7 @@
   #{:broadcast-address :device-id :port
     :apdu-timeout
     :number-of-apdu-retries :description
-    :object-name :device-name})
+    :object-name})
 
 (defn remove-nils [m]
   (->> (for [[k v] m]
@@ -68,8 +68,7 @@
    (s/optional-key :apdu-timeout) s/Int
    (s/optional-key :apdu-segment-timeout) s/Int
    (s/optional-key :number-of-apdu-retries) s/Int
-   (s/optional-key :object-name) s/Str
-   (s/optional-key :device-name) s/Str})
+   (s/optional-key :object-name) s/Str})
 
 (def bacnet-configs
   (resource

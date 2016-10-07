@@ -67,7 +67,11 @@
    :id-to-keep
    :time-interval
    :criteria-coll
-   :object-delay])
+   :object-delay
+   :proxy-host
+   :proxy-port
+   :proxy-user
+   :proxy-password])
 
 (s/defschema TargetObjects
   {s/Str [s/Str]})
@@ -86,7 +90,11 @@
    (s/optional-key :time-interval) s/Int
    (s/optional-key :criteria-coll) s/Any
    (s/optional-key :object-delay) s/Int
-   (s/optional-key :target-objects) TargetObjects})
+   (s/optional-key :target-objects) TargetObjects
+   (s/optional-key :proxy-host) s/Str
+   (s/optional-key :proxy-port) s/Int
+   (s/optional-key :proxy-user) s/Str
+   (s/optional-key :proxy-password) s/Str})
 
 (defn decode-target-objects [config-map]
   (if (:target-objects config-map)
