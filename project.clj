@@ -14,7 +14,7 @@
                  [bidi "2.0.9"]      ; routing
                  [aleph "0.4.1"] ; server
                  [aleph-middleware "0.1.1"]
-                 [yada "1.1.26"]
+                 [yada "1.1.29"]
                  
                  [trptcolin/versioneer "0.2.0"]
                  
