@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.1"
+(defproject wacnet "2.1.2"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -11,7 +11,7 @@
                  [io.hvac.vigilia/vigilia-logger "1.0.9"]
 
                  ;; webserver stuff
-                 [bidi "2.0.9"]      ; routing
+                 [bidi "2.0.16"]      ; routing
                  [aleph "0.4.1"] ; server
                  [aleph-middleware "0.1.1"]
                  [yada "1.1.29"]
@@ -25,19 +25,16 @@
 
                  ;; cljs
                  [org.clojure/clojurescript "1.9.89"]
-                 [org.clojure/core.async "0.2.385"];[org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [org.clojure/core.async "0.2.385"]
                  
-                 [reagent "0.6.0-rc"]
+                 [reagent "0.6.0"]
 
-                 [org.clojars.frozenlock/reagent-modals "0.2.5"
+                 [org.clojars.frozenlock/reagent-modals "0.2.6"
                   :exclusions [reagent]]
                  [cljs-ajax "0.3.9"]
-                 [re-com "0.8.3" :exclusions [reagent]]
-                 [cljsjs/fixed-data-table "0.6.0-1"
-                  :exclusions [cljsjs/react]]
-
-                 ;[org.webjars/swagger-ui "2.1.3"] ;; required until yada corrects its dependencies
-                 ]
+                 [re-com "1.3.0" :exclusions [reagent]]
+                 [cljsjs/fixed-data-table "0.6.3-0"
+                  :exclusions [cljsjs/react]]]
 
   :plugins [[lein-environ "1.0.1"]
             [lein-cljsbuild "1.1.1"]            

@@ -411,8 +411,10 @@
                                                      (if (empty? n) "< no name >" n))]
                                    (r/as-element 
                                     [Cell (merge {:style (merge {:white-space "nowrap"
-                                                                 :width "100%"}
-                                                                (when draggable? {:cursor :move}))}
+                                                                 :width "100%"
+                                                                 :height "100%"}
+                                                                (when draggable? {:cursor :move}))
+                                                  :class (str "object-name-cell" (when draggable? " draggable"))}
                                                  (when draggable?
                                                    {:draggable true
                                                     :on-drag-start #(-> (.-dataTransfer %)
@@ -422,7 +424,7 @@
                                                                                     (into {} cell-value)})))}))
                                      [:span {:title object-name}
                                       (when draggable? 
-                                        [:span {:style {:margin-right "5px"}} 
+                                        [:span.handle {:style {:margin-right "5px"}} 
                                          [:i.fa.fa-ellipsis-v]
                                          [:i.fa.fa-ellipsis-v]])
                                       object-name]])))
@@ -462,14 +464,11 @@
                                                                              (vec))))}]]])))
 
               ]
-          (reset! component this-c)
-          ;(prn @all-objects-a)
-          ;(prn @vigilia-mode)
-          
+          (reset! component this-c)          
           [re/v-box
+           :class "controllers"
            :size "1"
-           :style {;:width "100%"
-                   :visibility (when-not (> @width 1) ;; don't show when the table is 0 px (initiating)
+           :style {:visibility (when-not (> @width 1) ;; don't show when the table is 0 px (initiating)
                                  "hidden")}
            :children 
            [(when @show-modal?
@@ -660,11 +659,7 @@
                 [re/h-box
                  :children [[:button {:class "btn btn-default btn-sm"
                                       :on-click select-none-fn}
-                             [:span "Select none"]]
-                            ;; [:button {:class "btn btn-default btn-sm"
-                            ;;           :on-click select-all-fn}
-                            ;;  [:span (t/t @t/locale :vigilia/select-all)]]
-                            ]]]]))
+                             [:span "Select none"]]]]]]))
 
 
 (defn objects-table [selected-device-id configs]

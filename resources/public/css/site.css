@@ -114,3 +114,11 @@ body {
     right: 1em;
     min-width: 10em;
     z-index: 15;}
+
+.controllers .object-name-cell.draggable:hover {
+    background-color: rgba(51,102,204,.15);
+}
+
+.controllers .object-name-cell.draggable .handle {
+    color : rgba(51,102,204,1);
+}
