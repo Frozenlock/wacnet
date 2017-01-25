@@ -6,6 +6,7 @@
             [wacnet.templates.common :as common]
             [clojure.string :as s]
             [goog.string :as gstring]
+            [cljs.reader :as reader]
             [wacnet.explorer.devices :as dev]))
 
 (def configs-api-url "/api/v1/vigilia/logger/configs")
@@ -357,8 +358,7 @@
        [:div.text-right 
         [:button.btn.btn-danger {:on-click #(swap! configs-a dissoc :target-objects)
                                  :disabled (when-not (seq (:target-objects @configs-a)) true)} "Clear all"]
-        [:button.btn.btn-default {:on-click #(reset! show-explorer? true)} "Open explorer"]
-        ]       
+        [:button.btn.btn-default {:on-click #(reset! show-explorer? true)} "Open explorer"]]       
        
        (when @show-explorer?
          [re/modal-panel
@@ -473,133 +473,185 @@
       "project page "[:i.fa.fa-external-link]]]))
 
 
+(defn timer-el 
+  "Timer element that will count down given a timer atom (timer-a)
+  with a number. Once the timer-a reaches zero, the timeout-fn is
+  executed.
+  
+  This component will stop any countdown if it is unmounted."
+  [timer-a timeout-fn]
+  (let [forget-me? (atom nil)
+        tick-fn (fn this-fn []
+                     (when-not @forget-me?
+                       (js/setTimeout this-fn 1000)
+                       (let [time @timer-a]
+                         (cond 
+                           (not (number? time)) nil
+                           (> time 1) (swap! timer-a dec)
+                           (= time 1) (do (reset! timer-a nil) (timeout-fn))
+                           :else nil))))]
+    (r/create-class {:component-did-mount tick-fn
+                     :component-will-unmount #(reset! forget-me? true)
+                     :reagent-render (fn [timer-a timeout-fn]
+                                       [:div])})))
+
+(defn vigilia-controls [logger-state-a logger-configs-a]
+  (let [logger @logger-state-a
+        configs @logger-configs-a
+        project-id (:project-id configs)
+        logger-url "/api/v1/vigilia/logger"
+        send-command! (fn [bool]
+                        (POST logger-url
+                            {:response-format :transit
+                             :params {:logging bool}
+                             :handler #(reset! logger-state-a %)}))]
+    [re/v-box
+     :align :center
+     :children [[:div.text-center.well
+                 [:h3 "Logging " (if (:logging? logger)
+                                   [:b.text-success "in progress"]
+                                   [:b.text-danger "stopped"])]
+                 [:div
+                  [:button.btn.btn-success {:on-click #(send-command! true)
+                                                 :disabled (or (:logging? logger) (not project-id))} "START"] " "
+                  [:button.btn.btn-danger {:on-click #(send-command! false)
+                                           :disabled (not (:logging? logger))} "STOP"]]]
+                ]]))
+
+(defn refresh-btn [timer-a update-logger-state!]
+  (let [update-fn (fn []
+                    (update-logger-state!)
+                    (reset! timer-a 15))]
+    [re/h-box
+     :align :center
+     :children [[timer-el timer-a update-fn]
+                [re/button :label [:i.fa.fa-refresh.fa-fw]
+                 :tooltip "Refresh now"
+                 :class "btn-default btn-sm"
+                 :on-click update-fn]
+                [re/gap :size "5px"]
+                [:span.text-muted "Refresh in "@timer-a "s"]]]))
+
+
+(defn info-local-logs [scanning-state-a]
+  (let [ss @scanning-state-a]
+    [:div [:b "Local logs : "(:local-logs ss)]
+     [re/info-button
+      :info [:span "Local logs are logs that weren't sent back (yet) to the remote servers. "
+             "Perhaps a connection problem? If they start to accumulate, "
+             "you should investigate your network access."]]]))
+
+(defn info-last-scan [scanning-state-a]
+  (let [ss @scanning-state-a
+        end-time (js/Date. (some-> (:end-time ss)
+                                   (reader/read-string)))]
+    [:div
+     [:b "Last scan duration : " (gstring/format "%.2f" (double (/ (or (:scanning-time-ms ss)  0) 1000 60))) " min"]
+     [:small [:span.text-muted " (Completed at " (some-> (.toTimeString end-time)
+                                                         (s/split " ")
+                                                         (first)) ")"]]
+     [re/info-button
+      :info [:p "Don't set a scanning interval smaller than this value. "
+                            "The time taken to do a scan is determined by your network. MS/TP devices WILL "
+             "take longer than IP or Ethernet devices."]]]))
+
+(defn info-progress [logger-state-a]
+  (let [scanning? @(r/cursor logger-state-a [:scanning])
+        ids-scanned @(r/cursor logger-state-a [:ids-scanned])
+        ids-to-scan @(r/cursor logger-state-a [:ids-to-scan])]
+    [re/h-box
+     :children [[:b "Current scan progress : "]
+                         [re/gap :size "5px"]
+                         [re/progress-bar :model (->> (/ (count ids-scanned)
+                                                         (max (count ids-to-scan) 1))
+                                                      (* 100)
+                                                      (gstring/format "%.1f"))
+                          :width "200px"
+                          :striped? true]]]))
+
+(defn info-completed-scans [scanning-state-a]
+  (let [ss @scanning-state-a]
+    [:div [:b "Completed scans : "(str (or (:completed-scans ss) 0))]
+     [re/info-button
+      :info [:span "The number of network scans completed since Wacnet was booted."]]]))
+
+(defn vigilia-info [logger-state-a update-logger-state!]
+  (let [timer-a (r/atom 15)
+        loading-a (r/atom nil)
+        error-a (r/atom nil)]
+    (fn [logger-state-a]
+      (let [logger @logger-state-a
+            scanning-state-a (r/cursor logger-state-a [:scanning-state])
+            ss (:scanning-state logger)]
+        [re/v-box
+         :size "380px"
+         :children [[refresh-btn timer-a update-logger-state!]
+                    [re/gap :size "10px"]
+                    [re/v-box
+                     :children [[info-local-logs scanning-state-a]
+                                [info-completed-scans scanning-state-a]
+                                [info-last-scan scanning-state-a]
+                                [info-progress logger-state-a]]]]]))))
+
+(defn missing-id []
+  [:div.alert.alert-danger {:style {:margin-top 10}} 
+   "Missing Project ID."
+   [:div "Fill the " [:b "configurations"] " section below."]])
+
 (defn vigilia-status [configs-a]
   (let [logger-state (r/atom nil)
         loading-a (r/atom nil)
         error-a (r/atom nil)
         logger-url "/api/v1/vigilia/logger"
+        logger-url "/api/v1/vigilia/logger"
         update-logger-state! (fn []
-                                 (reset! loading-a true)
-                                 (GET logger-url
-                                     {:response-format :transit
-                                      :handler (fn [resp] 
-                                                 (reset! loading-a nil)
-                                                 (reset! logger-state resp))
-                                      :error-handler (fn [resp]
-                                                       (reset! loading-a nil)
-                                                       (reset! error-a true)
-                                                       (prn resp))}))
-        send-command! (fn [bool]
-                        (POST logger-url
-                            {:response-format :transit
-                             :params {:logging bool}
-                             :handler #(reset! logger-state %)}))]
+                               (reset! loading-a true)
+                               (GET logger-url
+                                   {:response-format :transit
+                                    :handler (fn [resp] 
+                                               (reset! loading-a nil)
+                                               (reset! logger-state resp))
+                                    :error-handler (fn [resp]
+                                                     (reset! loading-a nil)
+                                                     (reset! error-a true)
+                                                     (prn resp))}))]
     (r/create-class
      {:display-name "vigilia status"
       :component-did-mount update-logger-state!
       :reagent-render
       (fn []
         (cond 
-              
-              @error-a [:div.alert.alert-danger "Uh oh... problem communicating with Wacnet."
-                        [:div [:button.btn.btn-default {:on-click update-logger-state!} "Try again"]]]
+          
+          @error-a [:div.alert.alert-danger "Uh oh... problem communicating with Wacnet."
+                    [:div [:button.btn.btn-default {:on-click update-logger-state!} "Try again"]]]
 
-              @logger-state
-              (let [logger @logger-state
-                    ss (:scanning-state logger)
-                    project-id (:project-id @configs-a)]
-                [:div
-                 [:div.text-center.well
-                  [:h3 "Logging : " (if (:logging? logger)
-                                      [:span.text-success "In progress"]
-                                      [:span.text-danger "Stopped"])]
-                  [:div [:button.btn.btn-success {:on-click #(send-command! true)
-                                                  :disabled (or (:logging? logger) (not project-id))} "Start"] " "
-                   [:button.btn.btn-danger {:on-click #(send-command! false)
-                                            :disabled (or (not (:logging? logger)) (not project-id))} "Stop"]]
-                  (if project-id
-                    [link-to-project (:api-root @configs-a) project-id]
-                    [:div.alert.alert-danger {:style {:margin-top 10}} 
-                     "Missing Project ID."
-                     [:div "Fill the " [:b "configurations"] " section below."]])]
-                 [:div.panel.panel-default
-                  [:div.panel-heading.panel-toggle {:data-toggle "collapse" :data-target "#logging-status"
-                                                    :style {:cursor :pointer}}
-                   [:h4.panel-title.text-center "Details " [:i.fa.fa-chevron-down]]]
-                  [:div.panel-collapse.collapse {:id "logging-status"}
-                   [:div.panel-body
-                    [:table.table.table-striped.table-hover
-                  [:caption "Logging info"]
-                  [:tbody
-                   [:tr
-                    [:td.col-sm-2 [:b "Local logs : "]]
-                    [:td.col-sm-2 (str (:local-logs ss))]
-                    [:td.col-sm-8 [:span "Local logs are logs that weren't sent back (yet) to the remote servers. "
-                                   "Perhaps a connection problem? If they start to accumulate, "
-                                   "you should investigate your network access."]]]
-
-                   [:tr
-                    [:td.col-sm-2
-                     [:b "Last scan duration: "]]
-                    [:td.col-sm-2 (gstring/format "%.2f" (double (/ (or (:scanning-time-ms ss)  0) 1000 60))) " min"]
-                    [:td.col-sm-8
-                     [:p "Don't set a scanning interval smaller than this value. "
-                      "The time taken to do a scan is determined by your network. MS/TP devices WILL "
-                      "take longer than IP or Ethernet devices."]]]
-                   
-                   [:tr
-                    [:td.col-sm-2 [:b "Completed scans : "]]
-                    [:td.col-sm-2 (str (or (:completed-scans ss) 0))]
-                    [:td.col-sm-8 "The number of network scans completed since Wacnet was booted."]]
-
-                   [:tr
-                    [:td.col-sm-2 [:b "Currently scanning : "]]
-                    [:td.col-sm-2 (if (:scanning? logger) "Yes" "No")]
-                    [:td.col-sm-8 ""]]
-                   
-                   [:tr
-                    [:td.col-sm-2 [:b "Scan progress : "]]
-                    [:td.col-sm-2 (if (:scanning? logger) 
-                                    (->> (/ (count (:ids-scanned logger)) 
-                                            (count (:ids-to-scan logger)))
-                                         (* 100)
-                                         (gstring/format "%.1f"))) "0%"]
-                    [:td.col-sm-8 ""]]]]]]]
-                 
-                 [:div.text-right [:button.btn.btn-default {:on-click update-logger-state!}
-                                   "Refresh " (when @loading-a [:i.fa.fa-spinner.fa-pulse])]]
-                 
-                 ])))})))
+          @logger-state
+          (let [logger @logger-state
+                ss (:scanning-state logger)
+                project-id (:project-id @configs-a)
+                api-root (:api-root @configs-a)]
+            [re/h-box
+             :gap "20px"
+             :size "1"
+             :align :center
+             :children [[vigilia-controls logger-state configs-a]
+                        (if project-id
+                          [re/h-box
+                           :size "1"
+                           :align :center
+                           :children [[vigilia-info logger-state update-logger-state!]
+                                      [re/gap :size "1"]
+                                      [link-to-project project-id]
+                                      [re/gap :size "1"]]]
+                          [missing-id])]])))})))
 
 
-;; (defn vigilia-controls []
-;;   (let [status @timed/logging-state
-;;         btn-disabled? (not (:project-id (scan/get-logger-configs)))]
-;;     [:div.row
-;;      [:div.col-md-4
-;;       [:h4 "Logging Controls"]
-;;       [:div.btn-toolbar
-;;        (he/link-to "/vigilia/configs/stop-vigilia"
-;;                    [:div.btn.btn-danger {:style "margin-left: 1em;"
-;;                                          :disabled (= "Stopped" status)}
-;;                     "Stop"])
-;;        (he/link-to "/vigilia/configs/start-vigilia"
-;;                    [:div.btn.btn-success {:style "margin-left: 1em;"
-;;                                           :disabled 
-;;                                           (if (= "Stopped" status)
-;;                                             btn-disabled?
-;;                                             true)}
-;;                     "Start"])]]
-;;      [:div.col-sm-6
-;;       [:p "Wacnet will start the Vigilia logging automatically on startup if a "
-;;        "Vigilia configuration file is found."]]]))
 
 (defn vigilia-page []
   (let [configs-a (r/atom nil)]
     (fn []
       [common/scrollable
-       [:div.container                
-        ;(when @configs-a [explorer-modal configs-a])
+       [:div.container
         [heading]
         [:hr]
         [vigilia-status configs-a]
