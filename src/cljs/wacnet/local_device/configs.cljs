@@ -110,7 +110,8 @@
                                   :device-id nil
                                   :object-name nil
                                   :apdu-timeout nil
-                                  :number-of-apdu-retries nil} @configs-a)]
+                                  :number-of-apdu-retries nil
+                                  :port nil} @configs-a)]
                 ^{:key k} 
                 [common/form-group (name k) k
                  [common/live-edit :input configs-a k]]))
