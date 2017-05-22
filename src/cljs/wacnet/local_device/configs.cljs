@@ -105,7 +105,12 @@
          [:hr]
          [:div.form-horizontal          
           (if @loading? [re/throbber]
-              (for [[k v] @configs-a]
+              (for [[k v] (merge {:description nil
+                                  :broadcast-address nil
+                                  :device-id nil
+                                  :object-name nil
+                                  :apdu-timeout nil
+                                  :number-of-apdu-retries nil} @configs-a)]
                 ^{:key k} 
                 [common/form-group (name k) k
                  [common/live-edit :input configs-a k]]))
