@@ -421,7 +421,13 @@
                                                                         (.setData "application/edn" 
                                                                                   (str 
                                                                                    {:wacnet-object 
-                                                                                    (into {} cell-value)})))}))
+                                                                                    (into {} cell-value)}))
+                                                                        (.setData "text"
+                                                                                  (->> cell-value
+                                                                                       ((juxt :object-name
+                                                                                              :global-id
+                                                                                              :description))
+                                                                                       (s/join "\t"))))}))
                                      [:span {:title object-name}
                                       (when draggable? 
                                         [:span.handle {:style {:margin-right "5px"}} 
