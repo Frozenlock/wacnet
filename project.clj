@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.2-alpha"
+(defproject wacnet "2.1.3-alpha"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -17,6 +17,9 @@
                  [yada "1.2.2" :exclusions [manifold]];[yada "1.1.29"]
                  
                  [trptcolin/versioneer "0.2.0"]
+
+                 ;; error logs
+                 [org.slf4j/slf4j-nop "1.7.25"]
                  
 
                  ;; nREPL

@@ -641,7 +641,7 @@
                            :align :center
                            :children [[vigilia-info logger-state update-logger-state!]
                                       [re/gap :size "1"]
-                                      [link-to-project project-id]
+                                      [link-to-project api-root project-id]
                                       [re/gap :size "1"]]]
                           [missing-id])]])))})))
 
