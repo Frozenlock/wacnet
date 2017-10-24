@@ -405,7 +405,9 @@
                                     (let [write-access-spec {(obj-id-to-object-identifier o-id)
                                                              (for [[k v] properties]
                                                                [k (rd/advanced-property v priority nil)])}]
-                                      (let [result (rd/set-remote-properties! nil device-id write-access-spec)]
+                                      (let [result (try (rd/set-remote-properties! nil device-id write-access-spec)
+                                                        (catch Exception e
+                                                          {:error (.getMessage e)}))]
                                         (if (:success result)
                                           result
                                           (merge (:response ctx) 
