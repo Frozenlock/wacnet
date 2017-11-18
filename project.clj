@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.3-alpha"
+(defproject wacnet "2.1.3"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -8,7 +8,7 @@
                  ;; BACnet
                  [bacure "1.0.8"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.0.10"]
+                 [io.hvac.vigilia/vigilia-logger "1.0.11"]
 
                  ;; webserver stuff
                  [bidi "2.0.16"]      ; routing
