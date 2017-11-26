@@ -353,9 +353,7 @@
        [:div.text-info 
         "You can select individual objects to be recorded (assuming the devices go through the previous "
         "filters.)"]
-       [:div.text-info
-        "If no object is selected in a device, all of them are recorded."]
-       [:div.text-right 
+       [:div.text-right
         [:button.btn.btn-danger {:on-click #(swap! configs-a dissoc :target-objects)
                                  :disabled (when-not (seq (:target-objects @configs-a)) true)} "Clear all"]
         [:button.btn.btn-default {:on-click #(reset! show-explorer? true)} "Open explorer"]]       
@@ -370,6 +368,9 @@
                   :children
                   [[:div.text-right
                     [:button.btn.btn-primary {:on-click #(reset! show-explorer? nil)} "Close"]]
+                   [:div.alert.alert-info {:style {:margin 5}}
+                    [:b
+                     "If no object is selected in a device, all of them are recorded."]]
                    [dev/controllers-view selected-device-id {:vigilia-mode configs-a}]]]])])))
 
 
@@ -461,8 +462,11 @@
        [api-url-form configs-a]
        [credentials-form configs-a]
        [advanced-configs-panel configs-a]
-       [:div.text-right 
-        [clear-configs-btn configs-a (not (:project-id @configs-a))]]])}))
+       [:div.text-right
+        [clear-configs-btn configs-a (->> @configs-a
+                                          (vals)
+                                          (some identity)
+                                          (not))]]])}))
 
 
 (defn link-to-project [root-api-url project-id]
