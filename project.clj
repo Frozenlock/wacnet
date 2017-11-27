@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.3"
+(defproject wacnet "2.1.4"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -24,7 +24,7 @@
 
                  ;; nREPL
                  [org.clojure/tools.nrepl "0.2.12"]
-                 ;[cider/cider-nrepl "0.11.0"]
+                 [cider/cider-nrepl "0.15.1"]
 
                  ;; cljs
                  [org.clojure/clojurescript "1.9.946"]
@@ -35,6 +35,7 @@
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]
                  [cljs-ajax "0.7.1"]
                  [re-com "2.1.0" :exclusions [reagent]]
+                 [com.andrewmcveigh/cljs-time "0.5.0"]
                  [cljsjs/fixed-data-table-2 "0.7.17-2"
                   :exclusions [cljsjs/react]]]
 
