@@ -8,13 +8,13 @@
                  ;; BACnet
                  [bacure "1.0.8"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.0.11"]
+                 [io.hvac.vigilia/vigilia-logger "1.0.12"]
 
                  ;; webserver stuff
-                 [bidi "2.0.16"]      ; routing
+                 [bidi "2.0.16"] ; routing
                  [aleph "0.4.3"] ; server
                  [aleph-middleware "0.1.1"]
-                 [yada "1.2.2" :exclusions [manifold]];[yada "1.1.29"]
+                 [yada "1.2.2" :exclusions [manifold]]
                  
                  [trptcolin/versioneer "0.2.0"]
 
@@ -24,24 +24,23 @@
 
                  ;; nREPL
                  [org.clojure/tools.nrepl "0.2.12"]
-                 [cider/cider-nrepl "0.11.0"]
+                 ;[cider/cider-nrepl "0.11.0"]
 
                  ;; cljs
-                 [org.clojure/clojurescript "1.9.89"]
-                 [org.clojure/core.async "0.2.385"]
+                 [org.clojure/clojurescript "1.9.946"]
+                 [org.clojure/core.async "0.3.443"]
                  
-                 [reagent "0.6.0"]
+                 [reagent "0.8.0-alpha2"]
 
-                 [org.clojars.frozenlock/reagent-modals "0.2.6"
-                  :exclusions [reagent]]
-                 [cljs-ajax "0.3.9"]
-                 [re-com "1.3.0" :exclusions [reagent]]
-                 [cljsjs/fixed-data-table "0.6.3-0"
+                 [org.clojars.frozenlock/reagent-modals "0.2.8"]
+                 [cljs-ajax "0.7.1"]
+                 [re-com "2.1.0" :exclusions [reagent]]
+                 [cljsjs/fixed-data-table-2 "0.7.17-2"
                   :exclusions [cljsjs/react]]]
 
   :plugins [[lein-environ "1.0.1"]
-            [lein-cljsbuild "1.1.1"]            
-            [lein-externs "0.1.5"]] 
+            [lein-cljsbuild "1.1.7"]
+            [lein-externs "0.1.5"]]
 
   :manifest {"SplashScreen-Image" "public/img/splash.png"}
 
@@ -68,43 +67,16 @@
                    :dependencies [[ring/ring-mock "0.3.0"]
                                   [ring/ring-devel "1.4.0"]
                                   [prone "0.8.3"]
-                                  [lein-figwheel "0.5.0-6"
-                                   :exclusions [org.clojure/core.memoize
-                                                ring/ring-core
-                                                org.clojure/clojure
-                                                org.ow2.asm/asm-all
-                                                org.clojure/data.priority-map
-                                                org.clojure/tools.reader
-                                                org.clojure/clojurescript
-                                                org.clojure/core.async
-                                                org.clojure/tools.analyzer.jvm]]
-                                  ;; [org.clojure/clojurescript "1.7.170"
-                                  ;;  :exclusions [org.clojure/clojure org.clojure/tools.reader]]
-                                  [org.clojure/tools.nrepl "0.2.12"]
-                                  [com.cemerick/piggieback "0.2.1"]
-                                  [devcards "0.2.1-7"
-                                   :exclusions [org.clojure/tools.reader]]
-                                  [pjstadig/humane-test-output "0.7.1"]
+                                  [figwheel-sidecar "0.5.13"]
+                                  [org.clojure/tools.nrepl "0.2.13"]
+                                  [com.cemerick/piggieback "0.2.2"]
+                                  ;; [pjstadig/humane-test-output "0.7.1"]
                                   ]
 
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.4-5"
-                              :exclusions [org.clojure/core.memoize
-                                           ring/ring-core
-                                           org.clojure/clojure
-                                           org.ow2.asm/asm-all
-                                           org.clojure/data.priority-map
-                                           org.clojure/tools.reader
-                                           org.clojure/clojurescript
-                                           org.clojure/core.async
-                                           org.clojure/tools.analyzer.jvm]]
-                             ;[org.clojure/clojurescript "1.7.170"]
-                             ;[cider/cider-nrepl "0.11.0"]
-                             [org.clojure/tools.namespace "0.3.0-alpha2"
-                              :exclusions [org.clojure/tools.reader]]
-                             [refactor-nrepl "2.0.0"
-                              :exclusions [org.clojure/clojure]]
-                             ]
+                   :plugins [[lein-figwheel "0.5.13"]
+                             [cider/cider-nrepl "0.15.1"]
+                             [refactor-nrepl "2.3.1"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
@@ -123,10 +95,7 @@
 
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
                                               :compiler {:main "wacnet.dev"
-                                                         :source-map true}}
-                                        }
-
-                               }}
+                                                         :source-map true}}}}}
 
              :uberjar {:source-paths ["env/prod/clj"]
                        :prep-tasks ["compile" ["cljsbuild" "once"]]
@@ -138,8 +107,6 @@
                                             {:source-paths ["env/prod/cljs"]
                                              :compiler
                                              {:optimizations :advanced
-                                              ;; :source-map "target/cljsbuild/public/js/app.js.map"
-                                              ;; :source-map-path "js/out"
                                               :externs ^:replace ["externs.js"]
                                               :pretty-print false}
                                              }}}}}
