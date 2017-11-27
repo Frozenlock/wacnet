@@ -57,13 +57,12 @@
 (defn repl-page []
   (r/create-class
    {:component-did-mount (fn [this]
-                           (->> ["/jquery-console/jquery.console.js"
-                                 "/tryclojure.js"]
-                                (map (fn [url]
-                                       (-> (goog.string.Const.from url)
-                                           (goog.html.TrustedResourceUrl.fromConstant))))
-                                (clj->js)
-                                (goog.net.jsloader.safeLoadMany)))
+                           (goog.net.jsloader.safeLoadMany
+                            (clj->js
+                             [(-> (goog.string.Const.from "/jquery-console/jquery.console.js")
+                                  (goog.html.TrustedResourceUrl.fromConstant))
+                              (-> (goog.string.Const.from "/tryclojure.js")
+                                  (goog.html.TrustedResourceUrl.fromConstant))])))
     :reagent-render
     (fn []      
       [common/scrollable 
