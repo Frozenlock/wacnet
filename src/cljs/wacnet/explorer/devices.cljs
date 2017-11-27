@@ -10,7 +10,7 @@
             [clojure.string :as s]
             [re-com.core :as re :refer-macros [handler-fn]]
             [goog.Timer :as timer]
-            [cljsjs.fixed-data-table]
+            [cljsjs.fixed-data-table-2]
             [clojure.set :as cset]            
             [reagent-modals.modals :as mod]
             [cljs.core.async :as async :refer [<! >! chan put! onto-chan]])
@@ -256,8 +256,9 @@
                            {:size :lg}))}
      [:i.fa.fa-list]]))
 
-(defn action-btns [row modal-content show? configs all-objects-a]
-  (let [object row]
+(defn action-btns
+  [object-a modal-content show? configs all-objects-a]
+  (let [object @object-a]
     [:div
      ;[graph-btn v-object modal-content show?]
      [properties-btn object configs]
@@ -281,12 +282,12 @@
 (def Column (r/adapt-react-class js/FixedDataTable.Column))
 (def Cell (r/adapt-react-class js/FixedDataTable.Cell))
 
-(defn actions-cell [bacnet-object modal-content show? configs all-objects-a]
-  [Cell [action-btns bacnet-object modal-content show? configs all-objects-a]])
+;; (defn actions-cell [bacnet-object modal-content show? configs all-objects-a]
+;;   [Cell [action-btns bacnet-object modal-content show? configs all-objects-a]])
 
 
 
-(defn inside-value-cell [bacnet-object cell-comp current-value-a loading-a error-a]
+(defn inside-value-cell [bacnet-object-a cell-comp current-value-a loading-a error-a]
   (let [flash-update (fn [comp]
                        (let [node (r/dom-node comp)
                              class-list (.-classList node)
@@ -297,47 +298,50 @@
     (r/create-class 
      {:component-did-update #(flash-update cell-comp)
       :reagent-render 
-      (fn [bacnet-object cell-comp current-value-a loading-a error-a]
-        (let [present-value (:present-value (or (get @current-value-a (:object-id bacnet-object))
-                                                bacnet-object))]
+      (fn [bacnet-object-a cell-comp current-value-a loading-a error-a]
+        (let [present-value (:present-value (or (get @current-value-a (:object-id @bacnet-object-a))
+                                                @bacnet-object-a))]
           [:div {:style {:margin-left 5
                          :margin-right 5
                          :white-space "nowrap"}}
            (if @error-a 
              [:span.text-danger "Error " [:i.fa.fa-fw.fa-exclamation-triangle]]
              
-             (wo/object-value (:object-type bacnet-object) present-value))
+             (wo/object-value (:object-type @bacnet-object-a) present-value))
            (when @loading-a [:i.fa.fa-fw.fa-spinner.fa-pulse])]))})))
 
 (defn value-cell
   "The value cell can be initiated with a given :present-value, but will
   update itself periodically and flash to give a feedback to the
   user."
-  [bacnet-object]
-  (let [bacnet-object-a (atom bacnet-object)
+  [cell-value-a]
+  (let [bacnet-object-a (atom @cell-value-a)
         current-value-a (r/atom nil)
         loading? (r/atom nil)
         error? (r/atom true)
         forget-me? (atom nil)
         reload-chan (chan)
         get-new-value! (fn []
-                         (reset! loading? true)
-                         (reset! error? nil)
-                         (GET (:href @bacnet-object-a)
-                             {:handler (fn [response]
-                                         (reset! loading? nil)
-                                         (reset! current-value-a 
-                                                 {(:object-id @bacnet-object-a) response}))
-                              :response-format :transit
-                              :params {:properties [:present-value]}
-                              :error-handler #(do (reset! error? true) 
-                                                  (reset! loading? nil)
-                                                  (prn %))}))
+                         (when-let [href (:href @bacnet-object-a)]
+                           (reset! loading? true)
+                           (reset! error? nil)
+                           (GET href
+                               {:handler (fn [response]
+                                           (reset! loading? nil)
+                                           (reset! current-value-a 
+                                                   {(:object-id @bacnet-object-a) response}))
+                                :response-format :transit
+                                :params {:properties [:present-value]}
+                                :error-handler #(do (reset! error? true) 
+                                                    (reset! loading? nil)
+                                                    (prn %))})))
         reload-loop! (fn []
                        (go 
-                         (while (not @forget-me?)                           
-                           (async/alts! [reload-chan (async/timeout 20000)])
-                           (when (not @forget-me?)
+                         (while (not @forget-me?)
+                           ;; reload value every 15 seconds
+                           (async/alts! [reload-chan (async/timeout 15000)])
+                           (when (and (not @forget-me?)
+                                      @cell-value-a)
                              (get-new-value!)))))]
     (r/create-class
      {:display-name "present value cell"
@@ -346,23 +350,199 @@
       :component-did-mount reload-loop!
       
       :reagent-render
-      (fn [bacnet-object]
+      (fn [cell-value-a]
         ;; we might get a different bacnet-object every time we
         ;; scroll. Reset everything to zero.
-        (reset! bacnet-object-a bacnet-object)
+        (reset! bacnet-object-a @cell-value-a)
         ;; By the same token, fetch the value for the bacnet object
         ;; currently in this cell.
         (put! reload-chan :reload-now)
         ;; every deref is done in an sub-component so that we don't
         ;; mess up the updates done by :component-did-mount and
         ;; :component-did-update.
-        [Cell [inside-value-cell bacnet-object (r/current-component) 
-               current-value-a loading? error?]])})))
-              
+        [Cell [inside-value-cell bacnet-object-a (r/current-component) 
+               current-value-a loading? error?]])})))              
 
 
 
-(defn make-table [all-objects-a visible-objects-a device-id configs]
+(defn table-modal [show-modal? modal-content]
+  (when @show-modal?
+    [re/modal-panel
+     :backdrop-on-click (fn [e]
+                          (reset! show-modal? false)
+                          (reset! modal-content ""))
+     :child @modal-content]))
+
+(defn column-sort
+  ([column-name data-a data-path] (column-sort column-name data-a data-path nil))
+  ([column-name data-a data-path is-number]
+   (let [sort-direction (r/atom nil)]
+     (fn [column-name data-a data-path]
+       (let [sort-fn (fn [direction]
+                       (swap! (r/cursor data-a [:objects])
+                              (fn [m] (let [sorted (sort-by
+                                                    (fn [o]
+                                                      (let [value (get-in o data-path)]
+                                                        (if-not is-number
+                                                          value
+                                                          (if (number? value) value 0))))
+                                                    m)]
+                                        (if (= direction :up)
+                                          (do (reset! sort-direction :up)
+                                              sorted)
+                                          (do (reset! sort-direction :down)
+                                              (reverse sorted)))))))]
+         [Cell {:style {:width "100%"}}
+          [re/h-box
+           :align :center
+           :children [[:span column-name]
+                      [re/gap :size "1"]
+                      [:span {:style {:position :relative
+                                      :opacity 0.5}}
+                       [:i.fa.fa-sort {:style {:opacity 0}}]
+                       [:i.fa.fa-sort-up.fa-lg {:style {:position :absolute :right 3 :top 1
+                                        ;:opacity (if (= @sort-direction :up) 1 0.5)
+                                                        :cursor :pointer}
+                                                :on-click #(sort-fn :up)}]                      
+                       [:i.fa.fa-sort-down.fa-lg {:style {:position :absolute :right 3 :top 9
+                                        ;:opacity (if (= @sort-direction :down) 1 0.5)
+                                                          :cursor :pointer}
+                                                  :on-click #(sort-fn :down)}]
+                       ;; space between click areas
+                       [:span {:style {:width 13 :height 9 :position :absolute :top 7 :right 3}}]]
+                                        ;[re/gap :size "1px"]
+                      ]]])))))
+
+
+(defn table
+  [& args]
+  (let [sizes-a (r/atom {})]
+    (r/create-class
+     {:reagent-render
+      (fn [objects-data-a device-id table-data-a width height cell-type cell-object-name
+           cell-generic cell-present-value cell-generic cell-actions cell-vigilia-checkbox
+           configs]
+        (let [vigilia-mode (:vigilia-mode configs)]
+          [Table
+           {:width        @width
+            :max-height   @height
+            :rows-count    (count @table-data-a)
+            :header-height 40
+            :row-height    40
+            :is-column-resizing false
+            :on-column-resize-end-callback (fn [new-column-width column-key]
+                                             (swap! sizes-a assoc (keyword column-key) new-column-width))
+                                        ;:style {:font-size 12}
+            }
+           [Column
+            {:header (r/as-element [column-sort "Name" objects-data-a [:object-name]])
+             :columnKey :object-name
+             :cell cell-object-name
+             :is-resizable true
+             :fixed true
+             :width (or @(r/cursor sizes-a [:object-name]) 200)}]
+           (when vigilia-mode
+             [Column {:header "Record?"
+                      :cell cell-vigilia-checkbox
+                      :columnKey :object-id
+                      :width 100}])
+           [Column
+            {:header (r/as-element [column-sort "Type" objects-data-a [:object-type]])
+             :columnKey :object-type
+             :cell cell-type
+             :is-resizable true
+                                        ;:is-reorderable true
+             :width (or @(r/cursor sizes-a [:object-type]) 75)}]
+           [Column
+            {:header (r/as-element [column-sort "Description" objects-data-a [:description]])
+             :cell cell-generic
+             :is-resizable true
+             :flex-grow 2
+             :columnKey :description
+             :width (or @(r/cursor sizes-a [:description]) 100)}]
+           (when-not vigilia-mode
+             [Column
+              {:header (r/as-element [column-sort "Value" objects-data-a [:present-value]])
+               :columnKey :present-value
+               :is-resizable true
+               :cell cell-present-value
+               :width (or @(r/cursor sizes-a [:present-value]) 100)}])
+           (when-not vigilia-mode
+             [Column
+              {:header (r/as-element [column-sort "Units" objects-data-a [:units]])
+               :columnKey :units
+               :is-resizable true
+               :cell cell-generic
+               :width (or @(r/cursor sizes-a [:units]) 75)}])
+           (when-not vigilia-mode
+             [Column
+              {:header (r/as-element
+                        [Cell [:span "Action"
+                               [:button.btn.btn-default.btn-xs 
+                                {:style {:margin-left "10px"}
+                                 :title "Create object"
+                                 :on-click 
+                                 (fn []
+                                   (mod/modal!
+                                    [wo/create-new-object-modal device-id configs
+                                     (fn [resp]
+                                       (let [{:keys [object-instance object-type]} resp]
+                                         (swap! objects-data-a update-in [:objects]
+                                                conj resp))
+                                       (mod/close-modal!))
+                                     mod/close-modal!]))}
+                                "+"]]])
+               :cell cell-actions
+               :width 135}])]))})))
+
+
+
+
+(defn generic-cell [cell-prop-value-a]
+  (let [v @cell-prop-value-a]
+    [Cell {:title v
+           :style {:white-space "nowrap"
+                   :margin-left 5}}
+     v]))
+
+(defn icon-cell [cell-value-a]
+  (let [ot @(r/cursor cell-value-a [:object-type])]
+    [object-icon ot]))
+
+(defn name-cell [cell-value-a]
+  (let [cell-value @cell-value-a
+        object-name (let [n (:object-name cell-value)]
+                      (if (empty? n) "< no name >" n))
+        draggable? (:present-value cell-value)]
+    [Cell (merge {:style {:white-space "nowrap"
+                          :width "100%"
+                          ;; :text-overflow :ellipsis
+                          ;; :overflow :hidden
+                          :height "100%"
+                          ;:background-color (when in-briefcase? "grey")
+                          :cursor (when draggable? :move)}
+                  :class (str "object-name-cell" (when draggable? " draggable"))
+                  :on-click #(prn (into {} cell-value))}
+                 (when draggable?
+                   {:draggable true
+                    :on-drag-start #(doto (.-dataTransfer %)
+                                      (.setData "application/edn" 
+                                                (str 
+                                                 {:wacnet-object 
+                                                  (into {} cell-value)}))
+                                      (.setData "text"
+                                                (->> cell-value
+                                                     ((juxt :object-name :global-id :description))
+                                                     (s/join "\t"))))}))
+     [:span {:title object-name}
+      (when draggable? 
+        [:span.handle {:style {:margin-right "5px"}}
+         [:i.fa.fa-ellipsis-v]
+         [:i.fa.fa-ellipsis-v]])
+      object-name]]))
+
+
+(defn make-table [objects-store-a visible-objects-a device-id configs]
   (let [component (atom nil)
         width (r/atom 0)
         height (r/atom 0)
@@ -370,176 +550,87 @@
         ;;;;
         show-modal? (r/atom nil)
         modal-content (r/atom "")
-        vigilia-mode (:vigilia-mode configs)
+        ;;;; 
         ;; because fixeddatatable isn't reponsive, we have to make
         ;; sure to resize it manually whenever the user resize
         ;; something.
-        resize-fn (fn this-fn [old-width old-height node]
-                    (when-not (or @forget-me? vigilia-mode)
-                      (let [new-width (.-offsetWidth node)
-                            new-height (.-offsetHeight node)]
-                        (timer/callOnce
-                           (fn []
-                             (js/window.requestAnimationFrame #(this-fn new-width new-height node))) 50)
-                          ;; only update when the user stopped resizing
-                          (when (= old-width new-width)
-                            (reset! width new-width))
-                          (when (= old-height new-height)
-                            (reset! height new-height)))))]
+        resize-fn (fn [] (when-not @forget-me?
+                           (let [node @component
+                                 new-width (.-offsetWidth node)
+                                 new-height (.-offsetHeight node)]
+                             (reset! width new-width)
+                             (reset! height new-height))))
+        later-fn (util/debounce-factory)
+        debounce-resize-fn (fn [] (later-fn resize-fn 100))]
     (r/create-class
-     {:component-did-mount #(let [node (r/dom-node @component)
+     {:component-did-mount #(let [node (r/dom-node %)
                                   w (.-offsetWidth node)
                                   h (.-offsetHeight node)]
+                              (reset! component node)
                               (reset! width w)
                               (reset! height h)
-                              (resize-fn w h node))
-      :component-will-unmount #(reset! forget-me? true)
+                              (.addEventListener js/document.body :resize resize-fn)
+                              (.addEventListener js/window "resize" debounce-resize-fn))
+      :component-will-unmount #(do (reset! forget-me? true)
+                                   (.removeEventListener js/document.body :resize resize-fn)
+                                   (.removeEventListener js/window "resize" debounce-resize-fn))
       :reagent-render
-      (fn [all-objects-a visible-objects-a device-id configs]
-        (let [table-data (vec (:objects @visible-objects-a))
-              this-c (r/current-component)
-              make-cell (fn [component-fn]
-                          (fn [args]
-                            (let [{:strs [columnKey rowIndex]} (js->clj args)
-                                  cell-value (get-in table-data [rowIndex (keyword columnKey)])]
-                              (r/as-element [component-fn cell-value]))))
+      (fn [objects-store-a visible-objects-a device-id configs]
+        (let [cell-type (fn [args]
+                          (let [{:strs [rowIndex]} (js->clj args)]
+                            (r/as-element [Cell [icon-cell (r/cursor visible-objects-a [rowIndex])]])))
               cell-object-name (fn [args]
-                                 (let [{:strs [rowIndex]} (js->clj args)
-                                       cell-value (get-in table-data [rowIndex])
-                                       draggable? (:present-value cell-value)
-                                       object-name (let [n (:object-name cell-value)]
-                                                     (if (empty? n) "< no name >" n))]
-                                   (r/as-element 
-                                    [Cell (merge {:style (merge {:white-space "nowrap"
-                                                                 :width "100%"
-                                                                 :height "100%"}
-                                                                (when draggable? {:cursor :move}))
-                                                  :class (str "object-name-cell" (when draggable? " draggable"))}
-                                                 (when draggable?
-                                                   {:draggable true
-                                                    :on-drag-start #(-> (.-dataTransfer %)
-                                                                        (.setData "application/edn" 
-                                                                                  (str 
-                                                                                   {:wacnet-object 
-                                                                                    (into {} cell-value)}))
-                                                                        (.setData "text"
-                                                                                  (->> cell-value
-                                                                                       ((juxt :object-name
-                                                                                              :global-id
-                                                                                              :description))
-                                                                                       (s/join "\t"))))}))
-                                     [:span {:title object-name}
-                                      (when draggable? 
-                                        [:span.handle {:style {:margin-right "5px"}} 
-                                         [:i.fa.fa-ellipsis-v]
-                                         [:i.fa.fa-ellipsis-v]])
-                                      object-name]])))
-              cell-type (make-cell (fn [cell-value]
-                                     [Cell [object-icon cell-value]]))
-              cell-generic (make-cell (fn [cell-value]
-                                        (let [cell-value (if (keyword? cell-value)
-                                                           (name cell-value)
-                                                           cell-value)]
-                                          [Cell {:title cell-value
-                                                 :style {:white-space "nowrap"
-                                                         :margin-left 5}} cell-value])))              
-              cell-actions (fn [args]
-                             (let [{:strs [rowIndex]} (js->clj args)
-                                   cell-value (get-in table-data [rowIndex])]
-                               (r/as-element [actions-cell cell-value modal-content show-modal? configs
-                                              all-objects-a])))
+                                 (let [{:strs [rowIndex]} (js->clj args)]
+                                   (r/as-element [name-cell (r/cursor visible-objects-a [rowIndex])])))              
               cell-present-value (fn [args]
-                                   (let [{:strs [rowIndex]} (js->clj args)
-                                         cell-value (get-in table-data [rowIndex])]
-                                     (r/as-element [value-cell cell-value])))
-
-              vigilia-mode (:vigilia-mode configs)
-              cell-checkbox (make-cell (fn [cell-value]
-                                         (let [o-id cell-value
-                                               ids-record-a (r/cursor vigilia-mode [:target-objects 
-                                                                                    device-id])]
-                                           [Cell [:span
-                                                  [:input 
-                                                   {:type :checkbox
-                                                    :checked (some #{o-id} @ids-record-a)
-                                                    :on-change #(swap! ids-record-a
-                                                                       (fn [ids-record]
-                                                                         (-> (if (-> % .-target .-checked)
-                                                                               (conj ids-record o-id)
-                                                                               (remove #{o-id} ids-record))
-                                                                             (vec))))}]]])))
-
-              ]
-          (reset! component this-c)          
+                                   (let [{:strs [rowIndex]} (js->clj args)]
+                                     (r/as-element [value-cell (r/cursor visible-objects-a [rowIndex])])))
+              cell-generic (fn [args]
+                             (let [{:strs [columnKey rowIndex]} (js->clj args)]
+                               (r/as-element [generic-cell (r/cursor visible-objects-a [rowIndex (keyword columnKey)])])))
+              cell-actions (fn [args]
+                             (let [{:strs [rowIndex]} (js->clj args)]
+                               (r/as-element [Cell                                              
+                                              [action-btns
+                                               (r/cursor visible-objects-a [rowIndex])
+                                               modal-content
+                                               show-modal?
+                                               configs
+                                               objects-store-a]])))
+              vigilia-checkbox (fn [o-id-a ids-record-a]
+                                 (let [o-id @o-id-a]
+                                   [:span
+                                    [:input
+                                     {:type :checkbox
+                                      :checked (if (some #{o-id} @ids-record-a) true false)
+                                      :on-change #(swap! ids-record-a
+                                                         (fn [ids-record]
+                                                           (prn "check" (-> % .-target .-checked))
+                                                           (-> (if (-> % .-target .-checked)
+                                                                 (conj ids-record o-id)
+                                                                 (remove #{o-id} ids-record))
+                                                               (vec))))}]]))
+              cell-vigilia-checkbox (fn [args]
+                                      (let [{:strs [rowIndex]} (js->clj args)]
+                                        (let [object-a (r/cursor visible-objects-a [rowIndex])
+                                              o-id-a (r/cursor object-a [:object-id])
+                                              ids-record-a (r/cursor (:vigilia-mode configs)
+                                                                     [:target-objects @(r/cursor object-a [:device-id])])]
+                                          (r/as-element
+                                           [Cell [vigilia-checkbox o-id-a ids-record-a]]))))]
+          
           [re/v-box
            :class "controllers"
            :size "1"
-           :style {:visibility (when-not (> @width 1) ;; don't show when the table is 0 px (initiating)
+           :style {:height "100%"
+                   :visibility (when-not (> @width 1) ;; don't show when the table is 0 px (initiating)
                                  "hidden")}
            :children 
-           [(when @show-modal?
-              [re/modal-panel
-               :backdrop-on-click (handler-fn (do (reset! show-modal? false)
-                                                  (reset! modal-content "")))
-               :child @modal-content])            
-            [Table
-             {:width        @width
-              :max-height   @height
-              :rows-count    (count table-data)
-              :header-height 40
-              :row-height    40}
-             (when vigilia-mode 
-               [Column {:header "Record?"
-                        :cell cell-checkbox
-                        :columnKey :object-id
-                        :width 100
-                                        ;:flex-grow 1
-                        }])
-             [Column {:header "Type" 
-                      :cell cell-type
-                      :columnKey :object-type
-                      :width 75}]
-             [Column {:header "Name"
-                      :cell cell-object-name
-                      :columnKey :object-name
-                      :width 150 
-                      :flex-grow 1
-                      }]
-             [Column {:header "Description"
-                      :columnKey :description
-                      :cell cell-generic
-                      :width 100 :flex-grow 2}]
-             (when-not vigilia-mode 
-               [Column {:header "Value"
-                                        ;:columnKey :present-value
-                        :cell cell-present-value
-                        :width 100}])
-             (when-not vigilia-mode 
-               [Column {:header "Units"
-                        :cell cell-generic
-                        :columnKey :units
-                        :width 75}])
-             (when-not vigilia-mode
-               [Column
-                {:header (r/as-element 
-                          [Cell [:span "Action"
-                                 [:button.btn.btn-default.btn-xs 
-                                  {:style {:margin-left "10px"}
-                                   :title "Create object"
-                                   :on-click 
-                                   (fn []
-                                     (mod/modal!
-                                      [wo/create-new-object-modal device-id configs
-                                              (fn [resp]
-                                                (let [{:keys [object-instance object-type]} resp]
-                                                  (swap! all-objects-a update-in [:objects]
-                                                         conj resp))
-                                                (mod/close-modal!))
-                                       mod/close-modal!]))}
-                                  "+"]]])
-                 :cell cell-actions
-                 :width 130}])]]]))})))
-
+           [[table-modal show-modal? modal-content]
+            [table objects-store-a device-id visible-objects-a width height
+             cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions
+             cell-vigilia-checkbox
+             configs]]]))})))
 
 
 
@@ -595,7 +686,7 @@
                :width       "100%"
                :change-on-blur? false
                :on-change   #(reset! filter-string %)
-               :placeholder "Filter"]]])
+               :placeholder "Filter (supports regex)"]]])
 
 (defn filter-by-type
   "Given a list of objects, keep only those for which the key in
@@ -668,23 +759,71 @@
                              [:span "Select none"]]]]]]))
 
 
+(defn make-regex-filter [filter-string-a]
+  (try (->> @filter-string-a
+            (str "(?i)")
+            ;(util/make-fuzzy-regex)
+            (re-pattern))
+       (catch :default e)))
+
+(defn filter-with-string [objects-store filter-string-a]
+  (let [objects @(r/cursor objects-store [:objects])
+        regexp @(r/track make-regex-filter filter-string-a)]
+    (if regexp
+      (filter #(->> ((juxt :object-name :description :present-value :units) %)
+                    (remove nil?)
+                    (s/join)
+                    (re-find regexp)) objects)
+      objects)))
+
+
+(defn filter-objects [objects-store filter-string-a filter-type-a]
+  (-> @(r/track filter-with-string objects-store filter-string-a)
+      (filter-by-type @filter-type-a)
+      (vec)))
+
+(defn filter-header [objects-store filtered-objects-a filter-string-a filter-type-a]
+  (let [filtered-objects @filtered-objects-a
+        objects @(r/cursor objects-store [:objects])]
+    [re/v-box
+     :class (when objects (if-not (seq filtered-objects) "bg-danger"))
+     :style {:padding "10px"
+             :padding-top "0px"}
+     :children [[filtering-bar filter-string-a]
+                [object-type-filter filter-type-a]
+                [re/label :label [:span
+                                  {:class (or (when objects (if-not (seq filtered-objects) 
+                                                              "text-danger"))
+                                              "field-label")}
+                                  "visible objects"
+                                  ": "(count filtered-objects) "/" (count objects) ]]]]))
+
+
+
 (defn objects-table [selected-device-id configs]
-  (let [error? (r/atom nil)
+  (let [objects-store-a (r/atom {})
+        visible-objects-a (r/atom {})
+        filter-string-a (r/atom "")
+        filter-type-a (r/atom {:analog nil
+                               :binary nil
+                               :input nil
+                               :output nil})
+        ;;
         loading? (r/atom nil)
-        objects-a (r/atom {})
+        error? (r/atom nil)
         all-loaded? (r/atom nil)
         current-loaded-id (r/atom nil)
-        get-remaining-objects! 
-        (fn get-remaining-objects! 
+        get-remaining-objects!
+        (fn get-remaining-objects!
           ([device-id]
            (reset! error? nil)
            (reset! loading? true)
            (get-remaining-objects! device-id 1))
           ([device-id page]
            (when-not (= @current-loaded-id device-id)
-             (reset! objects-a {})
+             (reset! objects-store-a {})
              (reset! all-loaded? nil))
-           (reset! current-loaded-id device-id)           
+           (reset! current-loaded-id device-id)
            (GET (api-path (:api-root configs)
                           "bacnet"
                           "devices" device-id
@@ -700,12 +839,12 @@
                                                (let [[o-type o-inst] 
                                                      (s/split (:object-id o) #"\.")]
                                                  (assoc o :object-type o-type :object-instance o-inst)))]
-                                (if (= device-id (:id @objects-a))
-                                  (swap! objects-a update-in [:objects]
+                                (if (= device-id (:id @objects-store-a))
+                                  (swap! objects-store-a update-in [:objects]
                                          (fn [objs]
                                            (distinct (concat objs o-to-add))))
-                                  (reset! objects-a {:id device-id
-                                                     :objects o-to-add})))))
+                                  (reset! objects-store-a {:id device-id
+                                                           :objects o-to-add})))))
                 :response-format :transit
                 :params {:properties [:object-name :description :units :present-value]
                          :limit 50
@@ -713,71 +852,28 @@
                 :error-handler #(when (= @selected-device-id device-id)
                                   (reset! loading? nil)
                                   (reset! error? {:page page
-                                                  :device-id device-id}))})))
-
-        filter-string (r/atom "")
-        filter-fn (fn [objects filter-string]
-                    (let [regexp (re-pattern (util/make-fuzzy-regex filter-string))]
-                      (filter #(->> ((juxt :object-name :description :present-value :units) %)
-                                    (remove nil?)
-                                    (s/join)
-                                    (re-find regexp)) objects)))
-        type-filter (r/atom {:analog nil
-                             :binary nil
-                             :input nil
-                             :output nil})
-        visible-objects-a (r/atom @objects-a)]
+                                                  :device-id device-id}))})))]
     (r/create-class
-     {:component-did-mount (fn [] 
-                             (let [current-id? (= @current-loaded-id @selected-device-id)
-                                   device-id @selected-device-id]
-                               (when-not current-id?
-                                 (get-remaining-objects! device-id))))
-      :component-did-update (fn [] 
-                             (let [current-id? (= @current-loaded-id @selected-device-id)
-                                   device-id @selected-device-id]
-                               (when-not current-id?
-                                 (get-remaining-objects! device-id))))
-      :reagent-render
-      (fn []        
-        (let [{:keys [id objects]} @objects-a
+     {:component-did-mount (fn [])
+      :reagent-render      
+      (fn []
+        (let [{:keys [id objects]} @objects-store-a
               device-id @selected-device-id
-              current-id? (= @current-loaded-id @selected-device-id)
-              all-ok (and current-id? (not (or @error? @loading?)))]          
-          (let [filtered-objects (-> (filter-fn objects @filter-string)
-                                     (filter-by-type @type-filter))]
-            (reset! visible-objects-a {:id id :objects filtered-objects})
+              current-id? (= id device-id)]
+          (when-not current-id?
+            (get-remaining-objects! device-id))
+          (let [filtered-objects-a (r/track filter-objects objects-store-a filter-string-a filter-type-a)]
             [re/v-box
              :size "1"
-             :children 
-             [[re/v-box
-               :class (when objects (if-not (seq filtered-objects) "bg-danger"))
-               :style {:padding "10px"
-                       :padding-top "0px"
-                       :opacity (when-not current-id? 0.5)}
-               :children [[filtering-bar filter-string]
-                          [object-type-filter type-filter]
-                          [re/label :label [:div {:class (or (when objects (if-not (seq filtered-objects) 
-                                                                             "text-danger"))
-                                                             "field-label")}
-                                            [:span "Visible objects "
-                                             ": " (count filtered-objects) "/" 
-                                             (count objects) " "
-                                             (when-not (or @error? @all-loaded?)
-                                               [:i.fa.fa-spinner.fa-pulse])]]]]]
-              [re/v-box
-                                        ;:style {:opacity (when-not current-id? "0.5")}
+             :children
+             [[filter-header objects-store-a filtered-objects-a filter-string-a filter-type-a]
+              [re/box
+               :style {:opacity (when-not current-id? "0.5")}
                :size "1"
-               :children [;(when @loading? [re/throbber])
-                          (when-let [err @error?] 
-                            [:div.alert.alert-danger "Error while trying to load objects page " (:page err) ". "
-                             [:a {:on-click #(do (reset! error? nil)
-                                                 (get-remaining-objects! device-id (:page err)))
-                                  :style {:cursor :pointer}} "Retry"]
-                             [:div (str "You can also check the model link above to see if there are " 
-                                        "known BACnet issues with this product.")]])
-                          (when (= id @selected-device-id)
-                            [make-table objects-a visible-objects-a device-id configs])]]]])))})))
+               :class "unselectable"
+               :child (if-not current-id?
+                        [re/throbber]
+                        [make-table objects-store-a filtered-objects-a device-id configs])]]])))})))
 
     
 
@@ -841,7 +937,7 @@
           (cond
             devices-list
             [re/h-split
-             ;:size "grow"
+             :on-split-change #(.dispatchEvent js/document.body (js/Event. :resize))
              :initial-split 20
              :panel-1 [left-side-nav-bar dev-list-a
                        selected-device-id 
@@ -849,8 +945,7 @@
                                                      :refresh-fn #(load-devices-list! :refresh)
                                                      :loading-a loading?
                                                      :error-a error?})]
-             :panel-2 [objects-view selected-device-id configs]
-             ]
+             :panel-2 [objects-view selected-device-id configs]]
 
             @error? [re/alert-box
                      :alert-type :warning
