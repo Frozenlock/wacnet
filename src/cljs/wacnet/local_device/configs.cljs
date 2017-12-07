@@ -77,9 +77,11 @@
          (js/setTimeout #(reset! success? nil) 3000)
          [:div.message [:div.alert.alert-success "Updated!"]])
        (when @error?
-         (js/setTimeout #(reset! error? nil) 3000)
-         [:div.message [:div.alert.alert-danger "Error : " (:status-text @error?)
-                        [:div "The server encountered an error. Double check the configuration."]]])
+         (js/setTimeout #(reset! error? nil) 10000)
+         [:div.message [:div.alert.alert-danger.text-left
+                        [:div "Error : " (:status-text @error?)]
+                        [:div "The server encountered an error. Double check the configuration."]
+                        [:div "Also make sure the BACnet port is not already taken by another software."]]])
        [:button.btn.btn-primary 
         {:on-click #(update-configs! (-> @configs-a 
                                          (select-keys [:description :broadcast-address :device-id :port
