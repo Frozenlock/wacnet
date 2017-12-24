@@ -547,11 +547,13 @@
 
 (defn info-last-scan [scanning-state-a]
   (let [ss @scanning-state-a
-        end-time (js/Date. (some-> (:end-time ss)
-                                   (reader/read-string)))]
+        end-time (some-> (:end-time ss)
+                         (reader/read-string)
+                         (js/Date.))]
     [:div
      [:b "Last scan duration : " (gstring/format "%.2f" (double (/ (or (:scanning-time-ms ss)  0) 1000 60))) " min"]
-     [:small [:span.text-muted " (Completed at " (some-> (.toTimeString end-time)
+     [:small [:span.text-muted " (Completed at " (some-> end-time
+                                                         (.toTimeString)
                                                          (s/split " ")
                                                          (first)) ")"]]
      [re/info-button
