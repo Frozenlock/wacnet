@@ -6,7 +6,7 @@
             [wacnet.templates.common :as common]
             [clojure.string :as s]
             [goog.string :as gstring]
-            [cljs.reader :as reader]
+            [clojure.tools.reader :as reader]
             [wacnet.explorer.devices :as dev]))
 
 (def configs-api-url "/api/v1/vigilia/logger/configs")
@@ -52,17 +52,23 @@
         "can help you with troubleshooting.")])
 
 (defn interval-form [logger-config-a]
-  [form-group 
-   (r/cursor logger-config-a [:time-interval])
-   "Log interval (minutes)"
-   (str "This is the time interval at which the BACnet network is scanned. "
-                      "Smaller interval means more precision, but also more network utilization. "
-                      "10 minutes is a great interval to see most HVAC behaviors. "
-                      "(Minimum interval is 5 minutes.) Note that this is the minimum interval. "
-                      "It might take longer if you have a large or slow network.")
-   {:type :number :min 5}
-   (fn [value] (when-not (empty? value)
-                 (js/parseInt value)))])
+  (let [parse-fn (fn [value] (when-not (empty? value)
+                               (js/parseInt value)))
+        value-a (r/cursor logger-config-a [:time-interval])]
+    [form-group value-a     
+     "Log interval (minutes)"
+     (str "This is the time interval at which the BACnet network is scanned. "
+          "Smaller interval means more precision, but also more network utilization. "
+          "10 minutes is a great interval to see most HVAC behaviors. "
+          "(Minimum interval is 5 minutes.) Note that this is the minimum interval. "
+          "It might take longer if you have a large or slow network.")
+     {:type :number :min 5
+      :on-blur (fn [evt]
+                 (let [v (-> evt .-target .-value parse-fn)]
+                   (some->> v
+                            (max 5)
+                            (reset! value-a))))}
+     parse-fn]))
 
 
 (defn range-form [logger-config-a]
@@ -102,12 +108,16 @@
   (let [keep-a (r/cursor logger-config-a [:id-to-keep])
         remove-a (r/cursor logger-config-a [:id-to-remove])
         print-seq (fn [value] (or (s/join ", " (map str value)) ""))
-        read-seq (fn [string] (map #(js/parseInt %)
-                                   (-> string
-                                       (s/replace "," "")
-                                       (s/split #" ")
-                                       (distinct)
-                                       (seq))))]
+        read-seq (fn [string] (let [strings (-> string
+                                                (s/replace "," "")
+                                                (s/split #" ")
+                                                (distinct)
+                                                (seq))]
+                                (->> strings
+                                     (map (fn [value]
+                                            (when-not (empty? value)
+                                              (js/parseInt value))))
+                                     (remove nil?))))]
     (fn [logger-config-a]
       [:div.form-group
        [:h4 "Filter by device ID"]
@@ -122,27 +132,26 @@
 
 
 (defn criteria-filter-form [logger-config-a]
+  (def aaa logger-config-a)
   (let [criteria-a (r/cursor logger-config-a [:criteria-coll])
-        print-seq (fn [value] (or (s/join ", " value) ""))
-        read-seq (fn [string] (-> string
-                                  (s/replace "," "")
-                                  (s/split #" ")
-                                  (distinct)
-                                  (seq)))
-        temp-criteria-a (r/atom (print-seq @criteria-a))]
+        print-seq (fn [value] (or (s/join ", " (map pr-str value)) ""))
+        read-seq (fn [string]
+                   (->> (str "[" string "]")
+                        (reader/read-string)))]
     (fn []
       [:div.form-group
        [:label "Filter by device properties"]
-       [coll-area @criteria-a #(->> % .-target .-value read-seq
-                                    (reset! criteria-a))
-        (str {:property "value"} {:property "value" :property2 "value"})]
+       [coll-area (print-seq @criteria-a)
+        #(->> % .-target .-value read-seq
+              (reset! criteria-a))
+        (str {:property "value"} ", "{:property "value" :property2 "value"})]
        [:p.text-info (str "Use this if you want to discard some devices based on"
                           " their device properties.")]
        [:p.text-info (str "If a device matches all the properties from a single criteria map {}, "
                           "it's discarded. Let's say we want to discard every devices with"
                           " the model name \"BACstat\", with the object name which partly matches"
                           " \"room\". This is what this filter would look like:")]
-       [:pre.pre-scrollable (str {:model-name "BACstat", :object-name #"(?i)room"})]
+       [:pre.pre-scrollable (str {:model-name "BACstat", :object-name "room"})]
        [:div.text-info "Most used properties:"
         [:ul (for [p [:vendor-identifier :description :device-type
                       :vendor-name :object-name :model-name]]
@@ -179,13 +188,15 @@
                         (reset! error-a true))}))
 
 
-(defn save-configs! [logger-config-a success-a loading-a error-a]
+(defn save-configs! [temp-config-a logger-config-a success-a loading-a error-a]
   (POST configs-api-url
       {:handler (fn [response]
                   (reset! loading-a nil)
                   (reset! success-a true)
-                  (reset! logger-config-a (:configs response)))
-       :params (->> (for [[k v] @logger-config-a]
+                  (let [cfgs (:configs response)]
+                    (reset! logger-config-a cfgs)
+                    (reset! temp-config-a cfgs)))
+       :params (->> (for [[k v] @temp-config-a]
                       (when v [k v]))
                     (remove nil?)
                     (into {}))
@@ -199,11 +210,11 @@
   "A 'save' button that will send the current configurations to
   Wacnet's API. Shows a success or error message to the
   user."
-  [logger-config-a disabled?]
+  [temp-config-a logger-config-a disabled?]
   (let [error? (r/atom nil)
         loading? (r/atom nil)
         success? (r/atom nil)]
-    (fn [logger-config-a disabled?]
+    (fn [temp-config-a logger-config-a disabled?]
       [:span
        (when @success?
          (js/setTimeout #(reset! success? nil) 3000)
@@ -211,10 +222,10 @@
        (when @error?
          (js/setTimeout #(reset! error? nil) 3000)
          [:div.message [:div.alert.alert-danger "Error : " (:status-text @error?)]])
-       [:button.btn.btn-primary {:on-click #(save-configs! logger-config-a success? loading? error?)}
+       [:button.btn.btn-primary {:on-click #(save-configs! temp-config-a logger-config-a success? loading? error?)}
         "Save"]])))
 
-(defn api-url-form [logger-config-a]
+(defn api-url-form [temp-config-a logger-config-a]
   (let [test-server-a (r/atom nil)
         loading? (r/atom nil)
         error? (r/atom nil)
@@ -253,17 +264,17 @@
            
            [form-group api-url-a "vigilia API URL (leave empty for default)" nil]
            [:button.btn.btn-default {:on-click test-server-fn} "Test URL"]
-           [save-btn logger-config-a (when-not (:can-connect? @test-server-a) true)]]))})))
+           [save-btn temp-config-a logger-config-a (when-not (:can-connect? @test-server-a) true)]]))})))
 
 
-(defn credentials-form [logger-config-a]
+(defn credentials-form [temp-config-a logger-config-a]
   (let [test-server-a (r/atom nil)
         loading? (r/atom nil)
         error? (r/atom nil)
         test-server-fn (fn [] 
                          (load! "/api/v1/vigilia/logger/tests/credentials" 
-                                (let [p-id (:project-id @logger-config-a)
-                                      logger-key (:logger-key @logger-config-a)] 
+                                (let [p-id (:project-id @temp-config-a)
+                                      logger-key (:logger-key @temp-config-a)] 
                                   (when (and p-id logger-key)
                                     {:project-id p-id :logger-key logger-key}))
                                 test-server-a loading? error?))]
@@ -271,7 +282,7 @@
      {:component-did-mount test-server-fn
       :reagent-render
       (fn []
-        (let [{:keys [project-id logger-key]} @logger-config-a]
+        (let [{:keys [project-id logger-key]} @temp-config-a]
           [:div.well 
            [:h3 "Step 2 : Project credentials"]
            [:div {:style {:height "5em"}}
@@ -292,45 +303,47 @@
            
            [:div.row
             [:div.col-sm-6 
-             [form-group (r/cursor logger-config-a [:project-id]) "Project ID" nil]]
+             [form-group (r/cursor temp-config-a [:project-id]) "Project ID" nil]]
             [:div.col-sm-6 
-             [form-group (r/cursor logger-config-a [:logger-key]) "Logger Key"
+             [form-group (r/cursor temp-config-a [:logger-key]) "Logger Key"
               "You can configure it in your Vigilia configuration page."]]]
            [:button.btn.btn-default {:on-click test-server-fn} "Test credentials"]
-           [save-btn logger-config-a (when-not (:credentials-valid? @test-server-a) true)]]))})))
+           [save-btn temp-config-a logger-config-a (when-not (:credentials-valid? @test-server-a) true)]]))})))
 
 
 
 (defn get-configs! 
-  ([configs-a] (get-configs! configs-a nil nil))
-  ([configs-a loading-a error-a]
+  ([temp-configs-a configs-a] (get-configs! temp-configs-a configs-a nil nil))
+  ([loading-configs-a configs-a loading-a error-a]
    (when loading-a (reset! loading-a true))
    (when error-a (reset! error-a nil))
    (GET configs-api-url
        {:handler (fn [response]
                    (when loading-a (reset! loading-a nil))
-                   (reset! configs-a (:configs response)))
+                   (let [cfgs (:configs response)]
+                     (reset! configs-a cfgs)
+                     (reset! loading-configs-a cfgs)))
         :response-format :transit
         :error-handler (fn [_]
                          (when loading-a (reset! loading-a nil))
                          (when error-a (reset! error-a true)))})))
 
-(defn clear-configs! [configs-a success-a error-a]
+(defn clear-configs! [temp-configs-a configs-a success-a error-a]
   (DELETE configs-api-url
       {:handler (fn [resp] 
                   (reset! success-a true) 
-                  (get-configs! configs-a))
+                  (get-configs! temp-configs-a configs-a))
        :error-handler #(reset! error-a %)}))
 
 (defn clear-configs-btn
   "A 'save' button that will send the current configurations to
   Wacnet's API. Shows a success or error message to the
   user."
-  [logger-config-a disabled?]
+  [temp-configs-a logger-config-a disabled?]
   (let [error? (r/atom nil)
         loading? (r/atom nil)
         success? (r/atom nil)]
-    (fn [logger-config-a disabled?]
+    (fn [temp-configs-a logger-config-a disabled?]
       [:span
        (when @success?
          (js/setTimeout #(reset! success? nil) 3000)
@@ -338,7 +351,7 @@
        (when @error?
          (js/setTimeout #(reset! error? nil) 3000)
          [:div.message [:div.alert.alert-danger "Error : " (:status-text @error?)]])
-       [:button.btn.btn-danger {:on-click #(clear-configs! logger-config-a success? error?)
+       [:button.btn.btn-danger {:on-click #(clear-configs! temp-configs-a logger-config-a success? error?)
                                 :disabled disabled?
                                 :style {:margin-bottom "20px"}}
         "Delete configurations " (when @loading? [:i.fa.fa-spinner.fa-pulse])]])))
@@ -416,7 +429,7 @@
      [:p.text-info (str "Some networks require to use a proxy to communicate to the Internet.")]]))
 
 
-(defn advanced-configs-panel [configs-a]
+(defn advanced-configs-panel [temp-config-a configs-a]
   [:div.panel.panel-default
    [:div.panel-heading.panel-toggle {:data-toggle "collapse" :data-target "#advanded-configs"
                                      :style {:cursor :pointer}}
@@ -429,44 +442,40 @@
       :children 
       [[re/v-box
         :size "1"
-        :children [[logger-id-form configs-a]
-                   [interval-form configs-a]
-                   [range-form configs-a]
-                   [id-filter-form configs-a]
-                   [explorer-form configs-a]]]
+        :children [[logger-id-form temp-config-a]
+                   [interval-form temp-config-a]
+                   [range-form temp-config-a]
+                   [id-filter-form temp-config-a]
+                   [explorer-form temp-config-a]]]
        [re/v-box
         :size "1"
-        :children [                   [proxy-form configs-a]
-                   [object-delay-form configs-a]
-                   [criteria-filter-form configs-a]
+        :children [                   [proxy-form temp-config-a]
+                   [object-delay-form temp-config-a]
+                   [criteria-filter-form temp-config-a]
                    [re/gap :size "1"]
                    [re/box :child 
-                    [:div.text-right [save-btn configs-a nil]]]]]
-       ]]
-     
-
-     ]]])
+                    [:div.text-right [save-btn temp-config-a configs-a nil]]]]]]]]]])
 
 
 (defn configs-steps [configs-a]
-  (r/create-class
-   {:component-did-mount #(get-configs! configs-a)
-    :reagent-render
-    (fn [configs-a]
-      [:div
-       [:h2 {:id "Config"} "Configurations"]
-       [:p.text-info {:style {:margin 10
-                              :margin-left 0}} 
-        "Wacnet will start the logging automatically on startup if a "
-        "Vigilia configuration file is found."]
-       [api-url-form configs-a]
-       [credentials-form configs-a]
-       [advanced-configs-panel configs-a]
-       [:div.text-right
-        [clear-configs-btn configs-a (->> @configs-a
-                                          (vals)
-                                          (some identity)
-                                          (not))]]])}))
+  (let [temp-configs-a (r/atom nil)]
+    (r/create-class
+     {:component-did-mount #(get-configs! temp-configs-a configs-a)
+      :reagent-render
+      (fn [configs-a]
+        [:div
+         [:h2 {:id "Config"} "Configurations"]
+         [:p.text-info {:style {:margin 10
+                                :margin-left 0}} 
+          "Wacnet will start the logging automatically on startup if a "
+          "Vigilia configuration file is found."]
+         [api-url-form temp-configs-a configs-a]
+         [credentials-form temp-configs-a configs-a]
+         [advanced-configs-panel temp-configs-a configs-a]
+         [:div.text-right
+          [clear-configs-btn
+           temp-configs-a
+           configs-a]]])})))
 
 
 (defn link-to-project [root-api-url project-id]
@@ -502,25 +511,26 @@
 (defn vigilia-controls [logger-state-a logger-configs-a]
   (let [logger @logger-state-a
         configs @logger-configs-a
-        project-id (:project-id configs)
+        {:keys [project-id logger-key]} configs
         logger-url "/api/v1/vigilia/logger"
         send-command! (fn [bool]
                         (POST logger-url
                             {:response-format :transit
                              :params {:logging bool}
-                             :handler #(reset! logger-state-a %)}))]
+                             :handler #(reset! logger-state-a %)}))
+        disabled? (not (every? not-empty [project-id logger-key]))]
     [re/v-box
      :align :center
+     :style {:opacity (when disabled? 0.5)}
      :children [[:div.text-center.well
                  [:h3 "Logging " (if (:logging? logger)
                                    [:b.text-success "in progress"]
                                    [:b.text-danger "stopped"])]
                  [:div
                   [:button.btn.btn-success {:on-click #(send-command! true)
-                                                 :disabled (or (:logging? logger) (not project-id))} "START"] " "
+                                            :disabled (or (:logging? logger) disabled?)} "START"] " "
                   [:button.btn.btn-danger {:on-click #(send-command! false)
-                                           :disabled (not (:logging? logger))} "STOP"]]]
-                ]]))
+                                           :disabled (not (:logging? logger))} "STOP"]]]]]))
 
 (defn refresh-btn [timer-a update-logger-state!]
   (let [update-fn (fn []
@@ -547,33 +557,52 @@
 
 (defn info-last-scan [scanning-state-a]
   (let [ss @scanning-state-a
-        end-time (some-> (:end-time ss)
-                         (reader/read-string)
-                         (js/Date.))]
+        st (when-let [st (:scanning-time-ms ss)]
+             (if (> st 0) st))
+        end-time (when st
+                   (let [et (:end-time ss)]
+                     (when (> et 0)
+                       (-> et
+                           (reader/read-string)
+                           (js/Date.)))))]
     [:div
-     [:b "Last scan duration : " (gstring/format "%.2f" (double (/ (or (:scanning-time-ms ss)  0) 1000 60))) " min"]
-     [:small [:span.text-muted " (Completed at " (some-> end-time
-                                                         (.toTimeString)
-                                                         (s/split " ")
-                                                         (first)) ")"]]
+     [:b "Last scan duration : " (or (when st
+                                       (str (-> st
+                                                (/ 1000 60)
+                                                (double)
+                                                ((fn [num]
+                                                   (gstring/format "%.2f" num))))
+                                            " min"))
+                                     "N/A")]
+     [:small [:span.text-muted (when end-time
+                                 (str " (Completed at "
+                                      (-> end-time
+                                          (.toTimeString)
+                                          (s/split " ")
+                                          (first))
+                                      ")"))]]
      [re/info-button
       :info [:p "Don't set a scanning interval smaller than this value. "
                             "The time taken to do a scan is determined by your network. MS/TP devices WILL "
              "take longer than IP or Ethernet devices."]]]))
 
 (defn info-progress [logger-state-a]
-  (let [scanning? @(r/cursor logger-state-a [:scanning])
-        ids-scanned @(r/cursor logger-state-a [:ids-scanned])
-        ids-to-scan @(r/cursor logger-state-a [:ids-to-scan])]
+  (let [ids-scanned @(r/cursor logger-state-a [:ids-scanned])
+        ids-to-scan @(r/cursor logger-state-a [:ids-to-scan])
+        start-time @(r/cursor logger-state-a [:start-time])
+        end-time @(r/cursor logger-state-a [:end-time])]
     [re/h-box
      :children [[:b "Current scan progress : "]
-                         [re/gap :size "5px"]
-                         [re/progress-bar :model (->> (/ (count ids-scanned)
-                                                         (max (count ids-to-scan) 1))
-                                                      (* 100)
-                                                      (gstring/format "%.1f"))
-                          :width "200px"
-                          :striped? true]]]))
+                [re/gap :size "5px"]
+                (if (> start-time end-time)
+                  [re/progress-bar
+                   :model (->> (/ (count ids-scanned)
+                                  (max (count ids-to-scan) 1))
+                               (* 100)
+                               (gstring/format "%.1f"))
+                   :width "200px"
+                   :striped? true]
+                  [:span "Waiting for next scan."])]]))
 
 (defn info-completed-scans [scanning-state-a]
   (let [ss @scanning-state-a]
@@ -587,8 +616,7 @@
         error-a (r/atom nil)]
     (fn [logger-state-a]
       (let [logger @logger-state-a
-            scanning-state-a (r/cursor logger-state-a [:scanning-state])
-            ss (:scanning-state logger)]
+            scanning-state-a (r/cursor logger-state-a [:scanning-state])]
         [re/v-box
          :size "380px"
          :children [[refresh-btn timer-a update-logger-state!]
@@ -597,7 +625,7 @@
                      :children [[info-local-logs scanning-state-a]
                                 [info-completed-scans scanning-state-a]
                                 [info-last-scan scanning-state-a]
-                                [info-progress logger-state-a]]]]]))))
+                                [info-progress scanning-state-a]]]]]))))
 
 (defn missing-id []
   [:div.alert.alert-danger {:style {:margin-top 10}} 
@@ -635,13 +663,14 @@
           (let [logger @logger-state
                 ss (:scanning-state logger)
                 project-id (:project-id @configs-a)
+                logger-key (:logger-key @configs-a)
                 api-root (:api-root @configs-a)]
             [re/h-box
              :gap "20px"
              :size "1"
              :align :center
              :children [[vigilia-controls logger-state configs-a]
-                        (if project-id
+                        (if (every? not-empty [project-id logger-key])
                           [re/h-box
                            :size "1"
                            :align :center
