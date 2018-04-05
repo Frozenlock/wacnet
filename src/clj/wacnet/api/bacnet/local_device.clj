@@ -31,13 +31,14 @@
   #{:broadcast-address :device-id :port
     :apdu-timeout
     :number-of-apdu-retries :description
-    :object-name})
+    :object-name
+    :foreign-device-target})
 
-(defn remove-nils [m]
-  (->> (for [[k v] m]
-         (when v [k v]))
-       (remove nil?)
-       (into {})))
+;; (defn remove-nils [m]
+;;   (->> (for [[k v] m]
+;;          (when v [k v]))
+;;        (remove nil?)
+;;        (into {})))
 
 (defn get-current-configs
   "Get the configuration from the local-device or (if not found) the
@@ -60,6 +61,9 @@
                  allowed-configs-keys)))
 
 
+(s/defschema ForeignDevice
+  {(s/optional-key :host) s/Str (s/optional-key :port) s/Int})
+
 (s/defschema LocalConfigs
   {(s/optional-key :broadcast-address) s/Str
    (s/optional-key :device-id) s/Int
@@ -68,7 +72,9 @@
    (s/optional-key :apdu-timeout) s/Int
    (s/optional-key :apdu-segment-timeout) s/Int
    (s/optional-key :number-of-apdu-retries) s/Int
-   (s/optional-key :object-name) s/Str})
+   (s/optional-key :object-name) s/Str
+   (s/optional-key :foreign-device-target) (s/maybe ForeignDevice)})
+
 
 (def bacnet-configs
   (resource

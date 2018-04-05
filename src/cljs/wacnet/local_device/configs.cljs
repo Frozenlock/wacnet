@@ -51,7 +51,11 @@
                           (js/parseInt str-or-num)))]
     (-> configs-map 
         (update-in [:device-id] parse-maybe)
-        (update-in [:port] parse-maybe))))
+        (update-in [:port] parse-maybe)
+        ((fn [cm]
+           (cond-> cm
+             (get-in cm [:foreign-device-target :port])
+             (update-in [:foreign-device-target :port] parse-maybe)))))))
 
 (defn update-configs-btn [configs-a]
   (let [error? (r/atom nil)
@@ -75,7 +79,7 @@
       [:span
        (when @success?
          (js/setTimeout #(reset! success? nil) 3000)
-         [:div.message [:div.alert.alert-success "Updated!"]])
+         [:div.message [:div.alert.alert-success "Configs updated!"]])
        (when @error?
          (js/setTimeout #(reset! error? nil) 10000)
          [:div.message [:div.alert.alert-danger.text-left
@@ -86,7 +90,8 @@
         {:on-click #(update-configs! (-> @configs-a 
                                          (select-keys [:description :broadcast-address :device-id :port
                                                        :apdu-timeout
-                                                       :number-of-apdu-retries])))}
+                                                       :number-of-apdu-retries
+                                                       :foreign-device-target])))}
         "Update / Reboot device"]])))
 
 
@@ -105,18 +110,37 @@
         [:div.container         
          [:h3.text-center "Local Device Configurations"]
          [:hr]
-         [:div.form-horizontal          
-          (if @loading? [re/throbber]
-              (for [[k v] (merge {:description nil
-                                  :broadcast-address nil
-                                  :device-id nil
-                                  :object-name nil
-                                  :apdu-timeout nil
-                                  :number-of-apdu-retries nil
-                                  :port nil} @configs-a)]
-                ^{:key k} 
+         [:div
+          (if @loading?
+            [re/throbber]
+            [:div
+             [:div.form-horizontal
+              (for [[k v] (->> (dissoc @configs-a :foreign-device-target)
+                               (merge {:description nil
+                                       :broadcast-address nil
+                                       :device-id nil
+                                       :object-name nil
+                                       :apdu-timeout nil
+                                       :number-of-apdu-retries nil
+                                       :port nil}))]
+                ^{:key k}
                 [common/form-group (name k) k
-                 [common/live-edit :input configs-a k]]))
+                 [common/live-edit :input configs-a k]])]
+             [:hr]
+             ;; [:div.panel.panel-default
+             ;;  [:div.panel-heading.panel-toggle {:data-toggle "collapse" :data-target "#foreign-device"
+             ;;                                    :style {:cursor :pointer}}
+             ;;   [:h4.panel-title.text-center "Foreign Device (optional) " [:i.fa.fa-chevron-down]]]]
+             ;; (let [fdt-a (r/cursor configs-a [:foreign-device-target])]
+             ;;   [:div.panel-collapse.collapse {:id "foreign-device"}
+             ;;    [:div.panel-body
+             ;;     [:h5.text-center "Foreign Device Registration"]
+             ;;     [:div.form-horizontal
+             ;;      (for [k [:host :port]]
+             ;;        ^{:key k}
+             ;;        [common/form-group (name k) k
+             ;;         [common/live-edit :input fdt-a k]])]]])
+             ])
           [:div.text-right
            [update-configs-btn configs-a]]
           [summary configs-a]]])})))
