@@ -10,13 +10,13 @@
                  ;; BACnet
                  [bacure "1.0.8"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.0.12"]
+                 [io.hvac.vigilia/vigilia-logger "1.0.13"]
 
                  ;; webserver stuff
                  [bidi "2.1.3"] ; routing
-                 [aleph "0.4.5-alpha3"] ; server
+                 [aleph "0.4.6"] ; server
                  [aleph-middleware "0.2.0"]
-                 [yada "1.2.11" :exclusions [manifold]]
+                 [yada "1.2.13"]
                  
                  [trptcolin/versioneer "0.2.0"]
 
@@ -29,17 +29,17 @@
                  [cider/cider-nrepl "0.16.0"]
 
                  ;; cljs
-                 [org.clojure/clojurescript "1.10.238"]
+                 [org.clojure/clojurescript "1.10.339"]
                  [org.clojure/core.async "0.4.474"]
-                 [org.clojure/tools.reader "1.2.2"]
+                 [org.clojure/tools.reader "1.3.0"]
 
-                 [reagent "0.8.0-alpha2"] ;; doesn't work with clojure 1.9 on java 9
+                 [reagent "0.8.1"] ;; [reagent "0.8.0-alpha2"] ;; doesn't work with clojure 1.9 on java 9
                  
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]
-                 [cljs-ajax "0.7.3"]
+                 [cljs-ajax "0.7.4"]
                  [re-com "2.1.0" :exclusions [reagent]]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
-                 [cljsjs/fixed-data-table-2 "0.7.17-2"
+                 [cljsjs/fixed-data-table-2 "0.7.17-2" ;; 0.8.11 has problems with 'scroll-to-row'
                   :exclusions [cljsjs/react]]]
 
   :plugins [[lein-environ "1.1.0"]
@@ -47,6 +47,8 @@
             [lein-cljsbuild "1.1.7"]
             [org.clojars.rasom/lein-externs "0.1.7"]]
 
+  :javac-options ["-target" "1.8" "-source" "1.8"] ;; retest later
+  
   :manifest {"SplashScreen-Image" "public/img/splash.png"}
 
   :min-lein-version "2.5.0"
@@ -97,12 +99,12 @@
 
                    :dependencies [[ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.6.3"]
-                                  [figwheel-sidecar "0.5.15"]
+                                  [figwheel-sidecar "0.5.16"]
                                   [org.clojure/tools.nrepl "0.2.13"]
                                   [com.cemerick/piggieback "0.2.2"]]
 
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.15"]
+                   :plugins [[lein-figwheel "0.5.16"]
                              [cider/cider-nrepl "0.16.0"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
