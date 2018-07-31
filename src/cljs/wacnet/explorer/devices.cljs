@@ -285,7 +285,6 @@
 
 
 
-
 (defn inside-value-cell [bacnet-object-a cell-comp current-value-a loading-a error-a]
   (let [flash-update (fn [comp]
                        (let [node (r/dom-node comp)
@@ -814,6 +813,7 @@
                                 (reset! all-loaded? true))
                               ;; only update if we are still looking at the same device
                               (reset! loading? nil)
+                              (reset! error? nil)
                               (let [o-to-add (for [o (:objects %)]
                                                (let [[o-type o-inst] 
                                                      (s/split (:object-id o) #"\.")]
@@ -830,8 +830,9 @@
                          :page page}
                 :error-handler #(when true;(= @selected-dev-a device-id)
                                   (reset! loading? nil)
-                                  (reset! error? {:page page
-                                                  :device-id device-id}))})))]
+                                  (swap! error? assoc
+                                         :page page
+                                         :device-id device-id))})))]
     (r/create-class
      {:component-did-mount (fn []
                              (get-remaining-objects! @selected-dev-a))
@@ -852,24 +853,32 @@
              :size "1"
              :children
              [[filter-header objects-store-a filtered-objects-a filter-string-a filter-type-a]
-              [re/box
+              [re/v-box
                :style {:opacity (when (and (not current-id?)
                                            (not @error?))
                                   "0.5")}
                :size "1"
                :class "unselectable"
-               :child (cond @error?
-                            (let [err @error?] 
-                              [:div.alert.alert-danger "Error while trying to load objects page " (:page err) ". "
-                               [:a {:on-click #(do (reset! error? nil)
-                                                   (get-remaining-objects! device-id (:page err)))
-                                    :style {:cursor :pointer}} "Retry"]
-                               [:div (str "You can also check the model link above to see if there are " 
-                                          "known BACnet issues with this product.")]])
-                            @loading?
-                            [re/throbber]
+               :children [(when-let [err @error?] 
+                            [:div.alert.alert-danger "Error while trying to load objects page " (:page err) ". "
+                             [:a {:on-click #(do (swap! error? update :tries (fn [n] (inc (or n 0))))
+                                                 (reset! loading? true)
+                                                 (get-remaining-objects! device-id (:page err)))
+                                  :style {:cursor :pointer}} "Retry"]
+                             (when-let [qty (:tries err)]
+                               [:span (str " ("qty ")")])
+                             [:div (str "You can also check the model link above to see if there are " 
+                                        "known BACnet issues with this product.")]])
+                          (when @loading?
+                            [re/throbber])
+                          
+                          
 
-                            :else [make-table objects-store-a filtered-objects-a device-id configs])]]])))})))
+                          [re/box
+                           :size "1"
+                           :child (if-not current-id?
+                                    [:span]
+                                    [make-table objects-store-a filtered-objects-a device-id configs])]]]]])))})))
 
     
 
