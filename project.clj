@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.5-RC2"
+(defproject wacnet "2.1.5-RC3"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -32,6 +32,7 @@
                  [org.clojure/clojurescript "1.10.339"]
                  [org.clojure/core.async "0.4.474"]
                  [org.clojure/tools.reader "1.3.0"]
+                 [cljsjs/resize-observer-polyfill "1.4.2-0"]
 
                  [reagent "0.8.1"] ;; [reagent "0.8.0-alpha2"] ;; doesn't work with clojure 1.9 on java 9
                  

@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [cljs.reader :as reader]
             [ajax.core :refer [GET POST]]          
-            [wacnet.js-util :as util]
+            [wacnet.utils :as u]
             [wacnet.templates.common :as common]
             [wacnet.explorer.objects :as wo]
             [goog.string :as gstring]
@@ -87,7 +87,7 @@
 
 
 (defn filter-devices [devices-list filter-string]
-  (let [regexp (re-pattern (util/make-fuzzy-regex filter-string))]
+  (let [regexp (re-pattern (u/make-fuzzy-regex filter-string))]
     (filter #(or (re-find regexp (or (:id %) "< no name >"))
                  (re-find regexp (or (:name %) "< no name >"))) devices-list)))
 
@@ -419,81 +419,82 @@
   (let [sizes-a (r/atom {})]
     (r/create-class
      {:reagent-render
-      (fn [objects-data-a device-id table-data-a width height cell-type cell-object-name
+      (fn [objects-data-a device-id table-data-a size-a cell-type cell-object-name
            cell-generic cell-present-value cell-generic cell-actions cell-vigilia-checkbox
            configs]
-        (let [vigilia-mode (:vigilia-mode configs)]
-          [Table
-           {:width        @width
-            :max-height   @height
-            :rows-count    (count @table-data-a)
-            :header-height 40
-            :row-height    40
-            :is-column-resizing false
-            :on-column-resize-end-callback (fn [new-column-width column-key]
-                                             (swap! sizes-a assoc (keyword column-key) new-column-width))
-                                        ;:style {:font-size 12}
-            }
-           [Column
-            {:header (r/as-element [column-sort "Name" objects-data-a [:object-name]])
-             :columnKey :object-name
-             :cell cell-object-name
-             :is-resizable true
-             :fixed true
-             :width (or @(r/cursor sizes-a [:object-name]) 200)}]
-           (when vigilia-mode
-             [Column {:header "Record?"
-                      :cell cell-vigilia-checkbox
-                      :columnKey :object-id
-                      :width 100}])
-           [Column
-            {:header (r/as-element [column-sort "Type" objects-data-a [:object-type]])
-             :columnKey :object-type
-             :cell cell-type
-             :is-resizable true
+        (let [vigilia-mode (:vigilia-mode configs)
+              {:keys [width height]} @size-a]
+          (if-not (> width 1)
+            [:span]
+            [Table
+             {:width width
+              :max-height height
+              :rows-count    (count @table-data-a)
+              :header-height 40
+              :row-height    40
+              :is-column-resizing false
+              :on-column-resize-end-callback (fn [new-column-width column-key]
+                                               (swap! sizes-a assoc (keyword column-key) new-column-width))}
+             [Column
+              {:header (r/as-element [column-sort "Name" objects-data-a [:object-name]])
+               :columnKey :object-name
+               :cell cell-object-name
+               :is-resizable true
+               :fixed true
+               :width (or @(r/cursor sizes-a [:object-name]) 200)}]
+             (when vigilia-mode
+               [Column {:header "Record?"
+                        :cell cell-vigilia-checkbox
+                        :columnKey :object-id
+                        :width 100}])
+             [Column
+              {:header (r/as-element [column-sort "Type" objects-data-a [:object-type]])
+               :columnKey :object-type
+               :cell cell-type
+               :is-resizable true
                                         ;:is-reorderable true
-             :width (or @(r/cursor sizes-a [:object-type]) 75)}]
-           [Column
-            {:header (r/as-element [column-sort "Description" objects-data-a [:description]])
-             :cell cell-generic
-             :is-resizable true
-             :flex-grow 2
-             :columnKey :description
-             :width (or @(r/cursor sizes-a [:description]) 100)}]
-           (when-not vigilia-mode
+               :width (or @(r/cursor sizes-a [:object-type]) 75)}]
              [Column
-              {:header (r/as-element [column-sort "Value" objects-data-a [:present-value]])
-               :columnKey :present-value
-               :is-resizable true
-               :cell cell-present-value
-               :width (or @(r/cursor sizes-a [:present-value]) 100)}])
-           (when-not vigilia-mode
-             [Column
-              {:header (r/as-element [column-sort "Units" objects-data-a [:units]])
-               :columnKey :units
-               :is-resizable true
+              {:header (r/as-element [column-sort "Description" objects-data-a [:description]])
                :cell cell-generic
-               :width (or @(r/cursor sizes-a [:units]) 75)}])
-           (when-not vigilia-mode
-             [Column
-              {:header (r/as-element
-                        [Cell [:span "Action"
-                               [:button.btn.btn-default.btn-xs 
-                                {:style {:margin-left "10px"}
-                                 :title "Create object"
-                                 :on-click 
-                                 (fn []
-                                   (mod/modal!
-                                    [wo/create-new-object-modal device-id configs
-                                     (fn [resp]
-                                       (let [{:keys [object-instance object-type]} resp]
-                                         (swap! objects-data-a update-in [:objects]
-                                                conj resp))
-                                       (mod/close-modal!))
-                                     mod/close-modal!]))}
-                                "+"]]])
-               :cell cell-actions
-               :width 135}])]))})))
+               :is-resizable true
+               :flex-grow 2
+               :columnKey :description
+               :width (or @(r/cursor sizes-a [:description]) 100)}]
+             (when-not vigilia-mode
+               [Column
+                {:header (r/as-element [column-sort "Value" objects-data-a [:present-value]])
+                 :columnKey :present-value
+                 :is-resizable true
+                 :cell cell-present-value
+                 :width (or @(r/cursor sizes-a [:present-value]) 100)}])
+             (when-not vigilia-mode
+               [Column
+                {:header (r/as-element [column-sort "Units" objects-data-a [:units]])
+                 :columnKey :units
+                 :is-resizable true
+                 :cell cell-generic
+                 :width (or @(r/cursor sizes-a [:units]) 75)}])
+             (when-not vigilia-mode
+               [Column
+                {:header (r/as-element
+                          [Cell [:span "Action"
+                                 [:button.btn.btn-default.btn-xs 
+                                  {:style {:margin-left "10px"}
+                                   :title "Create object"
+                                   :on-click 
+                                   (fn []
+                                     (mod/modal!
+                                      [wo/create-new-object-modal device-id configs
+                                       (fn [resp]
+                                         (let [{:keys [object-instance object-type]} resp]
+                                           (swap! objects-data-a update-in [:objects]
+                                                  conj resp))
+                                         (mod/close-modal!))
+                                       mod/close-modal!]))}
+                                  "+"]]])
+                 :cell cell-actions
+                 :width 135}])])))})))
 
 
 
@@ -544,36 +545,13 @@
 
 (defn make-table [objects-store-a visible-objects-a device-id configs]
   (let [component (atom nil)
-        width (r/atom 0)
-        height (r/atom 0)
-        forget-me? (atom nil)
-        ;;;;
         show-modal? (r/atom nil)
         modal-content (r/atom "")
-        ;;;; 
-        ;; because fixeddatatable isn't reponsive, we have to make
-        ;; sure to resize it manually whenever the user resize
-        ;; something.
-        resize-fn (fn [] (when-not @forget-me?
-                           (let [node @component
-                                 new-width (.-offsetWidth node)
-                                 new-height (.-offsetHeight node)]
-                             (reset! width new-width)
-                             (reset! height new-height))))
-        later-fn (util/debounce-factory)
-        debounce-resize-fn (fn [] (later-fn resize-fn 100))]
+        debounce (u/debounce-factory)
+        size-a (r/atom {:width 0 :height 0})]
     (r/create-class
-     {:component-did-mount #(let [node (r/dom-node %)
-                                  w (.-offsetWidth node)
-                                  h (.-offsetHeight node)]
-                              (reset! component node)
-                              (reset! width w)
-                              (reset! height h)
-                              (.addEventListener js/document.body :resize resize-fn)
-                              (.addEventListener js/window "resize" debounce-resize-fn))
-      :component-will-unmount #(do (reset! forget-me? true)
-                                   (.removeEventListener js/document.body :resize resize-fn)
-                                   (.removeEventListener js/window "resize" debounce-resize-fn))
+     {:component-did-mount #(let [node (r/dom-node %)]
+                              (reset! component node))
       :reagent-render
       (fn [objects-store-a visible-objects-a device-id configs]
         (let [cell-type (fn [args]
@@ -623,14 +601,16 @@
            :class "controllers"
            :size "1"
            :style {:height "100%"
-                   :visibility (when-not (> @width 1) ;; don't show when the table is 0 px (initiating)
-                                 "hidden")}
+                   :width "100%"}
            :children 
            [[table-modal show-modal? modal-content]
-            [table objects-store-a device-id visible-objects-a width height
-             cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions
-             cell-vigilia-checkbox
-             configs]]]))})))
+            [u/auto-sizer
+             (fn [m]
+               (debounce #(reset! size-a m) 20)
+               [table objects-store-a device-id visible-objects-a size-a
+                cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions
+                cell-vigilia-checkbox
+                configs])]]]))})))
 
 
 
@@ -762,7 +742,7 @@
 (defn make-regex-filter [filter-string-a]
   (try (->> @filter-string-a
             (str "(?i)")
-            ;(util/make-fuzzy-regex)
+            ;(u/make-fuzzy-regex)
             (re-pattern))
        (catch :default e)))
 
@@ -937,7 +917,6 @@
           (cond
             devices-list
             [re/h-split
-             :on-split-change #(.dispatchEvent js/document.body (js/Event. :resize))
              :initial-split 20
              :panel-1 [left-side-nav-bar dev-list-a
                        selected-device-id 

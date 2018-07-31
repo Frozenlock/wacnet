@@ -1,6 +1,9 @@
-(ns wacnet.js-util
-  (:require [goog.Timer :as timer]            
-            [clojure.string :as s]))
+(ns wacnet.utils
+  (:require [goog.Timer :as timer]
+            [reagent.core :as r]
+            [goog.object :as gobj]
+            [clojure.string :as s]
+            cljsjs.resize-observer-polyfill))
 
 
 
@@ -65,3 +68,39 @@
 (defn is-embed?
   "Check if we are currently in an iframe." []
   (not= js/window js/window.parent))
+
+
+
+(defn js-get-keys [o]
+  (goog.object/getKeys o))
+
+(defn js-get [o k]
+  (goog.object/get o k))
+
+(defn js-set [o k v]
+  (goog.object/set o k v))
+
+(defn js-get-in [o js-ks]
+  (goog.object/getValueByKeys o js-ks))
+
+
+(defn auto-sizer [content-fn]
+  (let [size-a (r/atom {})
+        dom-node (atom nil)
+        observer (new js/ResizeObserver
+                      (fn [observer-entries]
+                        (let [content-rect (-> (first observer-entries)
+                                               (js-get "contentRect"))
+                              width (js-get content-rect "width")
+                              height (js-get content-rect "height")]
+                          (reset! size-a {:width width :height height}))))]
+    (r/create-class
+     {:component-did-mount (fn [this]
+                             (.observe observer (r/dom-node @dom-node)))
+      :component-will-unmount (fn [_] (.disconnect observer))
+      :reagent-render
+      (fn [content-fn]
+        [:div {:ref #(reset! dom-node %)
+               :style {:height "100%"
+                       :width "100%"}}
+         [content-fn @size-a]])})))
