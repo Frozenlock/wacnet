@@ -13,16 +13,17 @@
             [wacnet.vigilia :as vi]
             [clojure.string :as s]
             [goog.net.jsloader]
-            [reagent-modals.modals :as mod])
+            [reagent-modals.modals :as mod]
+            [wacnet.stateful :as state])
   (:import goog.History))
 
 
 
-(defn make-device-tab [params]
-  (let [selected-device-id (r/atom (:device-id params))]
-    (fn [params]
-      (reset! selected-device-id (:device-id params))
-      [d/controllers-view selected-device-id])))
+;; (defn make-device-tab [params]
+;;   (let [selected-device-id (r/atom (:device-id params))]
+;;     (fn [params]
+;;       (reset! selected-device-id (:device-id params))
+;;       [d/controllers-view selected-device-id])))
 
 
 (defn logo []
@@ -44,7 +45,7 @@
 ;; In these tabs we put what is available to the user.
 
 (def tabs {:devices {:name "Explorer"
-                     :content #'make-device-tab}
+                     :content #'d/controllers-view}
            :local-device-configs {:name "Configs"
                                   :content #'make-configs-tab}
            :repl {:name "REPL"
@@ -70,9 +71,9 @@
         (goto-tab! :local-device-configs) ;; default tab
         (do 
           (reset! current-tab-id handler)
+          (state/set-url-params! route-params)
           (reset! current-tab-content
-                  [(:content (get tabs handler))
-                   route-params]))))))
+                  [(:content (get tabs handler))]))))))
 
 
 

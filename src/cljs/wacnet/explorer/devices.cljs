@@ -13,7 +13,8 @@
             [cljsjs.fixed-data-table-2]
             [clojure.set :as cset]            
             [reagent-modals.modals :as mod]
-            [cljs.core.async :as async :refer [<! >! chan put! onto-chan]])
+            [cljs.core.async :as async :refer [<! >! chan put! onto-chan]]
+            [wacnet.stateful :as state])
   (:import [goog.events EventType])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
@@ -282,8 +283,6 @@
 (def Column (r/adapt-react-class js/FixedDataTable.Column))
 (def Cell (r/adapt-react-class js/FixedDataTable.Cell))
 
-;; (defn actions-cell [bacnet-object modal-content show? configs all-objects-a]
-;;   [Cell [action-btns bacnet-object modal-content show? configs all-objects-a]])
 
 
 
@@ -780,7 +779,7 @@
 
 
 
-(defn objects-table [selected-device-id configs]
+(defn objects-table [params-a selected-dev-a configs]
   (let [objects-store-a (r/atom {})
         visible-objects-a (r/atom {})
         filter-string-a (r/atom "")
@@ -809,7 +808,7 @@
                           "devices" device-id
                           "objects")
                {:handler #(do 
-                            (when (= @selected-device-id device-id)
+                            (when (= @selected-dev-a device-id)
                               (if-let [n-page (get-in % [:next :page])]
                                 (get-remaining-objects! device-id n-page)
                                 (reset! all-loaded? true))
@@ -829,69 +828,94 @@
                 :params {:properties [:object-name :description :units :present-value]
                          :limit 50
                          :page page}
-                :error-handler #(when (= @selected-device-id device-id)
+                :error-handler #(when true;(= @selected-dev-a device-id)
                                   (reset! loading? nil)
                                   (reset! error? {:page page
                                                   :device-id device-id}))})))]
     (r/create-class
-     {:component-did-mount (fn [])
+     {:component-did-mount (fn []
+                             (get-remaining-objects! @selected-dev-a))
+      :component-will-update (fn []
+                               (let [{:keys [id objects]} @objects-store-a
+                                     device-id @selected-dev-a
+                                     current-id? (= id device-id)]
+                                 (when-not current-id?
+                                   (when-not (= @current-loaded-id (:device-id @error?) device-id)
+                                     (get-remaining-objects! device-id)))))
       :reagent-render      
       (fn []
         (let [{:keys [id objects]} @objects-store-a
-              device-id @selected-device-id
-              current-id? (= id device-id)]
-          (when-not current-id?
-            (get-remaining-objects! device-id))
+              device-id @selected-dev-a
+              current-id? (= id device-id)]          
           (let [filtered-objects-a (r/track filter-objects objects-store-a filter-string-a filter-type-a)]
             [re/v-box
              :size "1"
              :children
              [[filter-header objects-store-a filtered-objects-a filter-string-a filter-type-a]
               [re/box
-               :style {:opacity (when-not current-id? "0.5")}
+               :style {:opacity (when (and (not current-id?)
+                                           (not @error?))
+                                  "0.5")}
                :size "1"
                :class "unselectable"
-               :child (if-not current-id?
-                        [re/throbber]
-                        [make-table objects-store-a filtered-objects-a device-id configs])]]])))})))
+               :child (cond @error?
+                            (let [err @error?] 
+                              [:div.alert.alert-danger "Error while trying to load objects page " (:page err) ". "
+                               [:a {:on-click #(do (reset! error? nil)
+                                                   (get-remaining-objects! device-id (:page err)))
+                                    :style {:cursor :pointer}} "Retry"]
+                               [:div (str "You can also check the model link above to see if there are " 
+                                          "known BACnet issues with this product.")]])
+                            @loading?
+                            [re/throbber]
+
+                            :else [make-table objects-store-a filtered-objects-a device-id configs])]]])))})))
 
     
 
 
-(defn objects-view [selected-device-id configs]
+(defn objects-view [params-a configs]
   (let [device-summary (r/atom {:id nil :summary {}})
+        loading-a (r/atom nil)
+        error-a (r/atom nil)
         get-summary! (fn [id]
                        (GET (api-path (:api-root configs)
                                       "bacnet"
                                       "devices" id)
-                           {:handler #(reset! device-summary {:id id :summary %})
+                           {:handler (fn [resp]
+                                       (reset! device-summary {:id id :summary resp})
+                                       (reset! error-a nil)
+                                       (reset! loading-a nil))
                             :response-format :transit
-                            :error-handler prn}))]
-    (fn [selected-device-id configs]
-      (let [selected-id @selected-device-id
+                            :error-handler (fn [resp]
+                                             (reset! device-summary {:id id})
+                                             (reset! error-a resp)
+                                             (reset! loading-a nil))}))]
+    (fn [params-a configs]
+      (let [selected-dev-a (r/cursor params-a [:device-id])
+            selected-id @selected-dev-a
             {:keys [summary id]} @device-summary
             correct-summary? (= selected-id id)]
         ;; make sure we have the correct device summary
         (when-not correct-summary? (get-summary! selected-id))
-        [re/v-box 
+        [re/v-box
          :size "1"
          :style {:margin-right "10px"
                  :margin-left "5px"}
-         :children [
-                    [re/title
-                     :level :level2
-                     :underline? true
-                     :label [:span [:i.fa.fa-caret-right] " " (:device-name summary)]]
-                    [re/box 
-                     :style {:opacity (when-not correct-summary? 0.5)}
-                     :child [summary-detail summary]]
+         :children [[re/v-box
+                     :style {:opacity (when-not correct-summary? "0.5")}
+                     :children [[re/title
+                                 :level :level2
+                                 :underline? true
+                                 :label [:span [:i.fa.fa-caret-right] " "(:device-name summary)]]
+                                [summary-detail summary]]]
                     [re/gap :size "20px"]
-                    [objects-table selected-device-id configs]]]))))
+                    [objects-table params-a selected-dev-a configs]]]))))
 
 
     
 
-(defn devices [selected-device-id configs]
+(defn devices [params-a configs]
   (let [dev-list-a (r/atom nil)
         error? (r/atom nil)
         loading? (r/atom true)
@@ -912,19 +936,20 @@
     (r/create-class
      {:component-did-mount (fn [_] (load-devices-list!))
       :reagent-render
-      (fn [selected-device-id configs]
-        (let [devices-list @dev-list-a]
+      (fn [params-a configs]
+        (let [devices-list @dev-list-a
+              selected-device-a (r/cursor params-a [:device-id])]
           (cond
             devices-list
             [re/h-split
              :initial-split 20
              :panel-1 [left-side-nav-bar dev-list-a
-                       selected-device-id 
+                       selected-device-a 
                        (assoc configs :devices-list {:device-list-a dev-list-a
                                                      :refresh-fn #(load-devices-list! :refresh)
                                                      :loading-a loading?
                                                      :error-a error?})]
-             :panel-2 [objects-view selected-device-id configs]]
+             :panel-2 [objects-view params-a configs]]
 
             @error? [re/alert-box
                      :alert-type :warning
@@ -962,11 +987,8 @@
 
 
 (defn controllers-view
-  ([selected-device-id] (controllers-view selected-device-id nil))
-  ([selected-device-id configs]
-   (r/create-class
-    {:display-name "controllers-view"
-     :reagent-render
-     (fn [selected-device-id configs]
-       [devices selected-device-id (merge default-configs configs)])})))
+  ([] (controllers-view {}))
+  ([configs]
+   (let [params-a (state/url-params-atom)]
+     [devices params-a (merge default-configs configs)])))
 
