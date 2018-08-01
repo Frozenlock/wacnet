@@ -359,7 +359,7 @@
 
 (defn explorer-form [configs-a]
   (let [show-explorer? (r/atom nil)
-        selected-device-id (r/atom nil)]
+        ]
     (fn [configs-a]
       [:div.form-group
        [:div [:label "Filter individual objects"]]
@@ -367,9 +367,10 @@
         "You can select individual objects to be recorded (assuming the devices go through the previous "
         "filters.)"]
        [:div.text-right
-        [:button.btn.btn-danger {:on-click #(swap! configs-a dissoc :target-objects)
-                                 :disabled (when-not (seq (:target-objects @configs-a)) true)} "Clear all"]
-        [:button.btn.btn-default {:on-click #(reset! show-explorer? true)} "Open explorer"]]       
+        [:div.btn-group
+         [:button.btn.btn-danger {:on-click #(swap! configs-a dissoc :target-objects)
+                                  :disabled (when-not (seq (:target-objects @configs-a)) true)} "Clear all"]
+         [:button.btn.btn-default {:on-click #(reset! show-explorer? true)} "Open explorer"]]]       
        
        (when @show-explorer?
          [re/modal-panel
@@ -384,7 +385,8 @@
                    [:div.alert.alert-info {:style {:margin 5}}
                     [:b
                      "If no object is selected in a device, all of them are recorded."]]
-                   [dev/controllers-view selected-device-id {:vigilia-mode configs-a}]]]])])))
+                   [dev/controllers-view {:selection-a (r/cursor configs-a [:target-objects])
+                                          :vigilia-mode true}]]]])])))
 
 
 (defn proxy-form [logger-config-a]
@@ -556,6 +558,7 @@
              "you should investigate your network access."]]]))
 
 (defn info-last-scan [scanning-state-a]
+  (def bbb scanning-state-a)
   (let [ss @scanning-state-a
         st (when-let [st (:scanning-time-ms ss)]
              (if (> st 0) st))

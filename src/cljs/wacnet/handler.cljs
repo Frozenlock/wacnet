@@ -14,7 +14,8 @@
             [clojure.string :as s]
             [goog.net.jsloader]
             [reagent-modals.modals :as mod]
-            [wacnet.stateful :as state])
+            [wacnet.stateful :as state]
+            [reagent-keybindings.keyboard :as kb])
   (:import goog.History))
 
 
@@ -139,6 +140,7 @@
         :height "100%"
         :children
         [;[dark-mode-css]
+         [kb/keyboard-listener]
          [mod/modal-window]
          [re/h-box
           :align :center

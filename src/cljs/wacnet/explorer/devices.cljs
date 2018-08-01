@@ -9,6 +9,7 @@
             [wacnet.routes :as routes]
             [clojure.string :as s]
             [re-com.core :as re :refer-macros [handler-fn]]
+            [reagent-keybindings.keyboard :as kb]
             [goog.Timer :as timer]
             [cljsjs.fixed-data-table-2]
             [clojure.set :as cset]            
@@ -284,6 +285,122 @@
 (def Cell (r/adapt-react-class js/FixedDataTable.Cell))
 
 
+(defn object-id [object-map]
+  (:object-id object-map)
+  ;; (->> ((juxt :object-type :object-instance) object-map)
+  ;;      (mapv reader/read-string))
+  )
+
+(defn drag-start-handler [ref-a visible-objects-a selected-objects-a cell-value-a]
+  (fn [evt]
+    (let [cell-value (into {} @cell-value-a)
+          this-o-id (object-id cell-value)]
+      ;; automatic selection if dragging a non-selected object
+      (when-not (some (fn [selected-id]
+                        (= this-o-id selected-id)) @selected-objects-a)
+        (let [{:keys [object-type object-instance device-id]} cell-value
+              route (routes/path-for :devices-with-object
+                                     :device-id device-id
+                                     :object-type object-type
+                                     :object-instance object-instance)]
+          ;; (routes/replace-hash! route)
+          ;; (swap! (state/url-params-atom)
+          ;;        assoc :device-id device-id
+          ;;        :object-type object-type
+          ;;        :object-instance object-instance)
+          (reset! selected-objects-a [this-o-id])))
+
+      ;; drag n drop
+      (let [objects (filter (fn [v-o]
+                              (some #{(object-id v-o)} @selected-objects-a))
+                            @visible-objects-a)]
+        (doto (.-dataTransfer evt)
+          (.setDragImage (-> (r/dom-node @ref-a)
+                             ;; find the 'row' element
+                             (.-parentNode)
+                             (.-parentNode)
+                             (.-parentNode)
+                             (.-parentNode)
+                             (.-parentNode)) 80 20)
+          (.setData "application/edn" 
+                    (str
+                     ;; backward compatibility - single object
+                     {:wacnet-object cell-value
+
+                      ;; supports multiple objects
+                      :wacnet-objects objects}))
+          (.setData "text/plain"
+                    (->> (for [obj-value objects]
+                           (->> obj-value
+                                ((juxt :object-name :global-id :description :present-value))
+                                (map (fn [a] (if (keyword? a)
+                                               (name a)
+                                               (str (or a "")))))
+                                (map (fn [string]
+                                       (s/replace string #"[\r|\n]+" " | ")))
+                                (s/join "\t")))
+                         (s/join "\n"))))))))
+
+(defn find-index [list id]
+  (when (seq list)
+    (.indexOf list id)))
+
+
+(defn cell-click-handler [cell-value-a visible-objects-a selected-objects-a evt]
+  (let [cell-value @cell-value-a]
+    (when (:present-value cell-value)
+      (let [{:keys [object-type object-instance device-id]} cell-value
+            route (routes/path-for :devices-with-object
+                                   :device-id device-id
+                                   :object-type object-type
+                                   :object-instance object-instance)
+            visible-objects @visible-objects-a
+            selected-objects @selected-objects-a]
+        (cond (and (.-shiftKey evt)
+                   (seq @selected-objects-a)
+                   (seq visible-objects))
+
+              (let [existing-indexes (map #(find-index (map object-id visible-objects) %) selected-objects)
+                    target-index (find-index visible-objects cell-value)
+                    ranges (map (fn [idx]
+                                  (let [[a b] (sort (map #(js/Math.abs %) [target-index idx]))]
+                                    (range a (inc b)))) existing-indexes)
+                    min-range (first (sort-by count ranges))]
+                (swap! selected-objects-a (fn [coll]
+                                            (let [new-objects-ids (->> (map #(nth visible-objects %) min-range)
+                                                                       (filter :present-value)
+                                                                       (map object-id))]
+                                              (->> coll
+                                                   (concat coll new-objects-ids)
+                                                   (distinct))))))
+
+              (.-ctrlKey evt)
+              (let [o-id (object-id cell-value)]
+                (if (some #{o-id} selected-objects)
+                  (swap! selected-objects-a (partial remove #{o-id}))
+                  (swap! selected-objects-a conj o-id)))
+
+              :else
+
+              (cond (next selected-objects)
+                    (reset! selected-objects-a [(object-id cell-value)])
+                    
+                    (some #{(object-id cell-value)} selected-objects)
+                    (reset! selected-objects-a [])
+
+                    :else  (reset! selected-objects-a [(object-id cell-value)])))
+        ;; (routes/replace-hash! route)
+        ;; (swap! (state/url-params-atom)
+        ;;        assoc :device-id device-id
+        ;;        :object-type object-type
+        ;;        :object-instance object-instance)
+        ))))
+
+
+(defn cell-double-click-handler [visible-objects-a selected-objects-a evt]
+  (let [valid-objects (filter :present-value @visible-objects-a)]
+    (reset! selected-objects-a (map object-id valid-objects))))
+
 
 (defn inside-value-cell [bacnet-object-a cell-comp current-value-a loading-a error-a]
   (let [flash-update (fn [comp]
@@ -312,7 +429,7 @@
   "The value cell can be initiated with a given :present-value, but will
   update itself periodically and flash to give a feedback to the
   user."
-  [cell-value-a]
+  [cell-value-a visible-objects-a selected-objects-a]
   (let [bacnet-object-a (atom @cell-value-a)
         current-value-a (r/atom nil)
         loading? (r/atom nil)
@@ -348,7 +465,7 @@
       :component-did-mount reload-loop!
       
       :reagent-render
-      (fn [cell-value-a]
+      (fn [cell-value-a visible-objects-a selected-objects-a]
         ;; we might get a different bacnet-object every time we
         ;; scroll. Reset everything to zero.
         (reset! bacnet-object-a @cell-value-a)
@@ -411,137 +528,182 @@
                                         ;[re/gap :size "1px"]
                       ]]])))))
 
+(defn find-selected-row [table-data-a params-a]
+  (let [{:keys [object-type object-instance]} @params-a]
+    (when (and object-type object-instance)
+      (let [o-id (str object-type "." object-instance)]
+        (->>  (map-indexed vector @table-data-a)
+              (filter (fn [[idx value]]
+                        (= (:object-id value) o-id)))
+              (ffirst))))))
+
+
+;; (defn object-id [object-map]
+;;   (let [oid (->> ((juxt :object-type :object-instance) object-map)
+;;                  (mapv reader/read-string))]
+;;     oid))
+
+;; (defn find-selected-rows [table-data-a selected-objects-a]
+;;   (->> (for [[idx value] (map-indexed vector @table-data-a)]
+;;          (let [o-id (object-id value)]
+;;            (when (some (fn [m]
+;;                          (= o-id (object-id m))) @selected-objects-a)
+;;              idx)))
+;;        (doall)
+;;        (remove nil?)))
+
+
+
+
+(defn find-selected-rows [table-data-a selected-objects-a]
+  (->> (for [[idx value] (map-indexed vector @table-data-a)]
+         (let [o-l-id (object-id value)]
+           (when (some (fn [sel-id]
+                         (= o-l-id sel-id)) @selected-objects-a)
+             idx)))
+       (doall)
+       (remove nil?)))
+
+(defn find-params-selected
+  "Return the (url) selected object map, if any."
+  [params-a objects-data-a]
+  (let [params @params-a]
+    (when (:object-instance params)
+      (let [o-id (object-id params)]
+        (-> (filter (fn [m] (= (object-id m) o-id)) @(r/cursor objects-data-a [:objects]))
+            (first))))))
 
 (defn table
-  [& args]
-  (let [sizes-a (r/atom {})]
+  [params-a selected-objects-a objects-data-a & args]
+  (let [sizes-a (r/atom {})        
+        url-selected-object-a (r/track find-params-selected params-a objects-data-a)]
     (r/create-class
      {:reagent-render
-      (fn [objects-data-a device-id table-data-a size-a cell-type cell-object-name
-           cell-generic cell-present-value cell-generic cell-actions cell-vigilia-checkbox
-           configs]
-        (let [vigilia-mode (:vigilia-mode configs)
-              {:keys [width height]} @size-a]
-          (if-not (> width 1)
-            [:span]
-            [Table
-             {:width width
-              :max-height height
-              :rows-count    (count @table-data-a)
-              :header-height 40
-              :row-height    40
-              :is-column-resizing false
-              :on-column-resize-end-callback (fn [new-column-width column-key]
-                                               (swap! sizes-a assoc (keyword column-key) new-column-width))}
-             [Column
-              {:header (r/as-element [column-sort "Name" objects-data-a [:object-name]])
-               :columnKey :object-name
-               :cell cell-object-name
-               :is-resizable true
-               :fixed true
-               :width (or @(r/cursor sizes-a [:object-name]) 200)}]
-             (when vigilia-mode
-               [Column {:header "Record?"
-                        :cell cell-vigilia-checkbox
-                        :columnKey :object-id
-                        :width 100}])
-             [Column
-              {:header (r/as-element [column-sort "Type" objects-data-a [:object-type]])
-               :columnKey :object-type
-               :cell cell-type
-               :is-resizable true
+      (fn [params-a selected-objects-a objects-data-a table-data-a size-a
+           cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions]
+        (let [linked-row (find-selected-row table-data-a params-a)
+              selected-rows (find-selected-rows table-data-a selected-objects-a)
+              ]
+          ;; (when-not (some #{(:global-id @url-selected-object-a)}
+          ;;                 (map :global-id @selected-objects-a))
+          ;;   (reset! selected-objects-a [@url-selected-object-a]))
+          (let [{:keys [width height]} @size-a]
+            (if-not (> width 1)
+              [:span]
+              [Table
+               {:width (:width @size-a)
+                :max-height (:height @size-a)
+                :rows-count (count @table-data-a)
+                :header-height 40
+                :row-height 40
+                :keyboard-scroll-enabled true
+                :keyboard-page-enabled true
+                :row-class-name-getter (fn [row-index]
+                                         (str (if (= row-index linked-row)
+                                                "selected-row")
+                                              " "
+                                              (if (some #{row-index} selected-rows)
+                                                "highlight-row")))
+                :scroll-to-row linked-row
+                :is-column-resizing false
+                :on-column-resize-end-callback (fn [new-column-width column-key]
+                                                 (swap! sizes-a assoc (keyword column-key) new-column-width))}
+               [Column
+                {:header (r/as-element [column-sort "Name" objects-data-a [:object-name]])
+                 :columnKey :object-name
+                 :cell cell-object-name
+                 :is-resizable true
+                 :fixed true
+                 :width (or @(r/cursor sizes-a [:object-name]) 200)}]
+               [Column
+                {:header (r/as-element [column-sort "Type" objects-data-a [:object-type]])
+                 :columnKey :object-type
+                 :cell cell-type
+                 :is-resizable true
                                         ;:is-reorderable true
-               :width (or @(r/cursor sizes-a [:object-type]) 75)}]
-             [Column
-              {:header (r/as-element [column-sort "Description" objects-data-a [:description]])
-               :cell cell-generic
-               :is-resizable true
-               :flex-grow 2
-               :columnKey :description
-               :width (or @(r/cursor sizes-a [:description]) 100)}]
-             (when-not vigilia-mode
+                 :width (or @(r/cursor sizes-a [:object-type]) 75)}]
+               [Column
+                {:header (r/as-element [column-sort "Description" objects-data-a [:description]])
+                 :cell cell-generic
+                 :is-resizable true
+                 :flex-grow 2
+                 :columnKey :description
+                 :width (or @(r/cursor sizes-a [:description]) 100)}]
                [Column
                 {:header (r/as-element [column-sort "Value" objects-data-a [:present-value]])
                  :columnKey :present-value
                  :is-resizable true
                  :cell cell-present-value
-                 :width (or @(r/cursor sizes-a [:present-value]) 100)}])
-             (when-not vigilia-mode
+                 :width (or @(r/cursor sizes-a [:present-value]) 100)}]
                [Column
-                {:header (r/as-element [column-sort "Units" objects-data-a [:units]])
+                {:header (r/as-element [column-sort "Unit" objects-data-a [:units]])
                  :columnKey :units
                  :is-resizable true
                  :cell cell-generic
-                 :width (or @(r/cursor sizes-a [:units]) 75)}])
-             (when-not vigilia-mode
+                 :width (or @(r/cursor sizes-a [:units]) 75)}]
                [Column
-                {:header (r/as-element
-                          [Cell [:span "Action"
-                                 [:button.btn.btn-default.btn-xs 
-                                  {:style {:margin-left "10px"}
-                                   :title "Create object"
-                                   :on-click 
-                                   (fn []
-                                     (mod/modal!
-                                      [wo/create-new-object-modal device-id configs
-                                       (fn [resp]
-                                         (let [{:keys [object-instance object-type]} resp]
-                                           (swap! objects-data-a update-in [:objects]
-                                                  conj resp))
-                                         (mod/close-modal!))
-                                       mod/close-modal!]))}
-                                  "+"]]])
+                {:header "Action"
                  :cell cell-actions
-                 :width 135}])])))})))
+                                        ;:fixed true
+                 :width 135}]]))))})))
 
 
 
 
-(defn generic-cell [cell-prop-value-a]
-  (let [v @cell-prop-value-a]
-    [Cell {:title v
-           :style {:white-space "nowrap"
-                   :margin-left 5}}
-     v]))
+(defn generic-cell [_]
+  (let [ref-a (atom nil)]
+    (fn [cell-prop-value-a cell-value-a visible-objects-a selected-objects-a]
+      (let [cell-value @cell-value-a
+            v @cell-prop-value-a
+            draggable? (:present-value cell-value)]
+        [Cell (merge {:title (when (string? v)
+                               v)
+                      :style {:white-space "nowrap"
+                              :margin-left 5
+                              :height "100%"
+                              :width "100%"
+                              :cursor (when draggable? :move)}
+                      :ref #(reset! ref-a %)
+                      :on-click (partial cell-click-handler cell-value-a visible-objects-a selected-objects-a)
+                      :on-double-click (partial cell-double-click-handler visible-objects-a selected-objects-a)}
+                     (when draggable?
+                       {:draggable true
+                        :on-drag-start (drag-start-handler ref-a visible-objects-a selected-objects-a cell-value-a)}))
+         v]))))
 
 (defn icon-cell [cell-value-a]
   (let [ot @(r/cursor cell-value-a [:object-type])]
     [object-icon ot]))
 
-(defn name-cell [cell-value-a]
-  (let [cell-value @cell-value-a
-        object-name (let [n (:object-name cell-value)]
-                      (if (empty? n) "< no name >" n))
-        draggable? (:present-value cell-value)]
-    [Cell (merge {:style {:white-space "nowrap"
-                          :width "100%"
-                          ;; :text-overflow :ellipsis
-                          ;; :overflow :hidden
-                          :height "100%"
-                          ;:background-color (when in-briefcase? "grey")
-                          :cursor (when draggable? :move)}
-                  :class (str "object-name-cell" (when draggable? " draggable"))
-                  :on-click #(prn (into {} cell-value))}
-                 (when draggable?
-                   {:draggable true
-                    :on-drag-start #(doto (.-dataTransfer %)
-                                      (.setData "application/edn" 
-                                                (str 
-                                                 {:wacnet-object 
-                                                  (into {} cell-value)}))
-                                      (.setData "text"
-                                                (->> cell-value
-                                                     ((juxt :object-name :global-id :description))
-                                                     (s/join "\t"))))}))
-     [:span {:title object-name}
-      (when draggable? 
-        [:span.handle {:style {:margin-right "5px"}}
-         [:i.fa.fa-ellipsis-v]
-         [:i.fa.fa-ellipsis-v]])
-      object-name]]))
+(defn name-cell [_]
+  (let [ref-a (atom nil)]
+    (fn [cell-value-a visible-objects-a selected-objects-a]
+      (let [cell-value @cell-value-a
+            object-name (let [n (:object-name cell-value)]
+                          (if (empty? n) "< no name >" n))
+            draggable? (:present-value cell-value)]
+        [Cell (merge {:style {:white-space "nowrap"
+                              :width "100%"
+                              :height "100%"
+                              :cursor (when draggable? :move)}
+                      :class (when draggable? " draggable")
+                      :ref #(reset! ref-a %)
+                      :on-click (partial cell-click-handler cell-value-a visible-objects-a selected-objects-a)
+                      :on-double-click (partial cell-double-click-handler visible-objects-a selected-objects-a)}
+                     (when draggable?
+                       {:draggable true
+                        :on-drag-start (drag-start-handler ref-a visible-objects-a selected-objects-a cell-value-a)}))
+         [:span {:title object-name}
+          (when draggable? 
+            [:span.handle {:style {:margin-right "5px"}}
+             [:i.fa.fa-ellipsis-v]
+             [:i.fa.fa-ellipsis-v]])
+          object-name]]))))
 
 
-(defn make-table [objects-store-a visible-objects-a device-id configs]
+(defonce table-selections-a (r/atom {}))
+
+(defn make-table [params-a objects-store-a visible-objects-a device-id configs]
   (let [component (atom nil)
         show-modal? (r/atom nil)
         modal-content (r/atom "")
@@ -551,19 +713,26 @@
      {:component-did-mount #(let [node (r/dom-node %)]
                               (reset! component node))
       :reagent-render
-      (fn [objects-store-a visible-objects-a device-id configs]
-        (let [cell-type (fn [args]
+      (fn [params-a objects-store-a visible-objects-a device-id configs]
+        (let [selected-objects-a (r/cursor (:selection-a configs) [device-id])
+              cell-type (fn [args]
                           (let [{:strs [rowIndex]} (js->clj args)]
-                            (r/as-element [Cell [icon-cell (r/cursor visible-objects-a [rowIndex])]])))
+                            (r/as-element [generic-cell (r/track icon-cell (r/cursor visible-objects-a [rowIndex]))
+                                           (r/cursor visible-objects-a [rowIndex])
+                                           visible-objects-a selected-objects-a])))
               cell-object-name (fn [args]
                                  (let [{:strs [rowIndex]} (js->clj args)]
-                                   (r/as-element [name-cell (r/cursor visible-objects-a [rowIndex])])))              
+                                   (r/as-element [name-cell (r/cursor visible-objects-a [rowIndex])
+                                                  visible-objects-a selected-objects-a])))
               cell-present-value (fn [args]
                                    (let [{:strs [rowIndex]} (js->clj args)]
-                                     (r/as-element [value-cell (r/cursor visible-objects-a [rowIndex])])))
+                                     (r/as-element [value-cell (r/cursor visible-objects-a [rowIndex])
+                                                    visible-objects-a selected-objects-a])))
               cell-generic (fn [args]
                              (let [{:strs [columnKey rowIndex]} (js->clj args)]
-                               (r/as-element [generic-cell (r/cursor visible-objects-a [rowIndex (keyword columnKey)])])))
+                               (r/as-element [generic-cell (r/cursor visible-objects-a [rowIndex (keyword columnKey)])
+                                              (r/cursor visible-objects-a [rowIndex])
+                                              visible-objects-a selected-objects-a])))
               cell-actions (fn [args]
                              (let [{:strs [rowIndex]} (js->clj args)]
                                (r/as-element [Cell                                              
@@ -572,28 +741,7 @@
                                                modal-content
                                                show-modal?
                                                configs
-                                               objects-store-a]])))
-              vigilia-checkbox (fn [o-id-a ids-record-a]
-                                 (let [o-id @o-id-a]
-                                   [:span
-                                    [:input
-                                     {:type :checkbox
-                                      :checked (if (some #{o-id} @ids-record-a) true false)
-                                      :on-change #(swap! ids-record-a
-                                                         (fn [ids-record]
-                                                           (prn "check" (-> % .-target .-checked))
-                                                           (-> (if (-> % .-target .-checked)
-                                                                 (conj ids-record o-id)
-                                                                 (remove #{o-id} ids-record))
-                                                               (vec))))}]]))
-              cell-vigilia-checkbox (fn [args]
-                                      (let [{:strs [rowIndex]} (js->clj args)]
-                                        (let [object-a (r/cursor visible-objects-a [rowIndex])
-                                              o-id-a (r/cursor object-a [:object-id])
-                                              ids-record-a (r/cursor (:vigilia-mode configs)
-                                                                     [:target-objects @(r/cursor object-a [:device-id])])]
-                                          (r/as-element
-                                           [Cell [vigilia-checkbox o-id-a ids-record-a]]))))]
+                                               objects-store-a]])))]
           
           [re/v-box
            :class "controllers"
@@ -601,14 +749,18 @@
            :style {:height "100%"
                    :width "100%"}
            :children 
-           [[table-modal show-modal? modal-content]
+           [[kb/kb-action "esc" (fn []
+                                  (reset! selected-objects-a [])
+                                  (routes/replace-hash!
+                                   (routes/path-for :devices
+                                                    :device-id device-id))
+                                  (swap! (state/url-params-atom) dissoc :object-instance :object-type))]
+            [table-modal show-modal? modal-content]
             [u/auto-sizer
              (fn [m]
                (debounce #(reset! size-a m) 20)
-               [table objects-store-a device-id visible-objects-a size-a
-                cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions
-                cell-vigilia-checkbox
-                configs])]]]))})))
+               [table params-a selected-objects-a objects-store-a visible-objects-a size-a
+                cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions])]]]))})))
 
 
 
@@ -760,7 +912,7 @@
       (filter-by-type @filter-type-a)
       (vec)))
 
-(defn filter-header [objects-store filtered-objects-a filter-string-a filter-type-a]
+(defn filter-header [objects-store filtered-objects-a filter-string-a filter-type-a selected-a]
   (let [filtered-objects @filtered-objects-a
         objects @(r/cursor objects-store [:objects])]
     [re/v-box
@@ -769,12 +921,26 @@
              :padding-top "0px"}
      :children [[filtering-bar filter-string-a]
                 [object-type-filter filter-type-a]
-                [re/label :label [:span
-                                  {:class (or (when objects (if-not (seq filtered-objects) 
-                                                              "text-danger"))
-                                              "field-label")}
-                                  "visible objects"
-                                  ": "(count filtered-objects) "/" (count objects) ]]]]))
+                [re/h-box
+                 :style {:margin-top 2}
+                 :children [[re/label :label [:span
+                                              {:class (or (when objects (if-not (seq filtered-objects) 
+                                                                          "text-danger"))
+                                                          "field-label")}
+                                              "visible objects"
+                                              ": "(count filtered-objects) "/" (count objects) ]]
+                            [re/gap :size "1"]
+                            [re/label :label [:span
+                                              {:class "field-label"}
+                                              "Selected objects"
+                                              ": "(count @selected-a) "/" (count objects)]]
+                            [:button.btn.btn-default.btn-xs
+                             {:style {:padding 0
+                                      :padding-right 3 :padding-left 3
+                                      :margin-left 5}
+                              :on-click #(reset! selected-a nil)
+                              :disabled (not (seq @selected-a))}
+                             "Clear"]]]]]))
 
 
 
@@ -852,7 +1018,8 @@
             [re/v-box
              :size "1"
              :children
-             [[filter-header objects-store-a filtered-objects-a filter-string-a filter-type-a]
+             [[filter-header objects-store-a filtered-objects-a filter-string-a filter-type-a
+               (r/cursor (:selection-a configs) [device-id])]
               [re/v-box
                :style {:opacity (when (and (not current-id?)
                                            (not @error?))
@@ -878,7 +1045,7 @@
                            :size "1"
                            :child (if-not current-id?
                                     [:span]
-                                    [make-table objects-store-a filtered-objects-a device-id configs])]]]]])))})))
+                                    [make-table params-a objects-store-a filtered-objects-a device-id configs])]]]]])))})))
 
     
 
@@ -951,6 +1118,7 @@
           (cond
             devices-list
             [re/h-split
+             :style {:margin-top 0}
              :initial-split 20
              :panel-1 [left-side-nav-bar dev-list-a
                        selected-device-a 
@@ -985,6 +1153,7 @@
 
 (def default-configs
   {:api-root "/api/v1/"
+   :selection-a table-selections-a
    :device-table-btns ; each object (row) is applied to this function
    (fn [obj]
      (when (:present-value obj)

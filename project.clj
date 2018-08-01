@@ -37,6 +37,7 @@
                  [reagent "0.8.1"] ;; [reagent "0.8.0-alpha2"] ;; doesn't work with clojure 1.9 on java 9
                  
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]
+                 [org.clojars.frozenlock/reagent-keybindings "1.0.1"]
                  [cljs-ajax "0.7.4"]
                  [re-com "2.1.0" :exclusions [reagent]]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
