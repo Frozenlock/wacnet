@@ -580,7 +580,7 @@
     (r/create-class
      {:reagent-render
       (fn [params-a selected-objects-a objects-data-a table-data-a size-a
-           cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions]
+           cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions configs]
         (let [linked-row (find-selected-row table-data-a params-a)
               selected-rows (find-selected-rows table-data-a selected-objects-a)
               ]
@@ -641,11 +641,26 @@
                  :is-resizable true
                  :cell cell-generic
                  :width (or @(r/cursor sizes-a [:units]) 75)}]
-               [Column
-                {:header "Action"
-                 :cell cell-actions
-                                        ;:fixed true
-                 :width 135}]]))))})))
+               (when-not (:vigilia-mode configs)
+                 [Column
+                  {:header (r/as-element
+                            [Cell [:span "Action"
+                                   [:button.btn.btn-default.btn-xs 
+                                    {:style {:margin-left "10px"}
+                                     :title "Create object"
+                                     :on-click 
+                                     (fn []
+                                       (mod/modal!
+                                        [wo/create-new-object-modal @(r/cursor params-a [:device-id]) configs
+                                         (fn [resp]
+                                           (let [{:keys [object-instance object-type]} resp]
+                                             (swap! objects-data-a update-in [:objects]
+                                                    conj resp))
+                                           (mod/close-modal!))
+                                         mod/close-modal!]))}
+                                    "+"]]])
+                   :cell cell-actions
+                   :width 135}])]))))})))
 
 
 
@@ -760,7 +775,7 @@
              (fn [m]
                (debounce #(reset! size-a m) 20)
                [table params-a selected-objects-a objects-store-a visible-objects-a size-a
-                cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions])]]]))})))
+                cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions configs])]]]))})))
 
 
 
