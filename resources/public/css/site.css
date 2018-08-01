@@ -98,6 +98,22 @@ body {
     }
 
 
+.unselectable {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.selectable {
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+
+
 .flash {
     animation-name: flash-animation;
     animation-duration: 1s;
@@ -115,10 +131,29 @@ body {
     min-width: 10em;
     z-index: 15;}
 
-.controllers .object-name-cell.draggable:hover {
-    background-color: rgba(51,102,204,.15);
+
+.controllers .draggable .handle {
+    color : rgba(255,153,0,1);
 }
 
-.controllers .object-name-cell.draggable .handle {
-    color : rgba(51,102,204,1);
+
+.public_fixedDataTable_bodyRow:hover .public_fixedDataTableCell_main{
+    background-color: rgba(255,153,0,0.1);
+}
+
+.public_fixedDataTable_main .selected-row .fixedDataTableRowLayout_body > :first-child .public_fixedDataTableCell_main{
+    font-weight : bold;
+}
+
+.public_fixedDataTable_main .highlight-row .public_fixedDataTableCell_main{
+    background-color: rgba(255,153,0,0.15);
+    transition: border-left 0.2s ease-in-out;
+}
+
+.public_fixedDataTable_main .highlight-row .fixedDataTableRowLayout_body > :first-child .public_fixedDataTableCell_main{
+    border-left: 3px solid rgba(255,153,0,1);
+}
+
+.public_fixedDataTable_main .highlight-row:hover .public_fixedDataTableCell_main{
+    background-color: rgba(255,153,0,0.25);
 }
