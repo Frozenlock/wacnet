@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.5-RC3"
+(defproject wacnet "2.1.5-RC5"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"

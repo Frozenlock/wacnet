@@ -382,11 +382,11 @@
                   :children
                   [[:div.text-right
                     [:button.btn.btn-primary {:on-click #(reset! show-explorer? nil)} "Close"]]
-                   [:div.alert.alert-info {:style {:margin 5}}
+                   [:div.alert.alert-info.text-center {:style {:margin 5}}
                     [:b
-                     "If no object is selected in a device, all of them are recorded."]]
-                   [dev/controllers-view {:selection-a (r/cursor configs-a [:target-objects])
-                                          :vigilia-mode true}]]]])])))
+                     "If not a single object is selected in a device, they are all recorded."]]
+                   [dev/controllers-view {;:selection-a (r/cursor configs-a [:target-objects])
+                                          :vigilia-mode (r/cursor configs-a [:target-objects])}]]]])])))
 
 
 (defn proxy-form [logger-config-a]

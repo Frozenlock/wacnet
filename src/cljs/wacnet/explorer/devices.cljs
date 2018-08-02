@@ -489,44 +489,34 @@
      :child @modal-content]))
 
 (defn column-sort
-  ([column-name data-a data-path] (column-sort column-name data-a data-path nil))
-  ([column-name data-a data-path is-number]
-   (let [sort-direction (r/atom nil)]
-     (fn [column-name data-a data-path]
-       (let [sort-fn (fn [direction]
-                       (swap! (r/cursor data-a [:objects])
-                              (fn [m] (let [sorted (sort-by
-                                                    (fn [o]
-                                                      (let [value (get-in o data-path)]
-                                                        (if-not is-number
-                                                          value
-                                                          (if (number? value) value 0))))
-                                                    m)]
-                                        (if (= direction :up)
-                                          (do (reset! sort-direction :up)
-                                              sorted)
-                                          (do (reset! sort-direction :down)
-                                              (reverse sorted)))))))]
-         [Cell {:style {:width "100%"}}
-          [re/h-box
-           :align :center
-           :children [[:span column-name]
-                      [re/gap :size "1"]
-                      [:span {:style {:position :relative
-                                      :opacity 0.5}}
-                       [:i.fa.fa-sort {:style {:opacity 0}}]
-                       [:i.fa.fa-sort-up.fa-lg {:style {:position :absolute :right 3 :top 1
-                                        ;:opacity (if (= @sort-direction :up) 1 0.5)
-                                                        :cursor :pointer}
-                                                :on-click #(sort-fn :up)}]                      
-                       [:i.fa.fa-sort-down.fa-lg {:style {:position :absolute :right 3 :top 9
-                                        ;:opacity (if (= @sort-direction :down) 1 0.5)
-                                                          :cursor :pointer}
-                                                  :on-click #(sort-fn :down)}]
-                       ;; space between click areas
-                       [:span {:style {:width 13 :height 9 :position :absolute :top 7 :right 3}}]]
-                                        ;[re/gap :size "1px"]
-                      ]]])))))
+  [marker-a data-a column-name sort-by-fn]
+  (let [sort-direction (r/cursor marker-a [column-name])
+        sort-fn (fn [direction]
+                  (swap! (r/cursor data-a [:objects])
+                         (fn [m] (let [sorted (sort-by sort-by-fn m)]
+                                        ;(reset! marker-a {})
+                                   (if (= direction :up)
+                                     (do (reset! marker-a {column-name :up})
+                                         sorted)
+                                     (do (reset! marker-a {column-name :down})
+                                         (reverse sorted)))))))]
+    [Cell {:style {:width "100%"}}
+     [re/h-box
+      :align :center
+      :children [[:span column-name]
+                 [re/gap :size "1"]
+                 [:span {:style {:position :relative}}
+                  [:i.fa.fa-sort {:style {:opacity 0}}]
+                  [:i.fa.fa-sort-up.fa-lg {:style {:position :absolute :right 3 :top 1
+                                                   :opacity (if (= @sort-direction :up) 1 0.3)
+                                                   :cursor :pointer}
+                                           :on-click #(sort-fn :up)}]
+                  [:i.fa.fa-sort-down.fa-lg {:style {:position :absolute :right 3 :top 9
+                                                     :opacity (if (= @sort-direction :down) 1 0.3)
+                                                     :cursor :pointer}
+                                             :on-click #(sort-fn :down)}]
+                  ;; space between click areas
+                  [:span {:style {:width 13 :height 9 :position :absolute :top 7 :right 3}}]]]]]))
 
 (defn find-selected-row [table-data-a params-a]
   (let [{:keys [object-type object-instance]} @params-a]
@@ -536,22 +526,6 @@
               (filter (fn [[idx value]]
                         (= (:object-id value) o-id)))
               (ffirst))))))
-
-
-;; (defn object-id [object-map]
-;;   (let [oid (->> ((juxt :object-type :object-instance) object-map)
-;;                  (mapv reader/read-string))]
-;;     oid))
-
-;; (defn find-selected-rows [table-data-a selected-objects-a]
-;;   (->> (for [[idx value] (map-indexed vector @table-data-a)]
-;;          (let [o-id (object-id value)]
-;;            (when (some (fn [m]
-;;                          (= o-id (object-id m))) @selected-objects-a)
-;;              idx)))
-;;        (doall)
-;;        (remove nil?)))
-
 
 
 
@@ -576,17 +550,21 @@
 (defn table
   [params-a selected-objects-a objects-data-a & args]
   (let [sizes-a (r/atom {})        
-        url-selected-object-a (r/track find-params-selected params-a objects-data-a)]
+        url-selected-object-a (r/track find-params-selected params-a objects-data-a)
+        sort-marker-a (r/atom {})
+        column-sort-comp (partial column-sort sort-marker-a objects-data-a)
+        column-sort-fn (fn [data-path]
+                         (fn [o]
+                           (let [value (get-in o data-path)]
+                             (str value))))]
     (r/create-class
      {:reagent-render
       (fn [params-a selected-objects-a objects-data-a table-data-a size-a
-           cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions configs]
+           cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions cell-vigilia-checkbox configs]
         (let [linked-row (find-selected-row table-data-a params-a)
               selected-rows (find-selected-rows table-data-a selected-objects-a)
-              ]
-          ;; (when-not (some #{(:global-id @url-selected-object-a)}
-          ;;                 (map :global-id @selected-objects-a))
-          ;;   (reset! selected-objects-a [@url-selected-object-a]))
+              vigilia-mode (:vigilia-mode configs)
+              device-id-a (r/cursor params-a [:device-id])]
           (let [{:keys [width height]} @size-a]
             (if-not (> width 1)
               [:span]
@@ -608,40 +586,53 @@
                 :is-column-resizing false
                 :on-column-resize-end-callback (fn [new-column-width column-key]
                                                  (swap! sizes-a assoc (keyword column-key) new-column-width))}
+               (when vigilia-mode
+                 [Column {:header (r/as-element [column-sort-comp "Recorded" (fn [o]
+                                                                               (if (some #{(:object-id o)}
+                                                                                         @(r/cursor vigilia-mode [@device-id-a]))
+                                                                                 1
+                                                                                 0))])
+                          :cell cell-vigilia-checkbox
+                          :columnKey :object-id
+                          ;:fixed true
+                          :width 100}])
+
                [Column
-                {:header (r/as-element [column-sort "Name" objects-data-a [:object-name]])
+                {:header (r/as-element [column-sort-comp "Name" (column-sort-fn [:object-name])])
                  :columnKey :object-name
                  :cell cell-object-name
                  :is-resizable true
                  :fixed true
                  :width (or @(r/cursor sizes-a [:object-name]) 200)}]
+              
+               
                [Column
-                {:header (r/as-element [column-sort "Type" objects-data-a [:object-type]])
+                {:header (r/as-element [column-sort-comp "Type" (column-sort-fn [:object-type])])
                  :columnKey :object-type
                  :cell cell-type
                  :is-resizable true
                                         ;:is-reorderable true
                  :width (or @(r/cursor sizes-a [:object-type]) 75)}]
                [Column
-                {:header (r/as-element [column-sort "Description" objects-data-a [:description]])
+                {:header (r/as-element [column-sort-comp "Description" (column-sort-fn [:description])])
                  :cell cell-generic
                  :is-resizable true
                  :flex-grow 2
                  :columnKey :description
                  :width (or @(r/cursor sizes-a [:description]) 100)}]
                [Column
-                {:header (r/as-element [column-sort "Value" objects-data-a [:present-value]])
+                {:header (r/as-element [column-sort-comp "Value" (column-sort-fn [:present-value])])
                  :columnKey :present-value
                  :is-resizable true
                  :cell cell-present-value
                  :width (or @(r/cursor sizes-a [:present-value]) 100)}]
                [Column
-                {:header (r/as-element [column-sort "Unit" objects-data-a [:units]])
+                {:header (r/as-element [column-sort-comp "Unit" (column-sort-fn [:units])])
                  :columnKey :units
                  :is-resizable true
                  :cell cell-generic
                  :width (or @(r/cursor sizes-a [:units]) 75)}]
-               (when-not (:vigilia-mode configs)
+               (when-not vigilia-mode
                  [Column
                   {:header (r/as-element
                             [Cell [:span "Action"
@@ -756,7 +747,33 @@
                                                modal-content
                                                show-modal?
                                                configs
-                                               objects-store-a]])))]
+                                               objects-store-a]])))
+              vigilia-checkbox (fn [o-id-a ids-record-a]
+                                 (let [o-id @o-id-a]
+                                   [:div.text-center
+                                    {:style {:width "100%"}}
+                                    (if (some #{o-id} @ids-record-a)
+                                      [:i.fa.fa-check-square-o.fa-fw.fa-lg {:style {:margin-right -3}}]
+                                      [:i.fa.fa-square-o.fa-fw.fa-lg])]))
+              cell-vigilia-checkbox (fn [args]
+                                      (let [{:strs [rowIndex]} (js->clj args)]
+                                        (let [object-a (r/cursor visible-objects-a [rowIndex])
+                                              o-id-a (r/cursor object-a [:object-id])
+                                              ids-record-a (r/cursor (:vigilia-mode configs)
+                                                                     [@(r/cursor object-a [:device-id])])]
+                                          (r/as-element
+                                           (if (:present-value @object-a)
+                                             [Cell {:style {:width "100%"
+                                                            :cursor :pointer}
+                                                    :on-click #(swap! ids-record-a
+                                                                      (fn [ids-record]
+                                                                        (let [o-id @o-id-a]
+                                                                          (-> (if-not (some #{o-id} ids-record)
+                                                                                (conj ids-record o-id)
+                                                                                (remove #{o-id} ids-record))
+                                                                              (vec)))))}
+                                              [vigilia-checkbox o-id-a ids-record-a]]
+                                             [Cell])))))]
           
           [re/v-box
            :class "controllers"
@@ -775,7 +792,7 @@
              (fn [m]
                (debounce #(reset! size-a m) 20)
                [table params-a selected-objects-a objects-store-a visible-objects-a size-a
-                cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions configs])]]]))})))
+                cell-type cell-object-name cell-generic cell-present-value cell-generic cell-actions cell-vigilia-checkbox configs])]]]))})))
 
 
 
@@ -856,52 +873,39 @@
       
 
 (defn object-type-filter [type-filter-a]
-  (let [set-all-fn (fn [value]
-                     (reset! type-filter-a
-                             (into {}
-                                   (for [[k v] @type-filter-a]
-                                     [k value]))))
-        ;select-all-fn (fn [] (set-all-fn true))
-        select-none-fn (fn [] (set-all-fn nil))
-        analog-cur (r/cursor type-filter-a [:analog])
+  (let [analog-cur (r/cursor type-filter-a [:analog])
         binary-cur (r/cursor type-filter-a [:binary])
         input-cur (r/cursor type-filter-a [:input])
         output-cur (r/cursor type-filter-a [:output])
         loop-cur (r/cursor type-filter-a [:loop])]
     [re/h-box
      :style {:flex-flow "row wrap"}
-     :children [[re/h-box
-                 :children [[:button {:class (str "btn btn-default btn-sm"
-                                                  (when @analog-cur " active"))
-                                      :title "Analog"
-                                      :on-click #(swap! analog-cur not)}
-                             [:span [:i.fa.fa-signal]" Analog"]]
-                            [:button {:class (str "btn btn-default btn-sm"
-                                                  (when @binary-cur " active"))
-                                      :title "Binary"
-                                      :on-click #(swap! binary-cur not)}
-                             [:span [:i.fa.fa-adjust]" Binary"]]
-                            [:button {:class (str "btn btn-default btn-sm"
-                                                  (when @input-cur " active"))
-                                      :title "Input"
-                                      :on-click #(swap! input-cur not)}
-                             [:span [:i.fa.fa-sign-in]" Input"]]
-                            [:button {:class (str "btn btn-default btn-sm"
-                                                  (when @output-cur " active"))
-                                      :title "Output"
-                                      :on-click #(swap! output-cur not)}
-                             [:span [:i.fa.fa-sign-out]" Output"]]
-                            [:button {:class (str "btn btn-default btn-sm"
-                                                  (when @loop-cur " active"))
-                                      :title "Control loop"
-                                      :on-click #(swap! loop-cur not)}
-                             [:span [:i.fa.fa-circle-o-notch]" Control loop"]]]]
-                
-                [re/gap :size "1"]
-                [re/h-box
-                 :children [[:button {:class "btn btn-default btn-sm"
-                                      :on-click select-none-fn}
-                             [:span "Select none"]]]]]]))
+     :children [[:div.btn-group
+                 [:button {:class (str "btn btn-default btn-sm"
+                                       (when @analog-cur " active"))
+                           :title "Analog"
+                           :on-click #(swap! analog-cur not)}
+                  [:span [:i.fa.fa-signal]" Analog"]]
+                 [:button {:class (str "btn btn-default btn-sm"
+                                       (when @binary-cur " active"))
+                           :title "Binary"
+                           :on-click #(swap! binary-cur not)}
+                  [:span [:i.fa.fa-adjust]" Binary"]]
+                 [:button {:class (str "btn btn-default btn-sm"
+                                       (when @input-cur " active"))
+                           :title "Input"
+                           :on-click #(swap! input-cur not)}
+                  [:span [:i.fa.fa-sign-in]" Input"]]
+                 [:button {:class (str "btn btn-default btn-sm"
+                                       (when @output-cur " active"))
+                           :title "Output"
+                           :on-click #(swap! output-cur not)}
+                  [:span [:i.fa.fa-sign-out]" Output"]]
+                 [:button {:class (str "btn btn-default btn-sm"
+                                       (when @loop-cur " active"))
+                           :title "Control loop"
+                           :on-click #(swap! loop-cur not)}
+                  [:span [:i.fa.fa-circle-o-notch]" Control loop"]]]]]))
 
 
 (defn make-regex-filter [filter-string-a]
@@ -927,35 +931,72 @@
       (filter-by-type @filter-type-a)
       (vec)))
 
-(defn filter-header [objects-store filtered-objects-a filter-string-a filter-type-a selected-a]
+(defn filter-header [objects-store filtered-objects-a filter-string-a filter-type-a selected-dev-a configs]
   (let [filtered-objects @filtered-objects-a
-        objects @(r/cursor objects-store [:objects])]
+        device-id @selected-dev-a
+        selected-a (r/cursor (:selection-a configs) [device-id])
+        vigilia-mode-a (:vigilia-mode configs)
+        vigilia-recorded-a (some-> vigilia-mode-a
+                                   (r/cursor [device-id]))
+        objects @(r/cursor objects-store [:objects])
+        set-all-fn (fn [value]
+                     (reset! filter-type-a
+                             (into {}
+                                   (for [[k v] @filter-type-a]
+                                     [k value]))))
+        select-none-fn (fn []
+                         (set-all-fn nil)
+                         (reset! filter-string-a ""))]
     [re/v-box
      :class (when objects (if-not (seq filtered-objects) "bg-danger"))
-     :style {:padding "10px"
-             :padding-top "0px"}
+     :style {:padding-bottom "10px"}
      :children [[filtering-bar filter-string-a]
-                [object-type-filter filter-type-a]
                 [re/h-box
-                 :style {:margin-top 2}
+                 :children [[object-type-filter filter-type-a]
+                            [re/gap :size "1"]
+                            [re/h-box
+                             :children [[:button {:class "btn btn-default btn-sm"
+                                                  :on-click select-none-fn}
+                                         [:span "Filter none"]]]]]]
+                [re/h-box
+                 :style {:margin-top (if vigilia-mode-a 10 2)}
                  :children [[re/label :label [:span
                                               {:class (or (when objects (if-not (seq filtered-objects) 
                                                                           "text-danger"))
                                                           "field-label")}
                                               "visible objects"
-                                              ": "(count filtered-objects) "/" (count objects) ]]
-                            [re/gap :size "1"]
+                                              ": "(count filtered-objects) "/" (count objects)]]
+                            [re/gap :size "5px"]
                             [re/label :label [:span
                                               {:class "field-label"}
-                                              "Selected objects"
-                                              ": "(count @selected-a) "/" (count objects)]]
-                            [:button.btn.btn-default.btn-xs
-                             {:style {:padding 0
-                                      :padding-right 3 :padding-left 3
-                                      :margin-left 5}
-                              :on-click #(reset! selected-a nil)
-                              :disabled (not (seq @selected-a))}
-                             "Clear"]]]]]))
+                                              "-- Selected : "(count @selected-a)]]
+                            (when vigilia-mode-a
+                              [re/h-box
+                               :size "1"
+                               :gap "10px"
+                               :children [[re/gap :size "10px"]
+                                          (let [btn-style {;; :padding 0
+                                                           ;; :padding-right 3 :padding-left 3
+                                        ;:margin-left 5
+                                                           }
+                                                disabled? (not (seq @selected-a))]
+                                            [:div.btn-group
+                                             [:button.btn.btn-default.btn-xs
+                                              {:style btn-style
+                                               :on-click #(swap! vigilia-recorded-a (fn [coll]
+                                                                                       (-> (concat coll @selected-a)
+                                                                                           (distinct))))
+                                               :disabled disabled?}
+                                              "Check"]
+                                             [:button.btn.btn-default.btn-xs
+                                              {:style btn-style
+                                               :on-click #(swap! vigilia-recorded-a
+                                                                 (fn [coll]
+                                                                   (remove (set @selected-a) coll)))
+                                               :disabled disabled?}
+                                              "Uncheck"]])
+                                          [:span {:class "field-label"}
+                                           "Recording : " (str (count (or (seq @vigilia-recorded-a) objects)))]]])]]]]))
 
 
 
@@ -1033,8 +1074,9 @@
             [re/v-box
              :size "1"
              :children
-             [[filter-header objects-store-a filtered-objects-a filter-string-a filter-type-a
-               (r/cursor (:selection-a configs) [device-id])]
+             [[filter-header objects-store-a filtered-objects-a filter-string-a filter-type-a selected-dev-a
+               configs
+               ]
               [re/v-box
                :style {:opacity (when (and (not current-id?)
                                            (not @error?))
@@ -1169,6 +1211,7 @@
 (def default-configs
   {:api-root "/api/v1/"
    :selection-a table-selections-a
+   ;:vigilia-mode (r/cursor (r/atom {}) [:target-objects])
    :device-table-btns ; each object (row) is applied to this function
    (fn [obj]
      (when (:present-value obj)
