@@ -17,8 +17,9 @@
   (let [[type instance] (s/split id #"\.")
         types (into {} (for [[k v] object-types]
                          [v k]))]
-    [(get types (#?(:cljs js/parseInt
-                    :clj Integer/parseInt) type))
+    [(let [parsed (#?(:cljs js/parseInt
+                      :clj Integer/parseInt) type)]
+       (get types parsed parsed))
      (#?(:cljs js/parseInt
          :clj Integer/parseInt) instance)]))
 
@@ -27,7 +28,7 @@
    Example: \"1.1\" --> [:analog-input 1] "
   [identifier]
   (let [[type instance] identifier]
-    (str (get object-types type) "." instance)))
+    (str (get object-types type type) "." instance)))
 
 ;; #?(:clj (defmacro object-type-map-name []
 ;;           (into {} (for [[k v] enum/object-type-map]
