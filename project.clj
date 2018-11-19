@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.5-RC5"
+(defproject wacnet "2.1.5"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -61,18 +61,6 @@
                                     [:cljsbuild :builds :app :compiler :output-dir]
                                     [:cljsbuild :builds :app :compiler :output-to]]
 
-
-  ;; jvm options for java 9 compatibility - try to remove once a new version of cljs is released
-  ;;:jvm-opts ["--add-modules" "java.xml.bind"]
-  ;; :jvm-opts ~(concat
-  ;;                                       ; Java 9+ recognition, adding --add-modules. Java versions before 9
-  ;;                                       ; had a different version syntax where they contained '.' delimiters,
-  ;;                                       ; from Java 9 onwards it has a simple versioning scheme based on one
-  ;;                                       ; number.
-  ;;             (if (false? (.contains (System/getProperty "java.version") "."))
-  ;;               ["--add-modules" "java.xml.bind"]
-  ;;               []))
-
   :cljsbuild
   {:builds {:min
             {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
@@ -108,9 +96,6 @@
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.5.16"]
                              [cider/cider-nrepl "0.16.0"]]
-
-                   :injections [(require 'pjstadig.humane-test-output)
-                                (pjstadig.humane-test-output/activate!)]
 
                    :figwheel {:http-server-root "public"
                               :readline false
