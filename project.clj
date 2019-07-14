@@ -22,7 +22,9 @@
 
                  ;; error logs
                  [org.slf4j/slf4j-nop "1.7.25"]
-                 
+
+                 ;; systemTray
+                 [com.dorkbox/SystemTray "3.17"]
 
                  ;; nREPL
                  [nrepl "0.6.0"]
