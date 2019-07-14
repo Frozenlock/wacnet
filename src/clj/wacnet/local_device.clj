@@ -2,7 +2,6 @@
   (:require [bacure.core]
             [bacure.local-device :as ld]
             [bacure.local-save :as ls]
-            ;[bacure.read-properties-cached :as rpc]
             [vigilia-logger.timed :as timed]
             [trptcolin.versioneer.core :as version]            
             [clojure.stacktrace :as st]))

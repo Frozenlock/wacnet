@@ -3,9 +3,7 @@
             [wacnet.systray :as st]
             [wacnet.local-device :as ld]
             [wacnet.nrepl :as nrepl]
-            [yada.yada :refer [listener] :as yada]
-            ;; [aleph.http :refer [start-server]]
-            )
+            [yada.yada :refer [listener] :as yada])
   (:gen-class :main true))
 
 
@@ -27,8 +25,6 @@
 
 (defn -main [& m]
   (close-splash-screen!) ;; first thing to do once clojure is loaded.
-  ;(wnrepl/start-nrepl) ;; start the nrepl first so we can get its port
-                       ;; for the local-device description
   (ld/initialize-with-exit-on-fail!) ;; we possibly exit at this point
   (nrepl/start-nrepl!)
   (start-webserver)
