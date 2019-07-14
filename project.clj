@@ -13,10 +13,10 @@
                  [io.hvac.vigilia/vigilia-logger "1.0.14-alpha"]
 
                  ;; webserver stuff
-                 [bidi "2.1.3"] ; routing
+                 [bidi "2.1.6"] ; routing
                  [aleph "0.4.6"] ; server
                  [aleph-middleware "0.2.0"]
-                 [yada "1.2.13"]
+                 [yada "1.2.15"]
                  
                  [trptcolin/versioneer "0.2.0"]
 
