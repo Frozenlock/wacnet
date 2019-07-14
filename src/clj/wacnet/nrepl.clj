@@ -1,12 +1,13 @@
 (ns wacnet.nrepl
-  (:require [clojure.tools.nrepl.server :refer [start-server stop-server]]
-            [clojure.tools.nrepl :as nrepl]
-            [cider.nrepl :refer [cider-nrepl-handler]]))
+  (:require [nrepl.core :as nrepl]
+            [nrepl.server :as nrepl-server]))
+
+;; this is required until this is fixed https://github.com/clojure-emacs/cider-nrepl/issues/447
+(defn nrepl-handler []
+  (require 'cider.nrepl)
+  (ns-resolve 'cider.nrepl 'cider-nrepl-handler))
 
 (def server (atom nil))
-
-(declare stop-nrepl)
-
 
 (defn server-eval "Send an expression to eval on the nrepl server."
   [to-eval]
@@ -29,7 +30,7 @@
 (defn stop-nrepl!
   "Stop any current nrepl server." []
   (when @server
-    (stop-server @server)
+    (nrepl-server/stop-server @server)
     (reset! server nil)))
 
 
@@ -37,8 +38,9 @@
   "Start (or restart) a REPL on a given port. Default to 47999 if none provided."
   [& port]
   (stop-nrepl!)
-  (reset! server (start-server :port (or (first port) 47999)
-                               :bind "0.0.0.0" ;; any
-                               :handler cider-nrepl-handler))
+  (some->> (nrepl-server/start-server :port (or (first port) 47999)
+                                            :bind "0.0.0.0" ;; any
+                                            :handler (nrepl-handler))
+           (reset! server))
   (server-eval repl-init))
 

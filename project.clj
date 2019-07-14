@@ -25,8 +25,8 @@
                  
 
                  ;; nREPL
-                 [org.clojure/tools.nrepl "0.2.13"]
-                 [cider/cider-nrepl "0.16.0"]
+                 [nrepl "0.6.0"]
+                 [cider/cider-nrepl "0.21.1"]
 
                  ;; cljs
                  [org.clojure/clojurescript "1.10.339"]
@@ -37,7 +37,7 @@
                  [reagent "0.8.1"] ;; [reagent "0.8.0-alpha2"] ;; doesn't work with clojure 1.9 on java 9
                  
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]
-                 [org.clojars.frozenlock/reagent-keybindings "1.0.1"]
+                 [org.clojars.frozenlock/reagent-keybindings "1.0.2"]
                  [cljs-ajax "0.7.4"]
                  [re-com "2.1.0" :exclusions [reagent]]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
@@ -89,19 +89,19 @@
 
                    :dependencies [[ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.6.3"]
-                                  [figwheel-sidecar "0.5.16"]
-                                  [org.clojure/tools.nrepl "0.2.13"]
-                                  [com.cemerick/piggieback "0.2.2"]]
+                                  [figwheel-sidecar "0.5.18"]
+                                  [nrepl "0.6.0"]
+                                  [cider/piggieback "0.4.0"]]
 
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.16"]
-                             [cider/cider-nrepl "0.16.0"]]
+                   :plugins [[lein-figwheel "0.5.18"]
+                             [cider/cider-nrepl "0.21.1"]]
 
                    :figwheel {:http-server-root "public"
                               :readline false
                               :server-port 3449
                               :nrepl-port 7002
-                              :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
+                              :nrepl-middleware ["cider.piggieback/wrap-cljs-repl"
                                                  "cider.nrepl/cider-middleware"]
                               :css-dirs ["resources/public/css"]
                               :ring-handler wacnet.handler/app}
