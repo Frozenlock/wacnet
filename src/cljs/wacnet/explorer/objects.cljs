@@ -66,6 +66,7 @@
        (cond 
          (number? v) (gstring/format "%.2f" v)
          (or (nil? v) (coll? v)) "---"
+         (boolean? v) (str v)
          :else (name v)))]))
 
 
