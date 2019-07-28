@@ -9,7 +9,11 @@
             [vigilia-logger.scan :as scan]
             [vigilia-logger.timed :as timed]
             [wacnet.api.util :as u]
-            [wacnet.bacnet-utils :as bu]))
+            [wacnet.bacnet-utils :as bu]
+            [clojure.java.io :as io]
+            [bacure.local-save :as local]
+            [clojure.string :as str])
+  (:import java.io.File))
 
 
 
@@ -71,7 +75,8 @@
    :proxy-host
    :proxy-port
    :proxy-user
-   :proxy-password])
+   :proxy-password
+   :logs-path])
 
 (s/defschema Criterias
   {s/Keyword s/Any})
@@ -98,7 +103,8 @@
    (s/optional-key :proxy-host) s/Str
    (s/optional-key :proxy-port) s/Int
    (s/optional-key :proxy-user) s/Str
-   (s/optional-key :proxy-password) s/Str})
+   (s/optional-key :proxy-password) s/Str
+   (s/optional-key :logs-path) s/Str})
 
 (defn decode-target-objects [config-map]
   (if (:target-objects config-map)
@@ -120,11 +126,31 @@
                       (into {}))))
     config-map))
 
+(defn validate-logs-path!
+  "Check if the provided path exists. If it doesn't, try to create it.
+  Return the path if it's valid."
+  [path]
+  (when (seq path)
+    (let [normalized-path (str/replace path (re-pattern (str/re-quote-replacement java.io.File/separator)) "/")
+          path (str (str/replace normalized-path (re-pattern "[/]$") "") "/") ;; insure the path ends with '/'
+          dir  (io/as-file path)]
+      (when (or
+             ;; if it exists, make sure it's a directory.
+             (let [dir (io/as-file path)]
+               (when (.exists dir)
+                 (.isDirectory dir)))
+
+             ;; if it doesn't exist, try to create it and then check if it's a
+             ;; directory.
+             (do (io/make-parents (str path "dummy-filename"))
+                 (.isDirectory (io/as-file path))))
+        path))))
+
 (def configs
   (let [response-map-fn (fn [ctx]                
                           (let [configs (-> (scan/get-logger-configs)
                                             (encode-target-objects))]
-                            {:href (u/make-link ctx)
+                            {:href    (u/make-link ctx)
                              :vigilia {:href (when-let [p-id (:project-id configs)] 
                                                (str (->> (scan/get-api-root)
                                                          (re-find #"(.*)/api/")
@@ -134,32 +160,34 @@
                                                         [k nil]))
                                              configs)}))]
     (resource 
-     {:produces [{:media-type u/produced-types
-                  :charset "UTF-8"}]
-      :consumes [{:media-type u/consumed-types
-                  :charset "UTF-8"}]
+     {:produces       [{:media-type u/produced-types
+                        :charset    "UTF-8"}]
+      :consumes       [{:media-type u/consumed-types
+                        :charset    "UTF-8"}]
       :access-control {:allow-origin "*"}
-      :methods {:get {:description "Logger configurations"
-                      :swagger/tags ["Vigilia"]
-                      :response response-map-fn}
-                :delete {:description (str "Delete the current logger configurations. "
-                                           "This will prevent Wacnet from automatically scanning devices on boot.")
-                         :swagger/tags ["Vigilia"]
-                         :response (fn [ctx]
-                                     (scan/delete-logger-configs!))}
-                :post {:description "Update the provided fields in the Vigilia logger configs."
-                       :swagger/tags ["Vigilia"]
-                       :parameters {:body Configs}
-                       :response (fn [ctx]
-                                   (when-let [new-configs (some-> ctx :parameters :body
-                                                                  decode-target-objects)]
-                                     (scan/save-logger-configs! (->> (for [[k v] new-configs]
-                                                                       (when-not (when (or (coll? v) (string? v))
-                                                                                   (empty? v))
-                                                                         [k v]))
-                                                                     (remove nil?)
-                                                                     (into {}))))
-                                   (response-map-fn ctx))}}})))
+      :methods        {:get    {:description  "Logger configurations"
+                                :swagger/tags ["Vigilia"]
+                                :response     response-map-fn}
+                       :delete {:description  (str "Delete the current logger configurations. "
+                                                   "This will prevent Wacnet from automatically scanning devices on boot.")
+                                :swagger/tags ["Vigilia"]
+                                :response     (fn [ctx]
+                                                (scan/delete-logger-configs!))}
+                       :post   {:description  "Update the provided fields in the Vigilia logger configs."
+                                :swagger/tags ["Vigilia"]
+                                :parameters   {:body Configs}
+                                :response     (fn [ctx]
+                                                (when-let [new-configs (some-> ctx :parameters :body
+                                                                               decode-target-objects
+                                                                               (update :logs-path validate-logs-path!))]
+                                                  (scan/save-logger-configs! (->> (for [[k v] new-configs]
+                                                                                    (when-not (or (when (or (coll? v) (string? v))
+                                                                                                    (empty? v))
+                                                                                                  (nil? v))
+                                                                                      [k v]))
+                                                                                  (remove nil?)
+                                                                                  (into {}))))
+                                                (response-map-fn ctx))}}})))
 
 (def test-api-root
   (resource 

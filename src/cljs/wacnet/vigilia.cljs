@@ -51,6 +51,13 @@
    (str "When recording a network using multiple loggers, the logger ID "
         "can help you with troubleshooting.")])
 
+(defn logger-logs-path-form [logger-config-a]
+  [form-group
+   (r/cursor logger-config-a [:logs-path])
+   "Logs directory"
+   [:span "Where the logs are temporarily stored if the Vigilia server is unreachable. Default is "
+    [:code "logger/"] "."]])
+
 (defn interval-form [logger-config-a]
   (let [parse-fn (fn [value] (when-not (empty? value)
                                (js/parseInt value)))
@@ -445,6 +452,7 @@
       [[re/v-box
         :size "1"
         :children [[logger-id-form temp-config-a]
+                   [logger-logs-path-form temp-config-a]
                    [interval-form temp-config-a]
                    [range-form temp-config-a]
                    [id-filter-form temp-config-a]
@@ -647,6 +655,7 @@
                                    {:response-format :transit
                                     :handler (fn [resp] 
                                                (reset! loading-a nil)
+                                               (reset! error-a nil)
                                                (reset! logger-state resp))
                                     :error-handler (fn [resp]
                                                      (reset! loading-a nil)
