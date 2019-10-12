@@ -217,11 +217,11 @@
   "A 'save' button that will send the current configurations to
   Wacnet's API. Shows a success or error message to the
   user."
-  [temp-config-a logger-config-a disabled?]
+  [temp-config-a logger-config-a]
   (let [error? (r/atom nil)
         loading? (r/atom nil)
         success? (r/atom nil)]
-    (fn [temp-config-a logger-config-a disabled?]
+    (fn [temp-config-a logger-config-a]
       [:span
        (when @success?
          (js/setTimeout #(reset! success? nil) 3000)
@@ -236,7 +236,7 @@
   (let [test-server-a (r/atom nil)
         loading? (r/atom nil)
         error? (r/atom nil)
-        api-url-a (r/cursor logger-config-a [:api-root])
+        api-url-a (r/cursor temp-config-a [:api-root])
         test-server-fn (fn [] 
                          (load! "/api/v1/vigilia/logger/tests/api-root" 
                                 (when-let [url @api-url-a]
@@ -265,13 +265,13 @@
                  [:span.text-success [:strong "Success"]
                   [:div "Connected to " [:a {:href api-url} api-url]]]
                  [:span [:strong.text-danger "Can't connect!"]
-                  [:div "We can't connect tot the Vigilia server at " 
+                  [:div "We can't connect to the Vigilia server at "
                    [:strong [:a {:href api-url} api-url]]]
                   [:div "Does this machine have a network access?"]])])]
            
            [form-group api-url-a "vigilia API URL (leave empty for default)" nil]
            [:button.btn.btn-default {:on-click test-server-fn} "Test URL"]
-           [save-btn temp-config-a logger-config-a (when-not (:can-connect? @test-server-a) true)]]))})))
+           [save-btn temp-config-a logger-config-a]]))})))
 
 
 (defn credentials-form [temp-config-a logger-config-a]

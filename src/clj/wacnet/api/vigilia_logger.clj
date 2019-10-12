@@ -59,25 +59,6 @@
                     :swagger/tags ["Vigilia"]
                     :response scanning-state-resp}}}))
 
-(def expected-keys
-  [:min-range
-   :max-range
-   :project-id
-   :api-root
-   :logger-id
-   :logger-version
-   :logger-key
-   :id-to-remove
-   :id-to-keep
-   :time-interval
-   :criteria-coll
-   :object-delay
-   :proxy-host
-   :proxy-port
-   :proxy-user
-   :proxy-password
-   :logs-path])
-
 (s/defschema Criterias
   {s/Keyword s/Any})
 
@@ -106,6 +87,10 @@
    (s/optional-key :proxy-password) s/Str
    (s/optional-key :logs-path) s/Str})
 
+(defn expected-keys []
+  (for [[m _] Configs]
+    (-> m first second)))
+
 (defn decode-target-objects [config-map]
   (if (:target-objects config-map)
     (update-in config-map [:target-objects]
@@ -133,7 +118,7 @@
   (when (seq path)
     (let [normalized-path (str/replace path (re-pattern (str/re-quote-replacement java.io.File/separator)) "/")
           path (str (str/replace normalized-path (re-pattern "[/]$") "") "/") ;; insure the path ends with '/'
-          dir  (io/as-file path)]
+          dir (io/as-file path)]
       (when (or
              ;; if it exists, make sure it's a directory.
              (let [dir (io/as-file path)]
@@ -156,7 +141,7 @@
                                                          (re-find #"(.*)/api/")
                                                          (last))
                                                     "/v/" p-id))}
-                             :configs (merge (into {} (for [k expected-keys]
+                             :configs (merge (into {} (for [k (expected-keys)]
                                                         [k nil]))
                                              configs)}))]
     (resource 
@@ -181,7 +166,9 @@
                                                                                decode-target-objects
                                                                                (update :logs-path validate-logs-path!))]
                                                   (scan/save-logger-configs! (->> (for [[k v] new-configs]
-                                                                                    (when-not (or (when (or (coll? v) (string? v))
+                                                                                    (when-not (or (when (or (coll? v)
+                                                                                                            (string? v)
+                                                                                                            (= :api-root k))
                                                                                                     (empty? v))
                                                                                                   (nil? v))
                                                                                       [k v]))
@@ -202,8 +189,10 @@
                     :parameters {:query {(s/optional-key :api-root)
                                          (rs/field s/Str {:description "Alternative API url"})}}
                     :response (fn [ctx]
-                                (let [api-root (or (some-> ctx :parameters :query :api-root)
-                                                   (scan/get-api-root))]
+                                (let [api-root (let [url (some-> ctx :parameters :query :api-root)]
+                                                 (if (empty? url)
+                                                   scan/default-api-root
+                                                   url))]
                                   {:can-connect? (scan/can-connect? api-root)
                                    :api-root api-root}))}}}))
 
