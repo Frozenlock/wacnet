@@ -84,7 +84,7 @@
              [:strong.nav-ids 
               (pad-id-length (:id tab) ids-length)]]
            ;(when ids? [re/line :class "separator" :color nil])
-           [:span tab-name]]))})))
+           [:span.device-name tab-name]]))})))
 
 
 
@@ -585,7 +585,8 @@
                 :scroll-to-row linked-row
                 :is-column-resizing false
                 :on-column-resize-end-callback (fn [new-column-width column-key]
-                                                 (swap! sizes-a assoc (keyword column-key) new-column-width))}
+                                                 (swap! sizes-a assoc (keyword column-key) new-column-width))
+                :className "fixed-data-table"}
                (when vigilia-mode
                  [Column {:header (r/as-element [column-sort-comp "Recorded" (fn [o]
                                                                                (if (some #{(:object-id o)}
@@ -782,6 +783,9 @@
                    :width "100%"}
            :children 
            [[kb/kb-action "esc" (fn []
+                                  ; the table might be focused, so blur it
+                                  (.blur (aget js/document "activeElement"))
+                                  ; now unselected any selected object
                                   (reset! selected-objects-a [])
                                   (routes/replace-hash!
                                    (routes/path-for :devices
