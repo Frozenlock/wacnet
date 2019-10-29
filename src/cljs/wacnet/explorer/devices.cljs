@@ -207,7 +207,7 @@
                                   [sort-by-id-btn sort-fn-a local-click]
                                   [sort-by-name-btn sort-fn-a local-click]]]
                       [re/input-text 
-                       :model       ""
+                       :model       filter-a
                        :width       "100%" 
                        :change-on-blur? false
                        :on-change   #(reset! filter-a %)
