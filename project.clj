@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.6"
+(defproject wacnet "2.1.7-alpha1"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -10,29 +10,29 @@
                  ;; BACnet
                  [bacure "1.1.7"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.0.16"]
+                 [io.hvac.vigilia/vigilia-logger "1.0.17"]
 
                  ;; webserver stuff
                  [bidi "2.1.6"] ; routing
                  [aleph "0.4.6"] ; server
                  [aleph-middleware "0.2.0"]
-                 [yada "1.2.15"]
+                 [yada "1.2.16"]
                  
                  [trptcolin/versioneer "0.2.0"]
 
                  ;; error logs
-                 [org.slf4j/slf4j-nop "1.7.25"]
+                 [org.slf4j/slf4j-nop "1.7.30"]
 
                  ;; systemTray
                  [com.dorkbox/SystemTray "3.17"]
 
                  ;; nREPL
-                 [nrepl "0.6.0"]
-                 [cider/cider-nrepl "0.21.1"]
+                 [nrepl "0.7.0"]
+                 [cider/cider-nrepl "0.24.0"]
 
                  ;; cljs
-                 [org.clojure/clojurescript "1.10.520"]
-                 [org.clojure/core.async "0.4.500"]
+                 [org.clojure/clojurescript "1.10.748"]
+                 [org.clojure/core.async "1.1.587"]
                  [org.clojure/tools.reader "1.3.2"]
                  [cljsjs/resize-observer-polyfill "1.4.2-0"]
 
@@ -51,8 +51,6 @@
             [lein-cljsbuild "1.1.7"]
             [refactor-nrepl "2.4.0"]
             [org.clojars.rasom/lein-externs "0.1.7"]]
-
-  :javac-options ["-target" "1.8" "-source" "1.8"] ;; retest later
   
   :manifest {"SplashScreen-Image" "public/img/splash.png"}
 
@@ -90,15 +88,15 @@
 
   :profiles {:dev {;:repl-options {:init-ns wacnet.repl}
 
-                   :dependencies [[ring/ring-mock "0.3.2"]
-                                  [ring/ring-devel "1.6.3"]
+                   :dependencies [[ring/ring-mock "0.4.0"]
+                                  [ring/ring-devel "1.8.0"]
                                   [figwheel-sidecar "0.5.19"]
-                                  [nrepl "0.6.0"]
+                                  [nrepl "0.7.0"]
                                   [cider/piggieback "0.4.2"]]
 
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.5.19"]
-                             [cider/cider-nrepl "0.22.4"]]
+                             [cider/cider-nrepl "0.24.0"]]
 
                    :figwheel {:http-server-root "public"
                               :readline false
