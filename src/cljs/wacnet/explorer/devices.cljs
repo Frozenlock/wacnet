@@ -154,7 +154,7 @@
 
 (defn left-side-nav-bar
   [dev-list-a selected-device-id configs]
-  (let [show-ids? (r/atom nil)
+  (let [show-ids? state/show-ids-a
         local-click (r/atom nil)
         clean-list-fn (fn [list-a] (for [{:keys [device-id device-name]} @list-a]
                                      {:id device-id :name device-name}))

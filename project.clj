@@ -40,6 +40,7 @@
                  
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]
                  [org.clojars.frozenlock/reagent-keybindings "1.0.2"]
+                 [alandipert/storage-atom "2.0.1"]
                  [cljs-ajax "0.8.0"]
                  [re-com "2.6.0"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
@@ -90,12 +91,12 @@
 
                    :dependencies [[ring/ring-mock "0.4.0"]
                                   [ring/ring-devel "1.8.0"]
-                                  [figwheel-sidecar "0.5.19"]
+                                  [figwheel-sidecar "0.5.20"]
                                   [nrepl "0.7.0"]
                                   [cider/piggieback "0.4.2"]]
 
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.19"]
+                   :plugins [[lein-figwheel "0.5.20"]
                              [cider/cider-nrepl "0.24.0"]]
 
                    :figwheel {:http-server-root "public"

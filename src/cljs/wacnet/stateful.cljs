@@ -1,6 +1,9 @@
 (ns wacnet.stateful
-  (:require
-   [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [alandipert.storage-atom :as sa]))
+
+(def show-ids-a (-> (r/atom nil)
+                    (sa/local-storage :show-ids)))
 
 (defonce state (r/atom {}))
 
