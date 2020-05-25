@@ -10,7 +10,7 @@
                  ;; BACnet
                  [bacure "1.1.7"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.0.17"]
+                 [io.hvac.vigilia/vigilia-logger "1.0.18"]
 
                  ;; webserver stuff
                  [bidi "2.1.6"] ; routing
