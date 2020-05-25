@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.7-alpha1"
+(defproject wacnet "2.1.7-alpha3"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -8,7 +8,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
 
                  ;; BACnet
-                 [bacure "1.1.7"]
+                 [bacure "1.1.8"]
 
                  [io.hvac.vigilia/vigilia-logger "1.0.18"]
 
