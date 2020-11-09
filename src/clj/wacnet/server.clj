@@ -1,11 +1,12 @@
 (ns wacnet.server
-  (:require [wacnet.handler :as h]
-            [wacnet.systray :as st]
+  (:gen-class
+   :main true)
+  (:require [taoensso.timbre :as timbre]
+            [wacnet.handler :as h]
             [wacnet.local-device :as ld]
             [wacnet.nrepl :as nrepl]
-            [yada.yada :refer [listener] :as yada])
-  (:gen-class :main true))
-
+            [wacnet.systray :as st]
+            [yada.yada :as yada]))
 
 (defn headless?
   "True if we are running without any graphical support."
@@ -24,17 +25,18 @@
 
 
 (defn -main [& m]
-  (close-splash-screen!) ;; first thing to do once clojure is loaded.
-  (ld/initialize-with-exit-on-fail!) ;; we possibly exit at this point
-  (nrepl/start-nrepl!)
-  (start-webserver)
-  (println (str "\n\n\n"
-                "---> \n"
-                "     See the web interface at http://localhost:47800.\n"
-                "     You can also connect to the Clojure nrepl on port 47999."))
-  ;; when we have graphical support
-  (when-not (headless?)
-    ;; add the system tray icon
-    (st/initialize-systray!)
-    ;; and open the web interface
-    (clojure.java.browse/browse-url "http://localhost:47800")))
+  (binding [timbre/*config* {:min-level :error}]
+    (close-splash-screen!) ;; first thing to do once clojure is loaded.
+    (ld/initialize-with-exit-on-fail!) ;; we possibly exit at this point
+    (nrepl/start-nrepl!)
+    (start-webserver)
+    (println (str "\n\n\n"
+                  "---> \n"
+                  "     See the web interface at http://localhost:47800.\n"
+                  "     You can also connect to the Clojure nrepl on port 47999."))
+    ;; when we have graphical support
+    (when-not (headless?)
+      ;; add the system tray icon
+      (st/initialize-systray!)
+      ;; and open the web interface
+      (clojure.java.browse/browse-url "http://localhost:47800"))))

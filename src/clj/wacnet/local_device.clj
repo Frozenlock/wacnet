@@ -1,10 +1,10 @@
 (ns wacnet.local-device
-  (:require [bacure.core]
+  (:require bacure.core
             [bacure.local-device :as ld]
             [bacure.local-save :as ls]
-            [vigilia-logger.timed :as timed]
-            [trptcolin.versioneer.core :as version]            
-            [clojure.stacktrace :as st]))
+            [clojure.stacktrace :as st]
+            [trptcolin.versioneer.core :as version]
+            [vigilia-logger.timed :as timed]))
 
 (defn initialize!
   "Initialize the local BACnet device." []
@@ -34,6 +34,21 @@
   []
   (java.awt.GraphicsEnvironment/isHeadless))
 
+(defn exit-with-err-msg
+  ([err-msg] (exit-with-err-msg err-msg false))
+  ([err-msg text-area]
+   (println err-msg)
+   (when-not (headless?)
+     (javax.swing.JOptionPane/showMessageDialog
+      nil
+      (if text-area
+        (javax.swing.JTextArea. err-msg)
+        err-msg)
+      "Error"
+      javax.swing.JOptionPane/ERROR_MESSAGE))
+   (println "Wacnet will now exit")
+   (System/exit 1)))
+
 (defn enforce-min-java!
   "Enforce the minimum required java version."[]
   (let [min-version 1.8
@@ -41,14 +56,7 @@
     (when-not (>= current-version min-version)
       (let [err-msg (str "You need Java "min-version " or higher to run this application. \n"
                          "(You are using Java "current-version ".)")]
-        (do (if (headless?)
-              (println err-msg) ;; print to console if headless
-              (javax.swing.JOptionPane/showMessageDialog
-               nil
-               err-msg
-               "Error"
-               javax.swing.JOptionPane/ERROR_MESSAGE))
-            (System/exit 0))))))
+        (exit-with-err-msg err-msg)))))
 
 
 (defn initialize-with-exit-on-fail!
@@ -63,14 +71,7 @@
                                                               47808)")"
                             " is already bound to another software.\n\t "
                             "Please close the other software and try again.\n")]
-           (do (if (headless?)
-                 (println err-msg) ;; print to console if headless
-                 (javax.swing.JOptionPane/showMessageDialog
-                  nil
-                  err-msg
-                  "Error"
-                  javax.swing.JOptionPane/ERROR_MESSAGE))
-               (System/exit 0))))
+           (exit-with-err-msg err-msg)))
        
        ;; configs and other errors
        (catch java.lang.Exception e
@@ -79,11 +80,4 @@
                             "configs.clj file. If the problem persists, you can contact us and include "
                             "the following stacktrace : \n\n"
                             (with-out-str (st/print-stack-trace e)))]
-           (do (if (headless?)
-                 (println err-msg) ;; print to console if headless
-                 (javax.swing.JOptionPane/showMessageDialog
-                  nil
-                  (javax.swing.JTextArea. err-msg)
-                  "Error"
-                  javax.swing.JOptionPane/ERROR_MESSAGE))
-               (System/exit 0))))))
+           (exit-with-err-msg err-msg)))))

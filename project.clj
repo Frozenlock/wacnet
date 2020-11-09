@@ -21,14 +21,15 @@
                  [trptcolin/versioneer "0.2.0"]
 
                  ;; error logs
-                 [org.slf4j/slf4j-nop "1.7.30"]
+                 [com.taoensso/timbre "5.1.0"]
+                 [com.fzakaria/slf4j-timbre "0.3.20"]
 
                  ;; systemTray
                  [com.dorkbox/SystemTray "3.17"]
 
                  ;; nREPL
-                 [nrepl "0.7.0"]
-                 [cider/cider-nrepl "0.24.0"]
+                 [nrepl "0.8.0"]
+                 [cider/cider-nrepl "0.25.3"]
 
                  ;; cljs
                  [org.clojure/clojurescript "1.10.748"]
