@@ -8,9 +8,9 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
 
                  ;; BACnet
-                 [bacure "1.1.8"]
+                 [bacure "1.1.9"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.0.19"]
+                 [io.hvac.vigilia/vigilia-logger "1.1.0"]
 
                  ;; webserver stuff
                  [bidi "2.1.6"] ; routing

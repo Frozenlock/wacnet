@@ -84,7 +84,7 @@
    (s/optional-key :proxy-host) s/Str
    (s/optional-key :proxy-port) s/Int
    (s/optional-key :proxy-user) s/Str
-   (s/optional-key :proxy-password) s/Str
+   (s/optional-key :proxy-pass) s/Str
    (s/optional-key :logs-path) s/Str})
 
 (defn expected-keys []

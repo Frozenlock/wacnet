@@ -400,7 +400,7 @@
   (let [proxy-host (r/cursor logger-config-a [:proxy-host])
         proxy-port (r/cursor logger-config-a [:proxy-port])
         proxy-user (r/cursor logger-config-a [:proxy-user])
-        proxy-password (r/cursor logger-config-a [:proxy-password])]
+        proxy-password (r/cursor logger-config-a [:proxy-pass])]
     [:div.form-group
      [:h4 "Vigilia Server Proxy"]
      [:div.text-right
@@ -414,7 +414,7 @@
        "Clear proxy"]]
      [:div.row
       [:div.col-md-6
-       [:label (str "Proxy host" " (ex: http://127.0.0.1)")]
+       [:label (str "Proxy host" " (ex: 127.0.0.1)")]
        [:input.form-control {:value @proxy-host
                              :on-change #(let [v (some-> % .-target .-value)]
                                            (reset! proxy-host v))}]]

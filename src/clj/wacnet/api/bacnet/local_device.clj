@@ -44,7 +44,7 @@
   "Get the configuration from the local-device or (if not found) the
   configuration file."
   [local-device-id]
-  (select-keys (merge ld/default-configs 
+  (select-keys (merge ld/default-configs
                       (or (ld/local-device-backup)
                           (save/get-configs)))
                allowed-configs-keys))
