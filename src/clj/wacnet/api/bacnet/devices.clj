@@ -1,69 +1,20 @@
 (ns wacnet.api.bacnet.devices
-  (:require [bacure.core :as b]
-            [bacure.coerce :as c]
+  (:require [bacure.coerce :as c]
             [bacure.coerce.type.enumerated :as ce]
+            [bacure.core :as b]
             [bacure.remote-device :as rd]
-            [bacure.local-device :as ld]
-            [yada.resource :refer [resource]]
-            [bidi.bidi :refer [path-for]]
-            [clojure.walk :as w]
-            [schema.core :as s]
-            [ring.swagger.schema :as rs]
-            [yada.yada :as yada]
+            [clojure.set :as cs]
             [clojure.string :as string]
-            [clojure.set :as cs]))
-
-
-(def produced-types
-  #{"application/transit+json"
-    ;"application/transit+msgpack"
-    "application/json" 
-    "application/edn" 
-    "text/html"})
-
-
-(def consumed-types
-  #{"application/transit+json"
-    ;"application/transit+msgpack"
-    "application/json" 
-    "application/edn"})
-
-
-(defn make-link
-  "Given a request context, return the full URL (with scheme and host)
-  for the current request, or for a given path."
-  ([ctx] (make-link ctx (:uri (:request ctx))))
-  ([ctx path]
-   (str (name (get-in ctx [:request :scheme]))
-        "://"
-        (or (get-in ctx [:request :headers "host"]) ;; for tests
-            (get-in ctx [:request :server-name]))
-        path)))
-
-(defmacro with-bacnet-device
-  "Tries to execute body only if the bacnet device is found. If not,
-  return an HTTP error with a short description."
-  [ctx local-device-id & body]
-  `(let [ldo# (ld/local-device-object ~local-device-id)]
-     (cond 
-       (and ldo# (.isInitialized ldo#)) 
-       (do ~@body)
-       
-       ldo# (let [response# (:response ~ctx)
-                  content-type# (yada/content-type ~ctx)]
-              (merge response# {:status 500
-                                :body {:error "BACnet local device not initialized."}}))
-       
-       :else (let [response# (:response ~ctx)]
-               (merge response# {:status 500
-                                 :body {:error "BACnet local device not found."}})))))
-
+            [ring.swagger.schema :as rs]
+            [schema.core :as s]
+            [wacnet.api.bacnet.common :as co]
+            [yada.resource :refer [resource]]))
 
 (def devices-list
   (resource
-   {:produces [{:media-type produced-types
+   {:produces [{:media-type co/produced-types
                 :charset "UTF-8"}]
-    :consumes [{:media-type consumed-types
+    :consumes [{:media-type co/consumed-types
                 :charset "UTF-8"}]
     :access-control {:allow-origin "*"}
     :methods {:get {:summary "Devices list"
@@ -74,14 +25,14 @@
                     :description "The list of all known devices with an optional refresh."
                     :swagger/tags ["BACnet"]
                     :response (fn [ctx]
-                                (with-bacnet-device ctx nil
+                                (co/with-bacnet-device ctx nil
                                   (when (get-in ctx [:parameters :query :refresh])
                                     (rd/discover-network))
-                                  {:href (make-link ctx)
+                                  {:href (co/make-link ctx)
                                    :devices (for [[k v] (rd/remote-devices-and-names nil)]
                                               {:device-id (str k)
                                                :device-name v
-                                               :href (make-link ctx (str (:uri (:request ctx)) "/" k))})}))}}}))
+                                               :href (co/make-link ctx (str (:uri (:request ctx)) "/" k))})}))}}}))
 
 
 (defn device-summary [local-device-id device-id]
@@ -95,9 +46,9 @@
 
 (def device
   (resource
-   {:produces [{:media-type produced-types
+   {:produces [{:media-type co/produced-types
                 :charset "UTF-8"}]
-    :consumes [{:media-type consumed-types
+    :consumes [{:media-type co/consumed-types
                 :charset "UTF-8"}]
     :access-control {:allow-origin "*"}
     :methods {:get {:summary "Device info"
@@ -106,59 +57,10 @@
                     :swagger/tags ["BACnet"]
                     :response (fn [ctx]
                                 (let [device-id (some-> ctx :parameters :path :device-id)]
-                                  (with-bacnet-device ctx nil
+                                  (co/with-bacnet-device ctx nil
                                     (assoc (device-summary nil device-id)
-                                           :href (make-link ctx)
-                                           :objects {:href (make-link ctx (str (:uri (:request ctx)) "/objects"))}))))}}}))
-
-
-(defn binary-to-int 
-  "Walk the object properties and replace :inactive and :active values
-  by 0 and 1. This makes binary objects similar to analog and
-  multi-state objects."
-  [obj-map]
-  (if (some #{(str (:object-type obj-map))} 
-            ["3" "4" "5"])
-    (into {} (for [[k v] obj-map]
-               [k (cond 
-                    (= v :inactive) 0
-                    (= v :active) 1
-                    :else v)]))    
-    obj-map))
-
-(defn object-identifier-to-obj-id 
-  "Convert a bacure object identifier to a shorter (and language
-  agnostic) version.
-  
-  [:analog-input 1] --> \"0.1\""
-  [object-identifier]
-  (let [[obj-type obj-inst] object-identifier]
-    (str (c/key-or-num-to-int ce/object-type-map obj-type)
-         "."
-         obj-inst)))
-
-(defn obj-id-to-object-identifier [obj-id]
-  (map #(Integer/parseInt %) 
-       (string/split obj-id #"\.")))
-
-(defn prepare-obj-map [obj-map]
-  (let [object-identifier (:object-identifier obj-map)
-        [obj-type obj-inst] object-identifier
-        obj-id (object-identifier-to-obj-id object-identifier)]
-    (-> (dissoc obj-map :object-identifier)
-        (update-in [:units] #(when (keyword? %) 
-                               (-> (name %)
-                                   (string/replace #"-" " "))))
-        ((fn [o] (->> (for [[k v] o]
-                         (when v [k v]))
-                       (remove nil?)
-                       (into {}))))
-        (assoc :object-id obj-id
-               :object-instance (str (last object-identifier))
-               :object-type (->> (first object-identifier)
-                                 (c/key-or-num-to-int ce/object-type-map )
-                                 (str)))
-        binary-to-int)))
+                                           :href (co/make-link ctx)
+                                           :objects {:href (co/make-link ctx (str (:uri (:request ctx)) "/objects"))}))))}}}))
 
 
 (defn get-object-quantity [local-device-id device-id]
@@ -167,13 +69,8 @@
       first
       :object-list))
 
-(defn get-object-list [local-device-id device-id]
-  (-> (b/remote-object-properties 
-       local-device-id device-id [:device device-id] :object-list)
-      first
-      :object-list))
 
-
+; TODO: use co/paginated-object-list instead
 (defn paginated-object-list
   "Return a collection of object maps. Each one has, in addition to the
   given properties, the :object-id, :object-type
@@ -201,72 +98,21 @@
                                                 (or desired-properties :object-name))]
                    (-> raw-obj-map
                        (assoc :device-id (str device-id))
-                       (prepare-obj-map)))
+                       (co/prepare-obj-map)))
         :limit limit
         :next-page (when remaining? (inc page))
         :current-page page
         :previous-page (when (> page 1) (dec page))}))))
 
-
-;; (defn object-list
-;;   "Return a collection of object maps. Each one has, in addition to the
-;;   given properties, the :object-id, :object-type
-;;   and :object-instance.
-;;   If no properties are given, only retrieve the name."
-;;   ([local-device-id device-id] (object-list local-device-id device-id nil))
-;;   ([local-device-id device-id desired-properties]
-;;    (let [get-prop-fn (fn [obj-id props]
-;;                        (b/remote-object-properties 
-;;                         local-device-id device-id obj-id props))
-;;          object-identifiers (-> (get-prop-fn [:device device-id] :object-list)
-;;                                 first
-;;                                 :object-list)]
-;;      (when object-identifiers 
-;;        (for [raw-obj-map (get-prop-fn object-identifiers 
-;;                                       (or desired-properties :object-name))]
-;;          (-> raw-obj-map
-;;              (assoc :device-id (str device-id))
-;;              (prepare-obj-map)))))))
-
-
 (defn get-object-properties
   "Get and prepare the object properties."
   [device-id obj-id properties]
-  (-> (b/remote-object-properties nil device-id (obj-id-to-object-identifier obj-id) 
+  (-> (b/remote-object-properties nil device-id (co/obj-id-to-object-identifier obj-id) 
                                   (or properties :all))
       (first)
-      (prepare-obj-map)
+      (co/prepare-obj-map)
       (assoc :device-id (str device-id))))
 
-(s/defschema ObjectIdentifier
-  [(s/one s/Keyword "Object type")
-   (s/one s/Int "Object Instance")])
-
-
-(s/defschema BACnetObject
-  {(s/optional-key :object-identifier) ObjectIdentifier
-   (s/optional-key :object-instance) s/Str
-   (s/optional-key :object-id) s/Str
-   (s/optional-key :object-type) s/Str
-   (s/optional-key :object-name) s/Str
-   (s/optional-key :description) s/Str
-   s/Any s/Any})
-
-
-(defn keyword-or-int [string]
-  (when-not (empty? string)
-    (or (try (Integer/parseInt string)
-             (catch Exception e))
-        (keyword string))))
-
-(defn clean-bacnet-object [bo]
-  (let [obj (-> bo
-                (update-in [:object-type] keyword-or-int)
-                (update-in [:units] keyword-or-int))]
-    (->> (for [[k v] obj]
-           (when v [k v]))
-         (remove nil?)
-         (into {}))))
 
 (defn clean-errors 
   "Remove the objects that can't be transmitted by the API."
@@ -279,28 +125,13 @@
          (into {}))
     b-error))
 
-(defn make-page-link [ctx page-num limit]
-  (def bbb ctx)
-  (when page-num
-    (let [params (:parameters ctx)
-          query (:query params)]
-      (make-link ctx (str (:uri (:request ctx)) 
-                          "?"
-                          (string/join "&"
-                                       (for [[k v] (assoc query :limit limit :page page-num)]
-                                         (if (coll? v)
-                                           (string/join "&"
-                                                        (for [i v]
-                                                          (str (name k) "=" 
-                                                               (name i))))
-                                           (str (name k) "="v)))))))))
 
 
 (def objects
   (resource
-   {:produces [{:media-type produced-types
+   {:produces [{:media-type co/produced-types
                 :charset "UTF-8"}]
-    :consumes [{:media-type consumed-types
+    :consumes [{:media-type co/consumed-types
                 :charset "UTF-8"}]
     :access-control {:allow-origin "*"}
     :methods {:post 
@@ -310,30 +141,28 @@
                                  "the object-instance itself.\n\n"
                                  "The object-type can be the integer value or the keyword. "
                                  "(Ex: \"0\" or \"analog-input\" for an analog input)\n\n"
-                                 "It is possible to give additional properties (such as object-name)."
-                                 "\n\n"
-                                 "Unless specified, the page will default to 1 and limit to 50 objects.")
+                                 "It is possible to give additional properties (such as object-name).")
                :swagger/tags ["BACnet"]
                :parameters {:path {:device-id Long}
-                            :body BACnetObject}
+                            :body co/BACnetObject}
                :response (fn [ctx]
                            (let [body (get-in ctx [:parameters :body])
                                  d-id (get-in ctx [:parameters :path :device-id])]
                              (when body
-                               (with-bacnet-device ctx nil
-                                 (let [clean-body (clean-bacnet-object body)
+                               (co/with-bacnet-device ctx nil
+                                 (let [clean-body (co/clean-bacnet-object body)
                                        o-id (:object-id clean-body)
                                        object-identifier (or (:object-identifier clean-body)
-                                                             (when o-id (obj-id-to-object-identifier o-id)))
+                                                             (when o-id (co/obj-id-to-object-identifier o-id)))
                                        obj-map (-> clean-body
                                                    (dissoc :object-id)
                                                    (assoc :object-identifier object-identifier))
                                        result (rd/create-remote-object! nil d-id obj-map)]
                                    (if-let [success (:success result)]
                                      (let [o-identifier (get success :object-identifier)
-                                           new-o-id (object-identifier-to-obj-id o-identifier)]
+                                           new-o-id (co/object-identifier-to-obj-id o-identifier)]
                                        (-> (get-object-properties d-id new-o-id nil)
-                                           (assoc :href (make-link ctx (str (:uri (:request ctx)) 
+                                           (assoc :href (co/make-link ctx (str (:uri (:request ctx)) 
                                                                             "/" new-o-id)))))
                                      (merge (:response ctx) 
                                             {:status 500
@@ -347,41 +176,39 @@
                                          (rs/field [s/Keyword]
                                                    {:description "List of wanted properties."})}}
                     :summary "Objects list, optionally with all their properties."
-                    :description (str "List of all known objects for a given device.")
+                    :description (str "List of all known objects for a given device."
+                                      "\n\n"
+                                      "Unless specified, the page will default to 1 and limit to 50 objects.")
                     :swagger/tags ["BACnet"]
                     :response (fn [ctx]
                                 (let [device-id (some-> ctx :parameters :path :device-id)
                                       limit (or (some-> ctx :parameters :query :limit) 50)
                                       page (or (some-> ctx :parameters :query :page) 1)
                                       properties (some-> ctx :parameters :query :properties)]
-                                  (with-bacnet-device ctx nil
+                                  (co/with-bacnet-device ctx nil
                                     (let [p-o-l (paginated-object-list nil device-id properties limit page)
                                           {:keys [next-page previous-page current-page objects]} p-o-l]
                                       (merge {:device
-                                              {:href (make-link ctx
+                                              {:href (co/make-link ctx
                                                                 (string/replace (:uri (:request ctx)) 
                                                                                 "/objects" ""))}
                                               :objects (for [o objects]
-                                                         (assoc o :href (make-link ctx (str (:uri (:request ctx)) 
+                                                         (assoc o :href (co/make-link ctx (str (:uri (:request ctx)) 
                                                                                             "/" (:object-id o)))))
-                                              :href (make-page-link ctx current-page limit)}
-                                             (when-let [l (make-page-link ctx next-page limit)]
+                                              :href (co/make-page-link ctx current-page limit)}
+                                             (when-let [l (co/make-page-link ctx next-page limit)]
                                                {:next {:href l
                                                        :page next-page}})
-                                             (when-let [l (make-page-link ctx previous-page limit)]
+                                             (when-let [l (co/make-page-link ctx previous-page limit)]
                                                {:previous {:href l
                                                            :page previous-page}}))))))}}}))
-
-(s/defschema PropertyValue
-  {s/Keyword  ;; property identifier
-   s/Any}) ;; prop value
 
 
 (def object
   (resource
-   {:produces [{:media-type produced-types
+   {:produces [{:media-type co/produced-types
                 :charset "UTF-8"}]
-    :consumes [{:media-type consumed-types
+    :consumes [{:media-type co/consumed-types
                 :charset "UTF-8"}]
     :access-control {:allow-origin "*"}
     :methods {:put {:summary "Update object"
@@ -394,15 +221,15 @@
                                       " if you understand the consequences.")
                     :swagger/tags ["BACnet"]
                     :parameters {:path {:device-id Long :object-id String}
-                                 :body {:properties PropertyValue
+                                 :body {:properties co/PropertyValue
                                         (s/optional-key :priority) Long}}
                     :response (fn [ctx]
                                 (let [device-id (get-in ctx [:parameters :path :device-id])
                                       o-id (get-in ctx [:parameters :path :object-id])
                                       properties (get-in ctx [:parameters :body :properties])
                                       priority (get-in ctx [:parameters :body :priority] nil)]
-                                  (with-bacnet-device ctx nil
-                                    (let [write-access-spec {(obj-id-to-object-identifier o-id)
+                                  (co/with-bacnet-device ctx nil
+                                    (let [write-access-spec {(co/obj-id-to-object-identifier o-id)
                                                              (for [[k v] properties]
                                                                [k (rd/advanced-property v priority nil)])}]
                                       (let [result (try (rd/set-remote-properties! nil device-id write-access-spec)
@@ -421,9 +248,9 @@
                :response (fn [ctx]
                            (let [device-id (get-in ctx [:parameters :path :device-id])
                                  o-id (get-in ctx [:parameters :path :object-id])]
-                             (with-bacnet-device ctx nil
+                             (co/with-bacnet-device ctx nil
                                (let [result (rd/delete-remote-object! nil device-id 
-                                                                      (obj-id-to-object-identifier o-id))]
+                                                                      (co/obj-id-to-object-identifier o-id))]
                                  (if (:success result)
                                    result
                                    (merge (:response ctx) 
@@ -441,9 +268,9 @@
                                 (let [device-id (some-> ctx :parameters :path :device-id)
                                       obj-id (some-> ctx :parameters :path :object-id)
                                       properties (some-> ctx :parameters :query :properties)]
-                                  (with-bacnet-device ctx nil
+                                  (co/with-bacnet-device ctx nil
                                     (-> (get-object-properties device-id obj-id properties)
-                                        (assoc :href (make-link ctx))))))}}}))
+                                        (assoc :href (co/make-link ctx))))))}}}))
 
 
 (defn decode-global-id
@@ -478,14 +305,14 @@
 
      (->> (for [obj objects-maps]
             [(:global-id obj) (-> (get-in result-map [(:device-id obj) (:object-identifier obj)])
-                                  (prepare-obj-map))])
+                                  (co/prepare-obj-map))])
           (into {})))))
 
 (def multi-objects
   (resource
-   {:produces [{:media-type produced-types
+   {:produces [{:media-type co/produced-types
                 :charset "UTF-8"}]
-    :consumes [{:media-type consumed-types
+    :consumes [{:media-type co/consumed-types
                 :charset "UTF-8"}]
     :access-control {:allow-origin "*"}
     :methods {:get
@@ -501,7 +328,7 @@
                                               {:description "List of wanted properties."})
                                     :global-object-ids [s/Str]}}
                :response (fn [ctx]
-                           (with-bacnet-device ctx nil
+                           (co/with-bacnet-device ctx nil
                              (let [ids (get-in ctx [:parameters :query :global-object-ids])
                                    properties (or (get-in ctx [:parameters :query :properties]) :all)]
                                (get-properties (map decode-global-id ids) properties))))}

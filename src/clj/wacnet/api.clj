@@ -24,7 +24,11 @@
                                            ["/objects" [["" bd/objects]
                                                         [["/" :object-id] bd/object]]]]]]]
             ["local-device" [["" bld/local-device]
-                             ["/" [["configs" bld/bacnet-configs]]]]]
+                             ["/" [["configs" bld/bacnet-configs]]]
+                             ["/" [["objects" bld/objects]]]
+
+                             ["/objects" [["" bld/objects]
+                                          [["/" :object-id] bld/object]]]]]
             ["multi-objects" [["" bd/multi-objects]]]]]
           log/api-route]]
     {:info {:title "Wacnet API"
