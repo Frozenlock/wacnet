@@ -13,9 +13,14 @@
   []
   (java.awt.GraphicsEnvironment/isHeadless))
 
-
-(defn start-webserver []
-  (yada/listener h/routes {:port 47800}))
+(let [storage (atom nil)]
+  (defn reset-webserver
+    []
+    (when-let [close-fn (-> @storage :close)]
+      (println "Server closed")
+      (close-fn))
+    (reset! storage (yada/listener h/routes {:port 47800}))
+    (println "Server started")))
 
 (defn close-splash-screen!
   "Close the splash screen, if present."[]
@@ -29,7 +34,7 @@
     (close-splash-screen!) ;; first thing to do once clojure is loaded.
     (ld/initialize-with-exit-on-fail!) ;; we possibly exit at this point
     (nrepl/start-nrepl!)
-    (start-webserver)
+    (reset-webserver)
     (println (str "\n\n\n"
                   "---> \n"
                   "     See the web interface at http://localhost:47800.\n"
