@@ -14,7 +14,7 @@
     [:p "If for any reason your browser can't load the application, you can still view your BACnet network using the API."
      [:ul 
       [:li [:a {:href "/api/v1"} "Swagger UI for Wacnet API"]]
-      [:li [:a {:href "/api/v1/devices"} "Raw API"]]]]]])
+      [:li [:a {:href "/api/v1/bacnet/devices"} "Raw API"]]]]]])
 
 (def loading-page
   (html5
