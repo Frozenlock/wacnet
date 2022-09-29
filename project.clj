@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.7"
+(defproject wacnet "2.1.8-RC3"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -8,9 +8,9 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
 
                  ;; BACnet
-                 [bacure "1.1.9"]
+                 [bacure "1.1.10"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.1.0"]
+                 [io.hvac.vigilia/vigilia-logger "1.1.1"]
 
                  ;; webserver stuff
                  [bidi "2.1.6"] ; routing
@@ -28,8 +28,8 @@
                  [com.dorkbox/SystemTray "3.17"]
 
                  ;; nREPL
-                 [nrepl "0.8.0"]
-                 [cider/cider-nrepl "0.25.3"]
+                 [nrepl "0.9.0-beta3"]
+                 [cider/cider-nrepl "0.27.4"]
 
                  ;; cljs
                  [org.clojure/clojurescript "1.10.748"]
@@ -51,7 +51,6 @@
   :plugins [[lein-environ "1.1.0"]
             [lein-ancient "0.6.15"]
             [lein-cljsbuild "1.1.7"]
-            [refactor-nrepl "2.4.0"]
             [org.clojars.rasom/lein-externs "0.1.7"]]
   
   :manifest {"SplashScreen-Image" "public/img/splash.png"}
