@@ -28,7 +28,7 @@
                  [com.dorkbox/SystemTray "3.17"]
 
                  ;; nREPL
-                 [nrepl "0.9.0-beta3"]
+                 [nrepl "1.0.0"]
                  [cider/cider-nrepl "0.27.4"]
 
                  ;; cljs

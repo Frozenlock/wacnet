@@ -1,5 +1,6 @@
 (ns wacnet.api.repl
   (:require [clojure.stacktrace :refer [root-cause]]
+            [wacnet.api.bacnet.common :as co]
             [wacnet.nrepl :as wnrepl]
             [yada.resource :refer [resource]]
             [schema.core :as s])
@@ -110,9 +111,9 @@
 
 (def eval-resource
   (resource
-   {:produces [{:media-type #{"application/json"}
+   {:produces [{:media-type co/produced-types
                 :charset "UTF-8"}]
-    :consumes [{:media-type #{"application/json"}
+    :consumes [{:media-type #{}
                 :charset "UTF-8"}]
     :access-control {:allow-origin "*"}
     :swagger/tags ["REPL"]
