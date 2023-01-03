@@ -22,9 +22,6 @@
   [:div.text-center
    [:h1 [:div [logo "Vigilia"]]
     [:small "HVAC Logging and Remote Monitoring"]]
-   [:h3 "Ever found yourself wishing for more data while troubleshooting a system?"]
-   [:h4 "Never again will you say "
-    [:i "\"Oh gee, if only I had created a trend log for this object...\""]]
    [:div [:a {:href "https://hvac.io/services/vigilia" :target "_blank"} "Learn more"]]])
 
 ;;; And now some of the configs
@@ -232,6 +229,13 @@
        [:button.btn.btn-primary {:on-click #(save-configs! temp-config-a logger-config-a success? loading? error?)}
         "Save"]])))
 
+(defn success-feedback
+  [*loading? *error? success-fn]
+  (cond
+    @*loading? ""
+    (or @*error? (not (success-fn))) [:i.fa.fa-exclamation-circle.text-danger]
+    :else [:i.fa.fa-check-circle.text-success]))
+
 (defn api-url-form [temp-config-a logger-config-a]
   (let [test-server-a (r/atom nil)
         loading? (r/atom nil)
@@ -246,32 +250,45 @@
      {:component-did-mount test-server-fn
       :reagent-render
       (fn []
-        (let [api-url (:api-root @test-server-a)]
-          [:div.well 
-           [:h3 "Step 1 : Connect to a Vigilia server"]
-           [:div {:style {:height "5em"}}
-            (cond
-              @loading?
-              [:div [:div "Testing connection..."]
-               [re/throbber]]
+        (let [api-url (:api-root @test-server-a)
+              problem? (and (not @loading?)
+                            (or @error?
+                                (not (:can-connect? @test-server-a))))
+              success? (and (not @loading?)
+                            (:can-connect? @test-server-a))]
+          [re/v-box
+           :size "1"
+           :children [[:h3 "1. Vigilia server "
+                       [success-feedback loading? error? #(:can-connect? @test-server-a)]]
+                      [:div
+                       (cond
+                         @loading?
+                         [:div [:div "Testing connection..."]
+                          [re/throbber]]
 
-              @error?
-              [:div.alert.alert-danger
-               [:p "Uh oh... the server encountered an error. Double check the provided URL."]]
+                         @error?
+                         [:div.alert.alert-danger
+                          [:p "Uh oh... the server encountered an error."]]
 
-              @test-server-a
-              [:div [:strong "Vigilia server connection : "]
-               (if (:can-connect? @test-server-a)
-                 [:span.text-success [:strong "Success"]
-                  [:div "Connected to " [:a {:href api-url} api-url]]]
-                 [:span [:strong.text-danger "Can't connect!"]
-                  [:div "We can't connect to the Vigilia server at "
-                   [:strong [:a {:href api-url} api-url]]]
-                  [:div "Does this machine have a network access?"]])])]
-           
-           [form-group api-url-a "vigilia API URL (leave empty for default)" nil]
-           [:button.btn.btn-default {:on-click test-server-fn} "Test URL"]
-           [save-btn temp-config-a logger-config-a]]))})))
+                         @test-server-a
+                         (when-not (:can-connect? @test-server-a)
+                           [:span [:strong.text-danger "Can't connect!"]
+                            [:div "We can't connect to the Vigilia server at "
+                             [:strong [:a {:href api-url} api-url]]]
+                            [:div "Does this machine have a network access?"]
+                            (when @(r/cursor logger-config-a [:proxy-host])
+                              [:div "A "
+                               "proxy "
+                               ;[:a {:href "#proxy"} "proxy "] ; link is hijacked by router (/#/ links)
+                               " is configured and could be the cause."])]))]
+                      [form-group api-url-a "Vigilia API URL (leave empty for default)"
+                       nil {:placeholder "https://vigilia.hvac.io/api/v1"}]
+                      ;[re/gap :size "1"]
+                      [re/h-box
+                       :align-self :end
+                       :children [[re/box :child [:button.btn.btn-default {:on-click test-server-fn} "Test URL"]]
+                                  [re/box :child [save-btn temp-config-a logger-config-a]]
+                                  [re/gap :size "50px"]]]]]))})))
 
 
 (defn credentials-form [temp-config-a logger-config-a]
@@ -290,32 +307,31 @@
       :reagent-render
       (fn []
         (let [{:keys [project-id logger-key]} @temp-config-a]
-          [:div.well 
-           [:h3 "Step 2 : Project credentials"]
-           [:div {:style {:height "5em"}}
-            (cond
-              @loading?
-              [:div [:div "Testing connection..."]
-               [re/throbber]]
+          [re/v-box
+           :size "1"
+           :children [[:h3 "2. Project credentials "
+                       [success-feedback loading? error? #(:credentials-valid? @test-server-a)]]
+                      [:div
+                       (cond
+                         @loading?
+                         [:div [:div "Testing connection..."]
+                          [re/throbber]]
 
-              @error?
-              [:div.alert.alert-danger
-               [:p "Uh oh... the server encountered an error. Double check the provided URL."]]
+                         @error?
+                         [:div.text-danger
+                          [:p "Connection error"]]
 
-              @test-server-a
-              [:div [:strong "Credentials : "]
-               (if (:credentials-valid? @test-server-a)
-                 [:span.text-success "Valid; access to Vigilia account"]
-                 [:span [:strong.text-danger "No access"]])])]
-           
-           [:div.row
-            [:div.col-sm-6 
-             [form-group (r/cursor temp-config-a [:project-id]) "Project ID" nil]]
-            [:div.col-sm-6 
-             [form-group (r/cursor temp-config-a [:logger-key]) "Logger Key"
-              "You can configure it in your Vigilia configuration page."]]]
-           [:button.btn.btn-default {:on-click test-server-fn} "Test credentials"]
-           [save-btn temp-config-a logger-config-a (when-not (:credentials-valid? @test-server-a) true)]]))})))
+                         @test-server-a
+                         (when-not (:credentials-valid? @test-server-a)
+                           [:span [:strong.text-danger "No access"]]))]
+                      [form-group (r/cursor temp-config-a [:project-id]) "Project ID" nil]
+                      [form-group (r/cursor temp-config-a [:logger-key]) "Logger Key"
+                       "You can configure it in your Vigilia configuration page."]                      
+                      [re/box
+                       :align-self :end
+                       :child [:div
+                               [:button.btn.btn-default {:on-click test-server-fn} "Test credentials"]
+                               [save-btn temp-config-a logger-config-a (when-not (:credentials-valid? @test-server-a) true)]]]]]))})))
 
 
 
@@ -402,7 +418,7 @@
         proxy-user (r/cursor logger-config-a [:proxy-user])
         proxy-password (r/cursor logger-config-a [:proxy-pass])]
     [:div.form-group
-     [:h4 "Vigilia Server Proxy"]
+     [:h4 {:id "proxy"} "Vigilia Server Proxy"]
      [:div.text-right
       [:button.btn.btn-sm.btn-danger
        {:disabled (when-not (or @proxy-host @proxy-port @proxy-user @proxy-password) true)
@@ -474,13 +490,16 @@
       :reagent-render
       (fn [configs-a]
         [:div
-         [:h2 {:id "Config"} "Configurations"]
-         [:p.text-info {:style {:margin 10
-                                :margin-left 0}} 
-          "Wacnet will start the logging automatically on startup if a "
-          "Vigilia configuration file is found."]
-         [api-url-form temp-configs-a configs-a]
-         [credentials-form temp-configs-a configs-a]
+         [:h2.text-center {:id "Config"} "Configurations"
+          [re/info-button
+           :info [:span
+                  "Wacnet will start the logging automatically on startup if a "
+                  "Vigilia configuration file is found."]]]
+         [re/h-box
+          :gap "50px"
+          :children [[api-url-form temp-configs-a configs-a]
+                     [credentials-form temp-configs-a configs-a]]]
+         [:hr]
          [advanced-configs-panel temp-configs-a configs-a]
          [:div.text-right
           [clear-configs-btn
