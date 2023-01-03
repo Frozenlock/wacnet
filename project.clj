@@ -92,12 +92,12 @@
                    :dependencies [[ring/ring-mock "0.4.0"]
                                   [ring/ring-devel "1.8.0"]
                                   [figwheel-sidecar "0.5.20"]
-                                  [nrepl "0.7.0"]
-                                  [cider/piggieback "0.4.2"]]
+                                  [nrepl "0.8.0"]
+                                  [cider/piggieback "0.5.1"]]
 
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.5.20"]
-                             [cider/cider-nrepl "0.24.0"]]
+                             [cider/cider-nrepl "0.27.4"]]
 
                    :figwheel {:http-server-root "public"
                               :readline false
