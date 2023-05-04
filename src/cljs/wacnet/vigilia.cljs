@@ -294,22 +294,39 @@
   (let [test-server-a (r/atom nil)
         loading? (r/atom nil)
         error? (r/atom nil)
-        test-server-fn (fn [] 
-                         (load! "/api/v1/vigilia/logger/tests/credentials" 
-                                (let [p-id (:project-id @temp-config-a)
-                                      logger-key (:logger-key @temp-config-a)] 
-                                  (when (and p-id logger-key)
-                                    {:project-id p-id :logger-key logger-key}))
-                                test-server-a loading? error?))]
+        temp-api-root-a (r/cursor temp-config-a [:api-root])
+        logger-api-root-a (r/cursor logger-config-a [:api-root])
+        tested-creds-a (r/atom {:api-root   nil
+                                :logger-key nil
+                                :project-id nil})
+        test-creds (fn [] {:api-root   @logger-api-root-a
+                           :logger-key (:logger-key @temp-config-a)
+                           :project-id (:project-id @temp-config-a)})
+        current-creds-tested? (fn []
+                                (= @tested-creds-a (test-creds)))
+        test-server-fn (fn []
+                         (let [{:keys [api-root logger-key project-id]} (test-creds)]
+                           (reset! tested-creds-a {:api-root   api-root
+                                                   :logger-key logger-key
+                                                   :project-id project-id})
+                           (load! "/api/v1/vigilia/logger/tests/credentials"
+                                  (when (and project-id logger-key)
+                                    {:project-id project-id :logger-key logger-key})
+                                  test-server-a loading? error?)))]
     (r/create-class
      {:component-did-mount test-server-fn
       :reagent-render
       (fn []
-        (let [{:keys [project-id logger-key]} @temp-config-a]
+        (let [{:keys [project-id logger-key]} @temp-config-a
+              saved-api-root? (= (str @logger-api-root-a) (str @temp-api-root-a))]
           [re/v-box
            :size "1"
+           :style (when-not saved-api-root?
+                    {:opacity 0.5
+                     :pointer-events :none})
            :children [[:h3 "2. Project credentials "
-                       [success-feedback loading? error? #(:credentials-valid? @test-server-a)]]
+                       (when @(r/track current-creds-tested?)
+                         [success-feedback loading? error? #(:credentials-valid? @test-server-a)])]
                       [:div
                        (cond
                          @loading?
@@ -321,8 +338,9 @@
                           [:p "Connection error"]]
 
                          @test-server-a
-                         (when-not (:credentials-valid? @test-server-a)
-                           [:span [:strong.text-danger "No access"]]))]
+                         (when @(r/track current-creds-tested?)
+                           (when-not (:credentials-valid? @test-server-a)
+                             [:span [:strong.text-danger "No access"]])))]
                       [form-group (r/cursor temp-config-a [:project-id]) "Project ID" nil]
                       [form-group (r/cursor temp-config-a [:logger-key]) "Logger Key"
                        "You can configure it in your Vigilia configuration page."]                      
