@@ -184,12 +184,12 @@
                            :parameters   {:query {(s/optional-key :api-root)
                                                   (rs/field s/Str {:description "Alternative API url"})}}
                            :response     (fn [ctx]
-                                       (let [api-root (let [url (some-> ctx :parameters :query :api-root)]
-                                                        (if (empty? url)
-                                                          configs/default-api-root
-                                                          url))]
-                                         {:can-connect? (http/can-connect? api-root)
-                                          :api-root     api-root}))}}}))
+                                           (let [api-root (let [url (some-> ctx :parameters :query :api-root)]
+                                                            (if (empty? url)
+                                                              configs/default-api-root
+                                                              url))]
+                                             {:can-connect? (http/can-connect? api-root)
+                                              :api-root     api-root}))}}}))
 
 (def test-credentials
   (resource
