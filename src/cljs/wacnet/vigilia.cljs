@@ -136,7 +136,6 @@
 
 
 (defn criteria-filter-form [logger-config-a]
-  (def aaa logger-config-a)
   (let [criteria-a (r/cursor logger-config-a [:criteria-coll])
         print-seq (fn [value] (or (s/join ", " (map pr-str value)) ""))
         read-seq (fn [string]
@@ -484,27 +483,33 @@
 
 
 (defn configs-steps [configs-a]
-  (let [temp-configs-a (r/atom nil)]
+  (let [temp-configs-a (r/atom nil)
+        loading-a (r/atom true)
+        error-a (r/atom nil)
+        load-configs! #(get-configs! temp-configs-a configs-a loading-a error-a)]
     (r/create-class
-     {:component-did-mount #(get-configs! temp-configs-a configs-a)
+     {:component-did-mount load-configs!
       :reagent-render
       (fn [configs-a]
-        [:div
-         [:h2.text-center {:id "Config"} "Configurations"
-          [re/info-button
-           :info [:span
-                  "Wacnet will start the logging automatically on startup if a "
-                  "Vigilia configuration file is found."]]]
-         [re/h-box
-          :gap "50px"
-          :children [[api-url-form temp-configs-a configs-a]
-                     [credentials-form temp-configs-a configs-a]]]
-         [:hr]
-         [advanced-configs-panel temp-configs-a configs-a]
-         [:div.text-right
-          [clear-configs-btn
-           temp-configs-a
-           configs-a]]])})))
+        (cond @error-a [:div.alert.alert-danger "Uh oh... problem communicating with Wacnet."
+                        [:div [:button.btn.btn-default {:on-click load-configs!} "Try again"]]]
+              @loading-a [re/throbber]
+              :else [:div
+                     [:h2.text-center {:id "Config"} "Configurations"
+                      [re/info-button
+                       :info [:span
+                              "Wacnet will start the logging automatically on startup if a "
+                              "Vigilia configuration file is found."]]]
+                     [re/h-box
+                      :gap "50px"
+                      :children [[api-url-form temp-configs-a configs-a]
+                                 [credentials-form temp-configs-a configs-a]]]
+                     [:hr]
+                     [advanced-configs-panel temp-configs-a configs-a]
+                     [:div.text-right
+                      [clear-configs-btn
+                       temp-configs-a
+                       configs-a]]]))})))
 
 
 (defn link-to-project [root-api-url project-id]
