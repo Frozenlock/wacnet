@@ -74,6 +74,10 @@
                             (reset! value-a))))}
      parse-fn]))
 
+(defn- maybe-parse-int
+  [v]
+  (when-not (empty? v)
+    (js/parseInt v)))
 
 (defn range-form [logger-config-a]
   (let [min-range-a (r/cursor logger-config-a [:min-range])
@@ -84,11 +88,11 @@
       [:div.col-md-6 
        [:label "Min"]
        [:input.form-control {:type :number :min 0 :value @min-range-a
-                             :on-change #(reset! min-range-a (-> % .-target .-value))}]]
+                             :on-change #(reset! min-range-a (some-> % .-target .-value maybe-parse-int))}]]
       [:div.col-md-6 
        [:label "Max"]
        [:input.form-control {:type :number :min 0 :value @max-range-a
-                             :on-change #(reset! max-range-a (-> % .-target .-value))}]]]
+                             :on-change #(reset! max-range-a (some-> % .-target .-value maybe-parse-int))}]]]
      [:p.text-info (str "Useful if you want to log only a part of your network. For example, "
                         "if you only want to log the devices with IDs below 10000, you would set "
                         "a MAX of 9999 and a MIN of 0.")]]))
@@ -455,7 +459,7 @@
        [:label (str "Proxy port" " (ex: 4341)")]
        [:input.form-control {:value @proxy-port
                              :type :number :min 0
-                             :on-change #(let [v (some-> % .-target .-value js/parseInt)]
+                             :on-change #(let [v (some-> % .-target .-value maybe-parse-int)]
                                            (reset! proxy-port v))}]]]
      [:div.row
       [:div.col-md-6
