@@ -935,14 +935,53 @@
       (filter-by-type @filter-type-a)
       (vec)))
 
-(defn filter-header [objects-store filtered-objects-a filter-string-a filter-type-a selected-dev-a configs]
+(defn missing-recorded-objects
+  [objects-store-a vigilia-recorded-a]
+  (cset/difference (set @vigilia-recorded-a)
+                   (set (map :object-id @(r/cursor objects-store-a [:objects])))))
+
+(defn not-found-recorded
+  [objects-store-a vigilia-recorded-a]
+  (let [missings (missing-recorded-objects objects-store-a vigilia-recorded-a)]
+    [re/h-box :children
+     (if (seq missings)
+       [[:span.text-danger "(Not found: " (count missings) ")"]
+        [re/info-button
+         :info [re/v-box
+                :gap "2px"
+                :children [[re/box :child
+                            [:span "The following object IDs are marked to be recorded but are not found on the device."]]
+                           [re/line]
+                           [re/box
+                            :align-self :end
+                            :child
+                            [re/button
+                             :on-click #(swap! vigilia-recorded-a (fn [oids]
+                                                                    (remove (set missings) oids)))
+                             :class "btn btn-default btn-sm"
+                             :style {:padding "2px"}
+                             :label "Remove all"]]
+                           [re/scroller :height "200px"
+                            :child
+                            [:ul (for [o-id missings]
+                                   ^{:key o-id}
+                                   [:li o-id [:button.btn.btn-default.btn-sm
+                                              {:style    {:padding     "0px"
+                                                          :margin-left "3px"}
+                                               :title    "Remove"
+                                               :on-click #(swap! vigilia-recorded-a (fn [oids]
+                                                                                      (remove #{o-id} oids)))}
+                                              [:i.fa.fa-times.fa-fw]]])]]]]]]
+       [])]))
+
+(defn filter-header [objects-store-a filtered-objects-a filter-string-a filter-type-a selected-dev-a configs]
   (let [filtered-objects @filtered-objects-a
         device-id @selected-dev-a
         selected-a (r/cursor (:selection-a configs) [device-id])
         vigilia-mode-a (:vigilia-mode configs)
         vigilia-recorded-a (some-> vigilia-mode-a
                                    (r/cursor [device-id]))
-        objects @(r/cursor objects-store [:objects])
+        objects @(r/cursor objects-store-a [:objects])
         set-all-fn (fn [value]
                      (reset! filter-type-a
                              (into {}
@@ -999,8 +1038,9 @@
                                                                    (remove (set @selected-a) coll)))
                                                :disabled disabled?}
                                               "Uncheck"]])
-                                          [:span {:class "field-label"}
-                                           "Recording : " (str (count (or (seq @vigilia-recorded-a) objects)))]]])]]]]))
+                                          [re/box :child [:span {:class "field-label"}
+                                                          "Recording : " (str (count (or (seq @vigilia-recorded-a) objects)))]]
+                                          [not-found-recorded objects-store-a vigilia-recorded-a]]])]]]]))
 
 
 
