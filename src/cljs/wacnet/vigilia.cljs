@@ -98,19 +98,13 @@
                         "a MAX of 9999 and a MIN of 0.")]]))
 
 
-(defn coll-area 
-  ([initial-value on-blur] (coll-area initial-value on-blur nil))
-  ([initial-value on-blur placeholder]
-   (let [value (r/atom "")
-         init-value (atom initial-value)]
-     (fn [initial-value on-blur]
-       (when-not (= initial-value @init-value)
-         (reset! init-value initial-value)
-         (reset! value initial-value))
-       [:textarea.form-control {:value @value
-                                :placeholder placeholder
-                                :on-change #(reset! value (-> % .-target .-value))
-                                :on-blur on-blur}]))))
+(defn coll-area
+  [initial-value on-blur]
+  (let [value (r/atom (or initial-value ""))]
+    (fn [_initial-value on-blur]
+      [:textarea.form-control {:value     @value
+                               :on-change #(reset! value (-> % .-target .-value))
+                               :on-blur   on-blur}])))
 
 (defn id-filter-form [logger-config-a]
   (let [keep-a (r/cursor logger-config-a [:id-to-keep])
@@ -374,15 +368,14 @@
 
 
 (defn explorer-form [configs-a]
-  (let [show-explorer? (r/atom nil)
-        ]
+  (let [show-explorer? (r/atom nil)]
     (fn [configs-a]
       [:div.form-group
-       [:div [:label "Filter individual objects"]]
+       [:h4 "Filter individual objects"]
        [:div.text-info 
         "You can select individual objects to be recorded (assuming the devices go through the previous "
         "filters.)"]
-       [:div.text-right
+       [:div
         [:div.btn-group
          [:button.btn.btn-danger {:on-click #(swap! configs-a dissoc :target-objects)
                                   :disabled (when-not (seq (:target-objects @configs-a)) true)} "Clear all"]
@@ -444,7 +437,7 @@
        [:input.form-control {:value @proxy-password
                              :on-change #(let [v (some-> % .-target .-value)]
                                            (reset! proxy-password v))}]]]     
-     [:p.text-info (str "Some networks require to use a proxy to communicate to the Internet.")]]))
+     [:p.text-info (str "Some networks require a proxy to communicate to the Internet.")]]))
 
 
 (defn advanced-configs-panel [temp-config-a configs-a]
