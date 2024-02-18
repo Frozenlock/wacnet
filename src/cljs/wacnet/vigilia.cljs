@@ -138,34 +138,6 @@
        [:p.text-info (str "Keep, or remove devices by their ID.")]])))
 
 
-
-(defn criteria-filter-form [logger-config-a]
-  (let [criteria-a (r/cursor logger-config-a [:criteria-coll])
-        print-seq (fn [value] (or (s/join ", " (map pr-str value)) ""))
-        read-seq (fn [string]
-                   (->> (str "[" string "]")
-                        (reader/read-string)))]
-    (fn []
-      [:div.form-group
-       [:label "Filter by device properties"]
-       [coll-area (print-seq @criteria-a)
-        #(->> % .-target .-value read-seq
-              (reset! criteria-a))
-        (str {:property "value"} ", "{:property "value" :property2 "value"})]
-       [:p.text-info (str "Use this if you want to discard some devices based on"
-                          " their device properties.")]
-       [:p.text-info (str "If a device matches all the properties from a single criteria map {}, "
-                          "it's discarded. Let's say we want to discard every devices with"
-                          " the model name \"BACstat\", with the object name which partly matches"
-                          " \"room\". This is what this filter would look like:")]
-       [:pre.pre-scrollable (str {:model-name "BACstat", :object-name "room"})]
-       [:div.text-info "Most used properties:"
-        [:ul (for [p [:vendor-identifier :description :device-type
-                      :vendor-name :object-name :model-name]]
-               ^{:key p}
-               [:li (str p)])]]])))
-
-
 (defn object-delay-form [logger-config-a]
   (let [object-delay-a (r/cursor logger-config-a [:object-delay])]
     [:div.form-group
@@ -498,7 +470,6 @@
         :size "1"
         :children [                   [proxy-form temp-config-a]
                    [object-delay-form temp-config-a]
-                   [criteria-filter-form temp-config-a]
                    [re/gap :size "1"]
                    [re/box :child 
                     [:div.text-right [save-btn temp-config-a configs-a nil]]]]]]]]]])

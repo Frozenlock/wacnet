@@ -54,9 +54,6 @@
                             :swagger/tags ["Vigilia"]
                             :response     scanning-state-resp}}}))
 
-(s/defschema Criterias
-  {s/Keyword s/Any})
-
 (s/defschema TargetObjects
   {s/Str [s/Str]})
 
@@ -73,7 +70,6 @@
    (s/optional-key :id-to-remove)   [s/Int]
    (s/optional-key :id-to-keep)     [s/Int]
    (s/optional-key :time-interval)  s/Int
-   (s/optional-key :criteria-coll)  [Criterias]
    (s/optional-key :object-delay)   s/Int
    (s/optional-key :target-objects) TargetObjects
    (s/optional-key :proxy-host)     s/Str
