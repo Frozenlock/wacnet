@@ -22,7 +22,9 @@
                             "http://"(bacure.network/get-any-ip)":47800, "
                             "or use the Clojure nREPL on port 47999" 
                             "."))}))
-  (timed/maybe-start-logging))
+  (future
+    (Thread/sleep 3000)
+    (timed/maybe-start-logging)))
 
 (defn java-version
   "Return the current java version as double."[]
