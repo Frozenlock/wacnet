@@ -60,23 +60,24 @@
 
 
 (s/defschema Configs
-  {(s/optional-key :api-root)       s/Str
-   (s/optional-key :logger-id)      s/Str
-   (s/optional-key :logger-version) s/Str
-   (s/optional-key :logger-key)     s/Str
-   (s/optional-key :project-id)     s/Str
-   (s/optional-key :min-range)      s/Int
-   (s/optional-key :max-range)      s/Int
-   (s/optional-key :id-to-remove)   [s/Int]
-   (s/optional-key :id-to-keep)     [s/Int]
-   (s/optional-key :time-interval)  s/Int
-   (s/optional-key :object-delay)   s/Int
-   (s/optional-key :target-objects) TargetObjects
-   (s/optional-key :proxy-host)     s/Str
-   (s/optional-key :proxy-port)     s/Int
-   (s/optional-key :proxy-user)     s/Str
-   (s/optional-key :proxy-pass)     s/Str
-   (s/optional-key :logs-path)      s/Str})
+  {(s/optional-key :api-root)                 s/Str
+   (s/optional-key :logger-id)                s/Str
+   (s/optional-key :logger-version)           s/Str
+   (s/optional-key :logger-key)               s/Str
+   (s/optional-key :project-id)               s/Str
+   (s/optional-key :min-range)                s/Int
+   (s/optional-key :max-range)                s/Int
+   (s/optional-key :id-to-remove)             [s/Int]
+   (s/optional-key :id-to-keep)               [s/Int]
+   (s/optional-key :time-interval)            s/Int
+   (s/optional-key :object-delay)             s/Int
+   (s/optional-key :target-objects)           TargetObjects
+   (s/optional-key :parallel-device-scan-qty) s/Int
+   (s/optional-key :proxy-host)               s/Str
+   (s/optional-key :proxy-port)               s/Int
+   (s/optional-key :proxy-user)               s/Str
+   (s/optional-key :proxy-pass)               s/Str
+   (s/optional-key :logs-path)                s/Str})
 
 (defn expected-keys []
   (for [[m _] Configs]

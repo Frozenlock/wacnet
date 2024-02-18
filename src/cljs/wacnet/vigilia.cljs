@@ -144,6 +144,22 @@
      [:p.text-info (str "Delay between each object scan of a device. This increases the total scan time. "
                         "Use this if the scans cause you to lose connection with some devices.")]]))
 
+(defn parallel-device-scan-form [logger-config-a]
+  (let [parse-fn (fn [value] (when-not (empty? value)
+                               (js/parseInt value)))
+        value-a (r/cursor logger-config-a [:parallel-device-scan-qty])]
+    [form-group value-a
+     "Parallel devices scan"
+     (str "Number of devices that can be scanned simultaneously. "
+          "Default is 20.")
+     {:type :number :min 1
+      :on-blur (fn [evt]
+                 (let [v (-> evt .-target .-value parse-fn)]
+                   (some->> v
+                            (max 1)
+                            (reset! value-a))))}
+     parse-fn]))
+
 
 
 
@@ -463,6 +479,7 @@
         :size "1"
         :children [                   [proxy-form temp-config-a]
                    [object-delay-form temp-config-a]
+                   [parallel-device-scan-form temp-config-a]
                    [re/gap :size "1"]
                    [re/box :child 
                     [:div.text-right [save-btn temp-config-a configs-a nil]]]]]]]]]])
