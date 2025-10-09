@@ -63,7 +63,7 @@
      "Log interval (minutes)"
      (str "This is the time interval at which the BACnet network is scanned. "
           "Smaller interval means more precision, but also more network utilization. "
-          "10 minutes is a great interval to see most HVAC behaviors. "
+          "10 minutes (default) is a great interval to see most HVAC behaviors. "
           "(Minimum interval is 5 minutes.) Note that this is the minimum interval. "
           "It might take longer if you have a large or slow network.")
      {:type :number :min 5
@@ -391,7 +391,7 @@
        [:div.text-info 
         "You can select individual objects to be recorded (assuming the devices go through the previous "
         "filters.)"]
-       [:div
+       [:div.text-right
         [:div.btn-group
          [:button.btn.btn-danger {:on-click #(swap! configs-a dissoc :target-objects)
                                   :disabled (when-not (seq (:target-objects @configs-a)) true)} "Clear all"]
@@ -458,31 +458,54 @@
 
 (defn advanced-configs-panel [temp-config-a configs-a]
   [:div.panel.panel-default
-   [:div.panel-heading.panel-toggle {:data-toggle "collapse" :data-target "#advanded-configs"
+   [:div.panel-heading.panel-toggle {:data-toggle "collapse"
+                                     :data-target "#advanded-configs"
                                      :style {:cursor :pointer}}
     [:h4.panel-title.text-center "Advanced configs (optional) " [:i.fa.fa-chevron-down]]]
    [:div.panel-collapse.collapse {:id "advanded-configs"}
     [:div.panel-body
-     [re/h-box
-      :size "1"
-      :gap "10px"
-      :children 
-      [[re/v-box
+     [:div.row
+      [:div.col-md-6
+       [re/v-box
         :size "1"
         :children [[logger-id-form temp-config-a]
                    [logger-logs-path-form temp-config-a]
                    [interval-form temp-config-a]
                    [range-form temp-config-a]
-                   [id-filter-form temp-config-a]
-                   [explorer-form temp-config-a]]]
+                   [id-filter-form temp-config-a]]]]
+      [:div.col-md-6
        [re/v-box
         :size "1"
-        :children [                   [proxy-form temp-config-a]
+        :children [[explorer-form temp-config-a]
+                   [proxy-form temp-config-a]
                    [object-delay-form temp-config-a]
-                   [parallel-device-scan-form temp-config-a]
-                   [re/gap :size "1"]
-                   [re/box :child 
-                    [:div.text-right [save-btn temp-config-a configs-a nil]]]]]]]]]])
+                   [parallel-device-scan-form temp-config-a]]]]
+      [:div.col-md-12
+       [:div.text-right [save-btn temp-config-a configs-a nil]]]]
+     ;; [re/h-box
+     ;;  :size "1"
+     ;;  :gap "10px"
+     ;;  :children 
+     ;;  [[re/v-box
+     ;;    :size "1"
+     ;;    :children [[logger-id-form temp-config-a]
+     ;;               [logger-logs-path-form temp-config-a]
+     ;;               [interval-form temp-config-a]
+     ;;               [range-form temp-config-a]
+     ;;               [id-filter-form temp-config-a]
+     ;;               ]]
+     ;;   [re/gap :size "10px"]
+     ;;   [re/v-box
+     ;;    :size "1"
+     ;;    :children [[explorer-form temp-config-a]
+     ;;               [:hr]
+     ;;               [proxy-form temp-config-a]
+     ;;               [object-delay-form temp-config-a]
+     ;;               [parallel-device-scan-form temp-config-a]
+     ;;               [re/gap :size "1"]
+     ;;               [re/box :child 
+     ;;                [:div.text-right [save-btn temp-config-a configs-a nil]]]]]]]
+     ]]])
 
 
 (defn configs-steps [configs-a]
@@ -509,7 +532,7 @@
                                  [credentials-form temp-configs-a configs-a]]]
                      [:hr]
                      [advanced-configs-panel temp-configs-a configs-a]
-                     [:div.text-right
+                     [:div.text-left
                       [clear-configs-btn
                        temp-configs-a
                        configs-a]]]))})))
