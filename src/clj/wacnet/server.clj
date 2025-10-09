@@ -35,13 +35,16 @@
     (ld/initialize-with-exit-on-fail!) ;; we possibly exit at this point
     (nrepl/start-nrepl!)
     (reset-webserver)
-    (println (str "\n\n\n"
-                  "---> \n"
-                  "     See the web interface at http://localhost:47800.\n"
-                  "     You can also connect to the Clojure nrepl on port 47999."))
-    ;; when we have graphical support
-    (when-not (headless?)
-      ;; add the system tray icon
-      (st/initialize-systray!)
-      ;; and open the web interface
-      (clojure.java.browse/browse-url "http://localhost:47800"))))
+    (let [wacnet-url "http://localhost:47800"]
+      (println (str "\n\n"
+                    "See the web interface at " wacnet-url ".\n"
+                    "You can also connect to the Clojure nrepl on port 47999.\n"))
+      ;; when we have graphical support
+      (when-not (headless?)
+        ;; and open the web interface
+        (try
+          (clojure.java.browse/browse-url wacnet-url)
+          (catch Exception _
+            (println (str "Error: Couldn't launch browser at " wacnet-url))))
+        ;; add the system tray icon
+        (st/initialize-systray!)))))
