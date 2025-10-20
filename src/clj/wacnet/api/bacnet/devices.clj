@@ -22,7 +22,7 @@
                                          (rs/field s/Bool
                                                    {:description (str "Tries to find new devices on the network"
                                                                       " using a WhoIs broadcast.")})}}
-                    :description "The list of all known devices with an optional refresh."
+                    :description "The list of all known devices with an optional refresh (WhoIs broadcast)."
                     :swagger/tags ["BACnet"]
                     :response (fn [ctx]
                                 (co/with-bacnet-device ctx nil
@@ -37,7 +37,7 @@
 
 (defn device-summary [local-device-id device-id]
   (-> (b/remote-object-properties local-device-id device-id [:device device-id]
-                                  [:description :vendor-identifier 
+                                  [:description :vendor-identifier
                                    :vendor-name :object-name :model-name])
       (first)
       (dissoc :object-identifier)
@@ -64,7 +64,7 @@
 
 
 (defn get-object-quantity [local-device-id device-id]
-  (-> (b/remote-object-properties 
+  (-> (b/remote-object-properties
        local-device-id device-id [:device device-id] [[:object-list 0]])
       first
       :object-list))
@@ -86,15 +86,15 @@
          desired-array (for [i (take limit after-cursor)]
                          [:object-list i])
          get-prop-fn (fn [obj-ids props]
-                       (b/remote-object-properties 
+                       (b/remote-object-properties
                         local-device-id device-id obj-ids props))
          object-identifiers (-> (if (> obj-qty limit)
                                   (get-prop-fn [:device device-id] desired-array)
                                   (get-prop-fn [:device device-id] :object-list))
                                 first
                                 :object-list)]
-     (when object-identifiers 
-       {:objects (for [raw-obj-map (get-prop-fn object-identifiers 
+     (when object-identifiers
+       {:objects (for [raw-obj-map (get-prop-fn object-identifiers
                                                 (or desired-properties :object-name))]
                    (-> raw-obj-map
                        (assoc :device-id (str device-id))
@@ -107,19 +107,19 @@
 (defn get-object-properties
   "Get and prepare the object properties."
   [device-id obj-id properties]
-  (-> (b/remote-object-properties nil device-id (co/obj-id-to-object-identifier obj-id) 
+  (-> (b/remote-object-properties nil device-id (co/obj-id-to-object-identifier obj-id)
                                   (or properties :all))
       (first)
       (co/prepare-obj-map)
       (assoc :device-id (str device-id))))
 
 
-(defn clean-errors 
+(defn clean-errors
   "Remove the objects that can't be transmitted by the API."
   [b-error]
   (if (map? b-error)
     (->> (for [[k v] b-error]
-           [k (dissoc v 
+           [k (dissoc v
                       :apdu-error
                       :timeout-error)])
          (into {}))
@@ -134,7 +134,7 @@
     :consumes [{:media-type co/consumed-types
                 :charset "UTF-8"}]
     :access-control {:allow-origin "*"}
-    :methods {:post 
+    :methods {:post
               {:summary "New object"
                :description (str "Create a new BACnet object. It is possible to give an object ID, but it is "
                                  "suggested to rather give the object-type and let the remote device handle "
@@ -162,13 +162,13 @@
                                      (let [o-identifier (get success :object-identifier)
                                            new-o-id (co/object-identifier-to-obj-id o-identifier)]
                                        (-> (get-object-properties d-id new-o-id nil)
-                                           (assoc :href (co/make-link ctx (str (:uri (:request ctx)) 
+                                           (assoc :href (co/make-link ctx (str (:uri (:request ctx))
                                                                             "/" new-o-id)))))
-                                     (merge (:response ctx) 
+                                     (merge (:response ctx)
                                             {:status 500
                                              :body (clean-errors result)})))))))}
               :get {:parameters {:path {:device-id Long}
-                                 :query {(s/optional-key :limit) 
+                                 :query {(s/optional-key :limit)
                                          (rs/field Long
                                                    {:description "Maximum number of objects per page."})
                                          (s/optional-key :page) Long
@@ -190,10 +190,10 @@
                                           {:keys [next-page previous-page current-page objects]} p-o-l]
                                       (merge {:device
                                               {:href (co/make-link ctx
-                                                                (string/replace (:uri (:request ctx)) 
+                                                                (string/replace (:uri (:request ctx))
                                                                                 "/objects" ""))}
                                               :objects (for [o objects]
-                                                         (assoc o :href (co/make-link ctx (str (:uri (:request ctx)) 
+                                                         (assoc o :href (co/make-link ctx (str (:uri (:request ctx))
                                                                                             "/" (:object-id o)))))
                                               :href (co/make-page-link ctx current-page limit)}
                                              (when-let [l (co/make-page-link ctx next-page limit)]
@@ -237,10 +237,10 @@
                                                           {:error (.getMessage e)}))]
                                         (if (:success result)
                                           result
-                                          (merge (:response ctx) 
+                                          (merge (:response ctx)
                                                  {:status 500
                                                   :body (clean-errors result)})))))))}
-              :delete 
+              :delete
               {:summary "Delete object"
                :description "Delete the given object."
                :swagger/tags ["BACnet"]
@@ -249,11 +249,11 @@
                            (let [device-id (get-in ctx [:parameters :path :device-id])
                                  o-id (get-in ctx [:parameters :path :object-id])]
                              (co/with-bacnet-device ctx nil
-                               (let [result (rd/delete-remote-object! nil device-id 
+                               (let [result (rd/delete-remote-object! nil device-id
                                                                       (co/obj-id-to-object-identifier o-id))]
                                  (if (:success result)
                                    result
-                                   (merge (:response ctx) 
+                                   (merge (:response ctx)
                                           {:status 500
                                            :body (clean-errors result)}))))))}
               :get {:parameters {:path {:device-id Long :object-id String}
@@ -281,22 +281,22 @@
     {:device-id d-id
      :object-type o-type
      :object-instance o-inst
-     :object-identifier (->> [o-type o-inst] 
-                             (c/clojure->bacnet :object-identifier) 
+     :object-identifier (->> [o-type o-inst]
+                             (c/clojure->bacnet :object-identifier)
                              (c/bacnet->clojure))
      :global-id id}))
 
-(defn get-properties 
+(defn get-properties
   "Get the requested properties in parallel for every devices."
   ([objects-maps] (get-properties objects-maps :all))
   ([objects-maps properties]
    ;; first get retrieve the data from the remote devices...
    (let [by-devices (group-by :device-id objects-maps)
-         result-map (->> (pmap 
+         result-map (->> (pmap
                           (fn [[device-id objects]]
-                            [device-id (->> (for [result (b/remote-object-properties 
-                                                          nil device-id 
-                                                          (map :object-identifier objects) 
+                            [device-id (->> (for [result (b/remote-object-properties
+                                                          nil device-id
+                                                          (map :object-identifier objects)
                                                           properties)]
                                               [(:object-identifier result) result])
                                             (into {}))]) by-devices)
