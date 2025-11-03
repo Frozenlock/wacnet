@@ -80,8 +80,8 @@
                                          (routes/path-for :devices-with-id :device-id (:id tab)))
                                         (reset! selected-tab-id (:id tab)))))}
             [:div.device-id
-             {:style {:max-width (if-not ids? "0px" (* ids-length 12))}}
-             [:strong.nav-ids 
+             {:style {:max-width (if-not ids? "0px" (max 25 (* ids-length 12)))}}
+             [:strong.nav-ids
               (pad-id-length (:id tab) ids-length)]]
            ;(when ids? [re/line :class "separator" :color nil])
            [:span.device-name tab-name]]))})))
