@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.9-SNAPSHOT5"
+(defproject wacnet "2.1.9-SNAPSHOT6"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -8,7 +8,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
 
                  ;; BACnet
-                 [bacure "1.2.1"]
+                 [bacure "1.3.1"]
 
                  [io.hvac.vigilia/vigilia-logger "1.3.0"]
 
@@ -17,7 +17,7 @@
                  [aleph "0.4.6"] ; server
                  [aleph-middleware "0.2.0"]
                  [yada "1.2.16"]
-                 
+
                  [trptcolin/versioneer "0.2.0"]
 
                  ;; error logs
@@ -25,7 +25,7 @@
                  [com.fzakaria/slf4j-timbre "0.3.20"]
 
                  ;; systemTray
-                 [com.dorkbox/SystemTray "3.17"]
+                 [com.dorkbox/SystemTray "4.4"]
 
                  ;; nREPL
                  [nrepl "1.0.0"]
@@ -38,7 +38,7 @@
                  [cljsjs/resize-observer-polyfill "1.4.2-0"]
 
                  [reagent "0.8.1"] ;; [reagent "0.8.0-alpha2"] ;; doesn't work with clojure 1.9 on java 9
-                 
+
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]
                  [org.clojars.frozenlock/reagent-keybindings "1.0.2"]
                  [alandipert/storage-atom "2.0.1"]
@@ -52,11 +52,11 @@
             [lein-ancient "0.6.15"]
             [lein-cljsbuild "1.1.7"]
             [org.clojars.rasom/lein-externs "0.1.7"]]
-  
+
   :manifest {"SplashScreen-Image" "public/img/splash.png"}
 
   :min-lein-version "2.5.0"
-  
+
   :main wacnet.server
 
   :clean-targets ^{:protect false} [:target-path
@@ -119,5 +119,5 @@
                        :env {:production true}
                        :aot :all
                        :omit-source true}}
-  
+
   :source-paths ["src/clj" "src/cljs" "src/cljc"])
