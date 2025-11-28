@@ -38,9 +38,7 @@
            [:div.btn.btn-default {:on-click #(swap! config-a assoc :broadcast-address b-ad)
                   :style {:cursor :pointer}}
             [:b (:interface interface)]
-            [:div 
-             ;[:div "Ips : " (:ips interface) " "]
-             [:div "Broadcast address : " (:broadcast-address interface)]]])])})))
+            [:div "Broadcast address : " (:broadcast-address interface)]])])})))
 
 
 (defn parse-configs
@@ -49,7 +47,7 @@
   (let [parse-maybe (fn [str-or-num]
                       (if (number? str-or-num) str-or-num
                           (js/parseInt str-or-num)))]
-    (-> configs-map 
+    (-> configs-map
         (update-in [:device-id] parse-maybe)
         (update-in [:port] parse-maybe)
         ((fn [cm]
@@ -86,8 +84,8 @@
                         [:div "Error : " (:status-text @error?)]
                         [:div "The server encountered an error. Double check the configuration."]
                         [:div "Also make sure the BACnet port is not already taken by another software."]]])
-       [:button.btn.btn-primary 
-        {:on-click #(update-configs! (-> @configs-a 
+       [:button.btn.btn-primary
+        {:on-click #(update-configs! (-> @configs-a
                                          (select-keys [:description :broadcast-address :device-id :port
                                                        :apdu-timeout
                                                        :number-of-apdu-retries
@@ -105,9 +103,9 @@
      {:component-did-mount (fn [_]
                              (get-configs configs-a loading? error?))
       ;:should-component-update (fn [_ _ _] true)
-      :reagent-render 
+      :reagent-render
       (fn []
-        [:div.container         
+        [:div.container
          [:h3.text-center "Local Device Configurations"]
          [:hr]
          [:div
