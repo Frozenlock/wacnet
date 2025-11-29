@@ -1,4 +1,4 @@
-(defproject wacnet "2.1.9-SNAPSHOT6"
+(defproject wacnet "2.1.9"
   :description "Webserver to browse a BACnet network"
   :url "https://hvac.io"
   :license {:name "GNU General Public License V3"
@@ -10,7 +10,7 @@
                  ;; BACnet
                  [bacure "1.3.1"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.3.0"]
+                 [io.hvac.vigilia/vigilia-logger "1.3.1"]
 
                  ;; webserver stuff
                  [bidi "2.1.6"] ; routing
@@ -21,8 +21,8 @@
                  [trptcolin/versioneer "0.2.0"]
 
                  ;; error logs
-                 [com.taoensso/timbre "5.1.0"]
-                 [com.fzakaria/slf4j-timbre "0.3.20"]
+                 [com.taoensso/timbre "6.6.1"]
+                 [com.fzakaria/slf4j-timbre "0.4.1"]
 
                  ;; systemTray
                  [com.dorkbox/SystemTray "4.4"]
