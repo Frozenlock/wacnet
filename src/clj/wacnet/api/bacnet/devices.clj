@@ -24,13 +24,16 @@
         (rd/discover-network))
       {:href (co/make-link ctx)
        :devices (for [[k v] (rd/remote-devices-and-names nil)
-                      :let [routed-by-id (some-> (rd/routing-info nil k)
-                                                 :routed-by
-                                                 :device-id)]]
+                      :let [routing-info (rd/routing-info nil k)
+                            routed-by (:routed-by routing-info)
+                            routed-by-id (:device-id routed-by)
+                            routed-by-mac (get-in routed-by [:address :mac-address])]]
                   (cond-> {:device-id (str k)
                            :device-name v
                            :href (co/make-link ctx (str (:uri (:request ctx)) "/" k))}
-                    routed-by-id (assoc-in [:network :routed-by :device-id] (str routed-by-id))))})))
+                    routed-by (assoc :network {:routed-by (cond-> {}
+                                                            routed-by-id (assoc :device-id (str routed-by-id))
+                                                            routed-by-mac (assoc :mac-address routed-by-mac))})))})))
 
 (def devices-list
   (resource

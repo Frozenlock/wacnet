@@ -10,15 +10,19 @@
 (def devices
   "Mock device list with router relationships."
   [{:device-id "1000" :device-name "Main Router" :network nil}
-   {:device-id "2001" :device-name "VAV Box 1" :network {:routed-by {:device-id "1000"}}}
-   {:device-id "2002" :device-name "VAV Box 2" :network {:routed-by {:device-id "1000"}}}
-   {:device-id "2003" :device-name "VAV Box 3" :network {:routed-by {:device-id "1000"}}}
+   {:device-id "2001" :device-name "VAV Box 1" :network {:routed-by {:device-id "1000" :mac-address "192.168.1.100:47808"}}}
+   {:device-id "2002" :device-name "VAV Box 2" :network {:routed-by {:device-id "1000" :mac-address "192.168.1.100:47808"}}}
+   {:device-id "2003" :device-name "VAV Box 3" :network {:routed-by {:device-id "1000" :mac-address "192.168.1.100:47808"}}}
    {:device-id "1100" :device-name "Secondary Router" :network nil}
-   {:device-id "3001" :device-name "AHU Controller" :network {:routed-by {:device-id "1100"}}}
-   {:device-id "3002" :device-name "Chiller Controller" :network {:routed-by {:device-id "1100"}}}
+   {:device-id "3001" :device-name "AHU Controller" :network {:routed-by {:device-id "1100" :mac-address "192.168.1.101:47808"}}}
+   {:device-id "3002" :device-name "Chiller Controller" :network {:routed-by {:device-id "1100" :mac-address "192.168.1.101:47808"}}}
    {:device-id "100" :device-name "BAS Server" :network nil}
    {:device-id "101" :device-name "Lighting Controller" :network nil}
-   {:device-id "102" :device-name "Energy Meter" :network nil}])
+   {:device-id "102" :device-name "Energy Meter" :network nil}
+   ;; Devices routed by an unknown router (only mac-address, no device-id)
+   {:device-id "4001" :device-name "Remote Sensor 1" :network {:routed-by {:mac-address "192.168.1.200:47808"}}}
+   {:device-id "4002" :device-name "Remote Sensor 2" :network {:routed-by {:mac-address "192.168.1.200:47808"}}}
+   {:device-id "4003" :device-name "Remote Actuator" :network {:routed-by {:mac-address "192.168.1.200:47808"}}}])
 
 (def device-summaries
   "Mock device summaries with full network info."
@@ -88,7 +92,29 @@
            :vendor-name "Schneider Electric"
            :vendor-identifier 10
            :model-name "PowerLogic"
-           :_network {:address {:network-number 0 :mac-address "192.168.1.12:47808"}}}})
+           :_network {:address {:network-number 0 :mac-address "192.168.1.12:47808"}}}
+   ;; Devices routed by unknown router (only mac-address in routed-by)
+   "4001" {:device-name "Remote Sensor 1"
+           :description "Remote temperature sensor"
+           :vendor-name "Unknown Vendor"
+           :vendor-identifier 999
+           :model-name "Sensor-Pro"
+           :_network {:address {:network-number 5 :mac-address "20"}
+                      :routed-by {:mac-address "192.168.1.200:47808"}}}
+   "4002" {:device-name "Remote Sensor 2"
+           :description "Remote humidity sensor"
+           :vendor-name "Unknown Vendor"
+           :vendor-identifier 999
+           :model-name "Sensor-Pro"
+           :_network {:address {:network-number 5 :mac-address "21"}
+                      :routed-by {:mac-address "192.168.1.200:47808"}}}
+   "4003" {:device-name "Remote Actuator"
+           :description "Remote damper actuator"
+           :vendor-name "Unknown Vendor"
+           :vendor-identifier 999
+           :model-name "Actuator-X"
+           :_network {:address {:network-number 5 :mac-address "22"}
+                      :routed-by {:mac-address "192.168.1.200:47808"}}}})
 
 (defn objects-for-device
   "Returns mock objects for a given device-id."
@@ -162,5 +188,18 @@
              :object-name "kW Demand" :description "Power demand" :present-value 125.4 :units "kilowatts"}
             {:object-id "0.2" :object-type "0" :object-instance "2"
              :object-name "kWh Total" :description "Energy consumption" :present-value 45230.0 :units "kilowatt-hours"}]
+    ;; Devices routed by unknown router
+    "4001" [{:object-id "8.4001" :object-type "8" :object-instance "4001"
+             :object-name "Remote Sensor 1" :description "Device object" :present-value nil}
+            {:object-id "0.1" :object-type "0" :object-instance "1"
+             :object-name "Remote Temp" :description "Remote temperature" :present-value 24.3 :units "degrees-celsius"}]
+    "4002" [{:object-id "8.4002" :object-type "8" :object-instance "4002"
+             :object-name "Remote Sensor 2" :description "Device object" :present-value nil}
+            {:object-id "0.1" :object-type "0" :object-instance "1"
+             :object-name "Remote Humidity" :description "Remote humidity" :present-value 55.0 :units "percent-relative-humidity"}]
+    "4003" [{:object-id "8.4003" :object-type "8" :object-instance "4003"
+             :object-name "Remote Actuator" :description "Device object" :present-value nil}
+            {:object-id "1.1" :object-type "1" :object-instance "1"
+             :object-name "Damper Cmd" :description "Damper command" :present-value 50.0 :units "percent"}]
     ;; Default empty list for unknown devices
     []))

@@ -79,45 +79,72 @@
    - :routers - seq of {:device router-device :children [child-devices]}
    - :standalone - seq of devices without a router (and not acting as routers)
 
-   all-devices-map is used to look up router devices that may not be in the filtered list."
+   all-devices-map is used to look up router devices that may not be in the filtered list.
+   When a router's device-id is unknown, groups by mac-address instead and creates
+   a fake device entry for display."
   [devices all-devices-map]
   (let [device-ids (set (map :device-id devices))
+        ;; Separate devices with known router-id from those with only mac-address
+        devices-with-router-id (filter #(get-in % [:network :routed-by :device-id]) devices)
+        devices-with-only-mac (filter #(and (get-in % [:network :routed-by :mac-address])
+                                            (not (get-in % [:network :routed-by :device-id])))
+                                      devices)
         ;; Find all router IDs referenced by visible devices
-        referenced-router-ids (->> devices
+        referenced-router-ids (->> devices-with-router-id
                                    (keep #(get-in % [:network :routed-by :device-id]))
                                    (into #{}))
-        ;; Routed devices (have a router)
-        routed-devices (filter #(get-in % [:network :routed-by :device-id]) devices)
-        ;; Standalone: not a router and not routed by another device
+        ;; Find all router mac-addresses for devices without router device-id
+        referenced-router-macs (->> devices-with-only-mac
+                                    (keep #(get-in % [:network :routed-by :mac-address]))
+                                    (into #{}))
+        ;; Standalone: not a router and not routed by another device (by id or mac)
         standalone (remove #(or (referenced-router-ids (:device-id %))
-                                (get-in % [:network :routed-by :device-id]))
+                                (get-in % [:network :routed-by :device-id])
+                                (get-in % [:network :routed-by :mac-address]))
                            devices)
         ;; Group routed devices by their router id
-        grouped (group-by #(get-in % [:network :routed-by :device-id]) routed-devices)]
-    {:routers (for [router-id referenced-router-ids
-                    :let [router-device (get all-devices-map router-id)
-                          children (get grouped router-id [])]
-                    :when (and router-device (seq children))]
-                {:device router-device
-                 :children children})
+        grouped-by-id (group-by #(get-in % [:network :routed-by :device-id]) devices-with-router-id)
+        ;; Group devices by router mac-address (when device-id is unknown)
+        grouped-by-mac (group-by #(get-in % [:network :routed-by :mac-address]) devices-with-only-mac)
+        ;; Build routers with known device-ids
+        routers-with-id (for [router-id referenced-router-ids
+                              :let [router-device (get all-devices-map router-id)
+                                    children (get grouped-by-id router-id [])]
+                              :when (and router-device (seq children))]
+                          {:device router-device
+                           :children children})
+        ;; Build fake router entries for unknown device-ids (grouped by mac-address)
+        routers-by-mac (for [mac-addr referenced-router-macs
+                             :let [children (get grouped-by-mac mac-addr [])]
+                             :when (seq children)]
+                         {:device {:device-id (str "MAC:" mac-addr)
+                                   :device-name (str "Unknown Router (" mac-addr ")")
+                                   :fake-router? true
+                                   :mac-address mac-addr}
+                          :children children})]
+    {:routers (concat routers-with-id routers-by-mac)
      :standalone standalone}))
 
 (defn router-nav-item
   "A collapsible navigation item for router devices with their child devices"
   [router-device children selected-device-id show-ids? ids-length local-click expanded-routers-a configs]
   (let [router-id (:device-id router-device)
+        fake-router? (:fake-router? router-device)
         expanded? (get @expanded-routers-a router-id false)]
     [:div.router-group
      ;; Router device - styled same as nav-item but with toggle
+     ;; For fake routers (unknown device-id), don't make it clickable for navigation
      [:div.nav-item
-      {:class (when (= @selected-device-id router-id) "selected")
-       :style {:display :block}
-       :title (:device-name router-device)
-       :on-click (handler-fn (do (reset! local-click router-id)
-                                 (if-not (:vigilia-mode configs)
-                                   (routes/goto-hash!
-                                    (routes/path-for :devices-with-id :device-id router-id))
-                                   (reset! selected-device-id router-id))))}
+      (merge {:class (when (and (not fake-router?) (= @selected-device-id router-id)) "selected")
+              :style {:display :block
+                      :cursor (if fake-router? :default :pointer)}
+              :title (:device-name router-device)}
+             (when-not fake-router?
+               {:on-click (handler-fn (do (reset! local-click router-id)
+                                          (if-not (:vigilia-mode configs)
+                                            (routes/goto-hash!
+                                             (routes/path-for :devices-with-id :device-id router-id))
+                                            (reset! selected-device-id router-id))))}))
       ;; Collapse/expand toggle
       [:span {:style {:cursor :pointer
                       :margin-right "3px"
@@ -128,10 +155,14 @@
                           (swap! expanded-routers-a assoc router-id (not expanded?)))}
        (if expanded? [:i.fa.fa-fw.fa-folder-open] [:i.fa.fa-fw.fa-folder])]
       [:div.device-id
-       {:style {:max-width (if-not @show-ids? "0px" (max 25 (* ids-length 12)))}}
+       {:style {:max-width (if (or fake-router? (not @show-ids?)) "0px" (max 25 (* ids-length 12)))}}
        [:strong.nav-ids
-        (pad-id-length router-id ids-length)]]
-      [:span.device-name {:style {:font-weight "bold"}}
+        (if fake-router?
+          [:span [:span {:style {:visibility "hidden"}}] "\u00A0"]
+          (pad-id-length router-id ids-length))]]
+      [:span.device-name {:style {:font-weight "bold"
+                                  :font-style (when fake-router? :italic)
+                                  :color (when fake-router? "#888")}}
        (or (:device-name router-device) "< no name >")]
       [:span.badge {:style {:margin-left "5px"
                             :background-color "#888"
@@ -255,7 +286,11 @@
               {:keys [routers standalone]} (group-devices-by-router visible-full-devices full-devices-map)]
           (when-not (some #{@selected-device-id} (map :id devices))
             (when (seq devices)
-              (select-device! (:id (first devices)))))
+              ;; Prefer selecting a router first (local network, faster)
+              (let [first-router-id (some-> routers first :device :device-id)
+                    first-standalone-id (some-> standalone first :device-id)
+                    default-id (or first-router-id first-standalone-id (:id (first devices)))]
+                (select-device! default-id))))
           [re/v-box
            :class    "noselect"
            :size     "1"
@@ -892,13 +927,15 @@
                                                    (if routed-by
                                                      [:span (:network-number address)
                                                       " via router "
-                                                      [:a {:href (routes/path-for :devices-with-id
-                                                                                  :device-id (:device-id routed-by))}
-                                                       (let [name (:device-name routed-by)
-                                                             device-id (:device-id routed-by)]
-                                                         (if (empty? name)
-                                                           (str device-id)
-                                                           (str name " (" device-id ")")))]]
+                                                      (if-let [router-id (:device-id routed-by)]
+                                                        [:a {:href (routes/path-for :devices-with-id
+                                                                                    :device-id router-id)}
+                                                         (let [name (:device-name routed-by)]
+                                                           (if (empty? name)
+                                                             (str router-id)
+                                                             (str name " (" router-id ")")))]
+                                                        ;; Router device-id unknown, show MAC address
+                                                        [:span "@ " (:mac-address routed-by)])]
                                                      (if (= 0 (:network-number address))
                                                        "Local (0)"
                                                        (str (:network-number address))))]]
