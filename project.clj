@@ -6,6 +6,7 @@
   ;; WARNING
   ;; compiling with java 9 causes the webserver to hang when started on java 8
   :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/tools.cli "1.1.230"]
 
                  ;; BACnet
                  [bacure "1.3.2"]
@@ -53,11 +54,11 @@
             [lein-cljsbuild "1.1.7"]
             [org.clojars.rasom/lein-externs "0.1.7"]]
 
-  :manifest {"SplashScreen-Image" "public/img/splash.png"}
-
   :min-lein-version "2.5.0"
 
-  :main wacnet.server
+  :java-source-paths ["src/java"]
+
+  :main wacnet.Launcher
 
   :clean-targets ^{:protect false} [:target-path
                                     [:cljsbuild :builds :app :compiler :output-dir]
@@ -115,7 +116,8 @@
                                                          :source-map true}}}}}
 
              :uberjar {:source-paths ["env/prod/clj"]
-                       :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
+                       :prep-tasks [["run" "-m" "wacnet.gen-help"]
+                                    "javac" "compile" ["cljsbuild" "once" "min"]]
                        :env {:production true}
                        :aot :all
                        :omit-source true}}
