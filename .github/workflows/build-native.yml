@@ -1,0 +1,83 @@
+name: Build Native Packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-uberjar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install Leiningen
+        uses: DeLaGuardo/setup-clojure@12.5
+        with:
+          lein: 2.11.2
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('project.clj') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+      - name: Build uberjar
+        run: lein uberjar
+
+      - name: Upload uberjar
+        uses: actions/upload-artifact@v4
+        with:
+          name: uberjar
+          path: target/*-standalone.jar
+          retention-days: 1
+
+  package:
+    needs: build-uberjar
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: windows-latest
+            platform: windows
+          - os: macos-latest
+            platform: macos
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Download uberjar
+        uses: actions/download-artifact@v4
+        with:
+          name: uberjar
+          path: target/
+
+      - name: Build native package (Linux/macOS)
+        if: matrix.platform != 'windows'
+        run: bash packaging/build-package.sh
+
+      - name: Build native package (Windows)
+        if: matrix.platform == 'windows'
+        shell: bash
+        run: bash packaging/build-package.sh
+
+      - name: Upload native package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wacnet-${{ matrix.platform }}
+          path: dist/*.zip

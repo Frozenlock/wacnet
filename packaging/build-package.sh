@@ -92,26 +92,16 @@ echo "App image created at: $DIST/Wacnet"
 ARCHIVE_BASE="wacnet-${VERSION}-${PLATFORM}-${ARCH_LABEL}"
 
 cd "$DIST"
-case "$PLATFORM" in
-    linux|macos)
-        ARCHIVE="${ARCHIVE_BASE}.tar.gz"
-        tar czf "$ARCHIVE" Wacnet/
-        echo "Archive created: $DIST/$ARCHIVE"
-        ;;
-    windows)
-        ARCHIVE="${ARCHIVE_BASE}.zip"
-        if command -v zip &>/dev/null; then
-            zip -r "$ARCHIVE" Wacnet/
-        elif command -v powershell &>/dev/null; then
-            powershell -Command "Compress-Archive -Path 'Wacnet' -DestinationPath '$ARCHIVE'"
-        else
-            echo "WARNING: Neither zip nor powershell found. Skipping archive creation."
-            echo "App image is available at: $DIST/Wacnet/"
-            exit 0
-        fi
-        echo "Archive created: $DIST/$ARCHIVE"
-        ;;
-esac
+ARCHIVE="${ARCHIVE_BASE}.zip"
+if command -v zip &>/dev/null; then
+    zip -r "$ARCHIVE" Wacnet/
+elif command -v powershell &>/dev/null; then
+    powershell -Command "Compress-Archive -Path 'Wacnet' -DestinationPath '$ARCHIVE'"
+else
+    echo "ERROR: Neither zip nor powershell found. Cannot create archive."
+    exit 1
+fi
+echo "Archive created: $DIST/$ARCHIVE"
 
 # --- Clean up staging ---
 rm -rf "$STAGING"
