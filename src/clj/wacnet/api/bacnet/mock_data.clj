@@ -9,16 +9,16 @@
 
 (def devices
   "Mock device list with router relationships."
-  [{:device-id "1000" :device-name "Main Router" :network nil}
+  [{:device-id "1000" :device-name "Main Router" :network nil :ip-address "192.168.1.100"}
    {:device-id "2001" :device-name "VAV Box 1" :network {:routed-by {:device-id "1000" :mac-address "192.168.1.100:47808"}}}
    {:device-id "2002" :device-name "VAV Box 2" :network {:routed-by {:device-id "1000" :mac-address "192.168.1.100:47808"}}}
    {:device-id "2003" :device-name "VAV Box 3" :network {:routed-by {:device-id "1000" :mac-address "192.168.1.100:47808"}}}
-   {:device-id "1100" :device-name "Secondary Router" :network nil}
+   {:device-id "1100" :device-name "Secondary Router" :network nil :ip-address "192.168.1.101"}
    {:device-id "3001" :device-name "AHU Controller" :network {:routed-by {:device-id "1100" :mac-address "192.168.1.101:47808"}}}
    {:device-id "3002" :device-name "Chiller Controller" :network {:routed-by {:device-id "1100" :mac-address "192.168.1.101:47808"}}}
-   {:device-id "100" :device-name "BAS Server" :network nil}
-   {:device-id "101" :device-name "Lighting Controller" :network nil}
-   {:device-id "102" :device-name "Energy Meter" :network nil}
+   {:device-id "100" :device-name "BAS Server" :network nil :ip-address "192.168.1.10"}
+   {:device-id "101" :device-name "Lighting Controller" :network nil :ip-address "192.168.1.11"}
+   {:device-id "102" :device-name "Energy Meter" :network nil :ip-address "192.168.1.12"}
    ;; Devices routed by an unknown router (only mac-address, no device-id)
    {:device-id "4001" :device-name "Remote Sensor 1" :network {:routed-by {:mac-address "192.168.1.200:47808"}}}
    {:device-id "4002" :device-name "Remote Sensor 2" :network {:routed-by {:mac-address "192.168.1.200:47808"}}}

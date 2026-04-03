@@ -37,7 +37,7 @@
      id]))
 
 (defn nav-item
-  [tab selected-tab-id show-ids? ids-length local-click configs]
+  [tab selected-tab-id show-ids? ids-length local-click configs & [show-ips?]]
   (let [this-id (atom (:id tab))] ;; keep track manually through updates
     ;; -> component-did-update does not receive the new arguments
     (r/create-class
@@ -52,14 +52,16 @@
                                     (reset! local-click nil)
                                     (.scrollIntoView (r/dom-node this))))))
       :reagent-render
-      (fn [tab selected-tab-id show-ids? ids-length on-select-tab]
+      (fn [tab selected-tab-id show-ids? ids-length on-select-tab configs & [show-ips?]]
         (let [selected?   (= @selected-tab-id (:id tab))
               tab-name (let [n (:name tab)]
                          (if (empty? n) "< no name >" n))
-              ids? @show-ids?]
+              ids? @show-ids?
+              ips? (and show-ips? @show-ips?)]
           (reset! this-id (:id tab))
           [:div.nav-item
            {:class (when selected? "selected")
+            :style {:display :flex :align-items :baseline :padding-right "2px"}
             :title tab-name
 
             :on-click (handler-fn (do (reset! local-click (:id tab))
@@ -71,8 +73,15 @@
             {:style {:max-width (if-not ids? "0px" (max 25 (* ids-length 12)))}}
             [:strong.nav-ids
              (pad-id-length (:id tab) ids-length)]]
-           ;(when ids? [re/line :class "separator" :color nil])
-           [:span.device-name tab-name]]))})))
+           [:span.device-name {:style {:flex "1"
+                                       :min-width "0"
+                                       :overflow "hidden"
+                                       :text-overflow "ellipsis"}}
+            tab-name]
+           (when-let [ip (:ip-address tab)]
+             [:div.device-ip
+              {:style {:max-width (if ips? "120px" "0px")}}
+              [:span {:style {:padding-left "5px" :padding-right "5px"}} ip]])]))})))
 
 (defn group-devices-by-router
   "Groups devices by their router. Returns a map with:
@@ -127,7 +136,7 @@
 
 (defn router-nav-item
   "A collapsible navigation item for router devices with their child devices"
-  [router-device children selected-device-id show-ids? ids-length local-click expanded-routers-a configs]
+  [router-device children selected-device-id show-ids? ids-length local-click expanded-routers-a configs & [show-ips?]]
   (let [router-id (:device-id router-device)
         fake-router? (:fake-router? router-device)
         expanded? (get @expanded-routers-a router-id false)]
@@ -136,7 +145,7 @@
      ;; For fake routers (unknown device-id), don't make it clickable for navigation
      [:div.nav-item
       (merge {:class (when (and (not fake-router?) (= @selected-device-id router-id)) "selected")
-              :style {:display :block
+              :style {:display :flex :align-items :baseline
                       :cursor (if fake-router? :default :pointer)}
               :title (:device-name router-device)}
              (when-not fake-router?
@@ -160,24 +169,34 @@
         (if fake-router?
           [:span [:span {:style {:visibility "hidden"}}] "\u00A0"]
           (pad-id-length router-id ids-length))]]
-      [:span.device-name {:style {:font-weight "bold"
-                                  :font-style (when fake-router? :italic)
-                                  :color (when fake-router? "#888")}}
-       (or (:device-name router-device) "< no name >")]
-      [:span.badge {:style {:margin-left "5px"
-                            :background-color "#888"
-                            :font-size "10px"}}
-       (count children)]]
+      [:span {:style {:flex "1"
+                      :min-width "0"
+                      :overflow "hidden"
+                      :text-overflow "ellipsis"}}
+       [:span {:style {:font-weight "bold"
+                       :font-style (when fake-router? :italic)
+                       :color (when fake-router? "#888")}}
+        (or (:device-name router-device) "< no name >")]
+       [:span.badge {:style {:margin-left "5px"
+                             :background-color "#888"
+                             :font-size "10px"}}
+        (count children)]]
+      (when-let [ip (:ip-address router-device)]
+        (let [ips? (and show-ips? @show-ips?)]
+          [:div.device-ip
+           {:style {:max-width (if ips? "120px" "0px")}}
+           [:span {:style {:padding-left "5px" :padding-right "5px"}} ip]]))]
      ;; Child devices (collapsible)
      (when expanded?
        [:div.router-children
         {:style {:padding-left "20px"}}
         (doall
-         (for [child children]
+         (for [child children
+               :let [ips? (and show-ips? @show-ips?)]]
            ^{:key (:device-id child)}
            [:div.nav-item
             {:class (when (= @selected-device-id (:device-id child)) "selected")
-             :style {:display :block}
+             :style {:display :flex :align-items :baseline :padding-right "2px"}
              :title (:device-name child)
              :on-click (handler-fn (do (reset! local-click (:device-id child))
                                        (if-not (:vigilia-mode configs)
@@ -188,78 +207,113 @@
              {:style {:max-width (if-not @show-ids? "0px" (max 25 (* ids-length 12)))}}
              [:strong.nav-ids
               (pad-id-length (:device-id child) ids-length)]]
-            [:span.device-name (or (:device-name child) "< no name >")]]))])]))
+            [:span.device-name {:style {:flex "1"
+                                        :min-width "0"
+                                        :overflow "hidden"
+                                        :text-overflow "ellipsis"}}
+             (or (:device-name child) "< no name >")]
+            (when-let [ip (:ip-address child)]
+              [:div.device-ip
+               {:style {:max-width (if ips? "120px" "0px")}}
+               [:span {:style {:padding-left "5px" :padding-right "5px"}} ip]])]))])]))
 
-(defn filter-devices [devices-list filter-string]
+(defn filter-devices [devices-list filter-string & {:keys [show-ids? show-ips?]}]
   (let [regexp (re-pattern (u/make-fuzzy-regex filter-string))]
-    (filter #(or (re-find regexp (or (:id %) "< no name >"))
-                 (re-find regexp (or (:name %) "< no name >"))) devices-list)))
+    (filter #(or (re-find regexp (or (:name %) "< no name >"))
+                 (and show-ids? (re-find regexp (or (:id %) "")))
+                 (and show-ips? (re-find regexp (or (:ip-address %) "")))) devices-list)))
 
 (defn sort-by-id-btn [sort-fn-a local-click]
   (let [ascending? (r/atom true)]
     (fn []
       (let [asc? @ascending?]
-        [re/button
-         :tooltip          "Sort by device ID"
-         :tooltip-position :below-left
-         :on-click         #(do (reset! local-click true)
-                                (reset! sort-fn-a
-                                        (fn [coll]
-                                          (sort-by :id
-                                                   (fn [id-str1 id-str2]
-                                                     ((if asc? compare (comp (fn [n] (* -1 n)) compare))
-                                                      (reader/read-string id-str1)
-                                                      (reader/read-string id-str2)))
-                                                   coll)))
-                                (swap! ascending? not))
-         :label            (if asc?
-                             [:i.fa.fa-sort-numeric-asc]
-                             [:i.fa.fa-sort-numeric-desc])]))))
+        [:button.btn.btn-default
+         {:title "Sort by device ID"
+          :on-click #(do (reset! local-click true)
+                         (reset! sort-fn-a
+                                 (fn [coll]
+                                   (sort-by :id
+                                            (fn [id-str1 id-str2]
+                                              ((if asc? compare (comp (fn [n] (* -1 n)) compare))
+                                               (reader/read-string id-str1)
+                                               (reader/read-string id-str2)))
+                                            coll)))
+                         (swap! ascending? not))}
+         (if asc?
+           [:i.fa.fa-sort-numeric-asc]
+           [:i.fa.fa-sort-numeric-desc])]))))
 
 (defn sort-by-name-btn [sort-fn-a local-click]
   (let [ascending? (r/atom true)]
     (fn []
       (let [asc? @ascending?]
-        [re/button
-         :tooltip          "Sort by device name"
-         :tooltip-position :below-left
-         :on-click         #(do (reset! local-click true)
-                                (reset! sort-fn-a
-                                        (fn [coll]
-                                          (sort-by :name
-                                                   (if asc? compare (comp (fn [n] (* -1 n)) compare))
-                                                   coll)))
-                                (swap! ascending? not))
-         :label            (if asc?
-                             [:i.fa.fa-sort-alpha-asc]
-                             [:i.fa.fa-sort-alpha-desc])]))))
+        [:button.btn.btn-default
+         {:title "Sort by device name"
+          :on-click #(do (reset! local-click true)
+                         (reset! sort-fn-a
+                                 (fn [coll]
+                                   (sort-by :name
+                                            (if asc? compare (comp (fn [n] (* -1 n)) compare))
+                                            coll)))
+                         (swap! ascending? not))}
+         (if asc?
+           [:i.fa.fa-sort-alpha-asc]
+           [:i.fa.fa-sort-alpha-desc])]))))
+
+(defn- ip->sortable
+  "Convert an IP address string to a vector of numbers for proper sorting.
+   Returns [0 0 0 0] for nil/invalid IPs so they sort first."
+  [ip-str]
+  (if (and ip-str (re-matches #"\d+\.\d+\.\d+\.\d+" ip-str))
+    (mapv #(js/parseInt % 10) (s/split ip-str #"\."))
+    [0 0 0 0]))
+
+(defn sort-by-ip-btn [sort-fn-a local-click]
+  (let [ascending? (r/atom true)]
+    (fn []
+      (let [asc? @ascending?]
+        [:button.btn.btn-default
+         {:title "Sort by IP address"
+          :on-click #(do (reset! local-click true)
+                         (reset! sort-fn-a
+                                 (fn [coll]
+                                   (sort-by (comp ip->sortable :ip-address)
+                                            (if asc? compare (comp (fn [n] (* -1 n)) compare))
+                                            coll)))
+                         (swap! ascending? not))}
+         (if asc?
+           [:i.fa.fa-sort-amount-asc]
+           [:i.fa.fa-sort-amount-desc])]))))
 
 (defn refresh-btn [configs]
   (let [devices-list-m (:devices-list configs)
         refresh-fn (:refresh-fn devices-list-m)
         loading-a (:loading-a devices-list-m)
         error-a (:error-a devices-list-m)]
-    [re/button
-     :tooltip "Check for new devices (WhoIs)"
-     :tooltip-position :below-right
-     :on-click (fn [] (when refresh-fn
-                        (refresh-fn)))
-     :label [:i.fa.fa-refresh
-             {:class (str (when @loading-a "fa-pulse ")
-                          (when @error-a "text-danger"))}]]))
+    [:button.btn.btn-default
+     {:title "Check for new devices (WhoIs)"
+      :on-click (fn [] (when refresh-fn
+                         (refresh-fn)))}
+     [:i.fa.fa-refresh
+      {:class (str (when @loading-a "fa-pulse ")
+                   (when @error-a "text-danger"))}]]))
 
 (defn left-side-nav-bar
   [dev-list-a selected-device-id configs]
   (let [show-ids? state/show-ids-a
+        show-ips? state/show-ips-a
         local-click (r/atom nil)
         expanded-routers-a (r/atom {}) ; tracks which routers are expanded
-        clean-list-fn (fn [list-a] (for [{:keys [device-id device-name]} @list-a]
-                                     {:id device-id :name device-name}))
+        clean-list-fn (fn [list-a] (for [{:keys [device-id device-name ip-address]} @list-a]
+                                     (cond-> {:id device-id :name device-name}
+                                       ip-address (assoc :ip-address ip-address))))
         filter-a (r/atom "")
         sort-fn-a (r/atom nil)
         get-visible-devices (fn []
                               {:devices (let [d (filter-devices (clean-list-fn dev-list-a)
-                                                                @filter-a)]
+                                                                @filter-a
+                                                                :show-ids? @show-ids?
+                                                                :show-ips? @show-ips?)]
                                           (if-let [f @sort-fn-a]
                                             (f d) d))})
         manipulated-devices-list (r/track get-visible-devices)
@@ -295,24 +349,38 @@
            :class    "noselect"
            :size     "1"
            :gap      "5px"
-           :children [[re/title
-                       :level :level2
-                       :underline? true
-                       :label [:span {:style {:white-space :nowrap}} "Devices "
-                               [:small "("
-                                (count visible-devices) "/" (count devices) ")"]]]
-                      [re/h-box
-                       :gap "3px"
-                       :children [[re/button
-                                   :label            (if ids? [:i.fa.fa-dedent] [:i.fa.fa-indent])
-                                   :on-click         #(do (reset! local-click true)
-                                                          (swap! show-ids? not))
-                                   :tooltip          "Show device IDs"
-                                   :tooltip-position :below-right]
-                                  [refresh-btn configs]
-                                  [re/gap :size "1"]
-                                  [sort-by-id-btn sort-fn-a local-click]
-                                  [sort-by-name-btn sort-fn-a local-click]]]
+           :children [[:div {:style {:display :flex :flex-wrap :wrap
+                                     :align-items :baseline}}
+                       [re/title
+                        :level :level2
+                        :underline? false
+                        :label [:span {:style {:white-space :nowrap}} "Devices "
+                                [:small "("
+                                 (count visible-devices) "/" (count devices) ")"]]]
+                       [:div {:style {:flex "1"}}]
+                       [refresh-btn configs]]
+                      [:div {:style {:display :flex :flex-wrap :wrap
+                                     :gap "3px" :align-items :center
+                                     :justify-content :space-between}}
+                       ;; --- ID toggle ---
+                       [:button.btn.btn-default
+                        {:title "Show device IDs"
+                         :on-click #(do (reset! local-click true)
+                                        (swap! show-ids? not))}
+                        (if ids? [:i.fa.fa-dedent] [:i.fa.fa-indent])]
+                       ;; --- Sort by ID + Name ---
+                       [:div.btn-group {:style {:flex-shrink 0}}
+                        [sort-by-id-btn sort-fn-a local-click]
+                        [sort-by-name-btn sort-fn-a local-click]]
+                       ;; --- IP: show + sort ---
+                       [:div.btn-group {:style {:flex-shrink 0}}
+                        [:button.btn.btn-default
+                         {:class (when @show-ips? "active")
+                          :title "Show IP addresses"
+                          :on-click #(do (reset! local-click true)
+                                         (swap! show-ips? not))}
+                         [:i.fa.fa-sitemap]]
+                        [sort-by-ip-btn sort-fn-a local-click]]]
                       [re/input-text
                        :model       filter-a
                        :width       "100%"
@@ -335,15 +403,16 @@
                             (for [{:keys [device children]} routers]
                               ^{:key (:device-id device)}
                               [router-nav-item device children selected-device-id
-                               show-ids? visible-ids-max-length local-click expanded-routers-a configs]))
+                               show-ids? visible-ids-max-length local-click expanded-routers-a configs show-ips?]))
                            ;; Then render standalone devices
                            (doall
                             (for [device standalone]
                               ^{:key (:device-id device)}
-                              [nav-item {:id (:device-id device)
-                                         :name (:device-name device)}
+                              [nav-item (cond-> {:id (:device-id device)
+                                                 :name (:device-name device)}
+                                          (:ip-address device) (assoc :ip-address (:ip-address device)))
                                selected-device-id show-ids?
-                               visible-ids-max-length local-click configs]))]
+                               visible-ids-max-length local-click configs show-ips?]))]
                           [:div [:div "No devices found."]
                            [:div " Check the local device "
                             [:a {:href (routes/path-for :local-device-configs)} "configs"]]])]]]]))})))

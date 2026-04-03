@@ -5,8 +5,10 @@
 (def show-ids-a (-> (r/atom nil)
                     (sa/local-storage :show-ids)))
 
-(defonce state (r/atom {}))
+(def show-ips-a (-> (r/atom nil)
+                    (sa/local-storage :show-ips)))
 
+(defonce state (r/atom {}))
 
 (defn get-in-state [ks]
   (let [temp-a (r/cursor state ks)]

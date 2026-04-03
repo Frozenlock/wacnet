@@ -11,14 +11,26 @@
             [wacnet.api.bacnet.mock-data :as mock]
             [yada.resource :refer [resource]]))
 
+(defn- extract-ip
+  "Extract IP from a BACnet mac-address string like \"192.168.1.10:47808\".
+   Filters out non-routable addresses (0.x.x.x) which are MSTP addresses
+   encoded as IP."
+  [mac-address]
+  (when mac-address
+    (let [[ip] (string/split (str mac-address) #":")]
+      (when (and (re-matches #"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" ip)
+                 (not (string/starts-with? ip "0.")))
+        ip))))
+
 (defn- get-devices-list-response [ctx]
   (if @mock/use-mock-data?
     {:href (co/make-link ctx)
-     :devices (for [{:keys [device-id device-name network]} mock/devices]
+     :devices (for [{:keys [device-id device-name network ip-address]} mock/devices]
                 (cond-> {:device-id device-id
                          :device-name device-name
                          :href (co/make-link ctx (str (:uri (:request ctx)) "/" device-id))}
-                  network (assoc :network network)))}
+                  network (assoc :network network)
+                  ip-address (assoc :ip-address ip-address)))}
     (co/with-bacnet-device ctx nil
       (when (get-in ctx [:parameters :query :refresh])
         (rd/discover-network))
@@ -27,13 +39,15 @@
                       :let [routing-info (rd/routing-info nil k)
                             routed-by (:routed-by routing-info)
                             routed-by-id (:device-id routed-by)
-                            routed-by-mac (get-in routed-by [:address :mac-address])]]
+                            routed-by-mac (get-in routed-by [:address :mac-address])
+                            ip (extract-ip (get-in routing-info [:address :mac-address]))]]
                   (cond-> {:device-id (str k)
                            :device-name v
                            :href (co/make-link ctx (str (:uri (:request ctx)) "/" k))}
                     routed-by (assoc :network {:routed-by (cond-> {}
                                                             routed-by-id (assoc :device-id (str routed-by-id))
-                                                            routed-by-mac (assoc :mac-address routed-by-mac))})))})))
+                                                            routed-by-mac (assoc :mac-address routed-by-mac))})
+                    ip (assoc :ip-address ip)))})))
 
 (def devices-list
   (resource
