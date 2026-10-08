@@ -4,7 +4,7 @@
             [bacure.remote-device :as rd]
             [bacure.local-device :as ld]
             [bacure.network :as net]
-            [vigilia-logger.timed :as timed]
+            [wacnet.local-device]
             [yada.resource :refer [resource]]
             [bidi.bidi :refer [path-for]]
             [clojure.walk :as w]
@@ -41,7 +41,7 @@
     (ld/clear-all!) ;; remove all local devices
     ;; boot the local device
     (b/boot-up! (merge current-configs configs)
-                {:auto-fetch-filter timed/auto-fetch-filter})
+                wacnet.local-device/boot-up-runtime-options)
     ;; create a config backup and save it locally
     (select-keys (ld/save-local-device-backup!)
                  allowed-configs-keys)))

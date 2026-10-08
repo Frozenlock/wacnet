@@ -6,25 +6,39 @@
             [trptcolin.versioneer.core :as version]
             [vigilia-logger.timed :as timed]))
 
+(def boot-up-runtime-options
+  "Options for `bacure.core/boot-up!` that aren't saved with the configs.
+  While logging, only fetch on our own the identity of the devices we
+  log. Must be in place before the network discovery, hence given to
+  every `boot-up!`."
+  {:auto-fetch-filter timed/auto-fetch-filter})
+
+(defn boot-up-configs
+  "The BACnet configs of the Wacnet local device, from the saved
+  configs (name and description can be customized)."
+  [saved-configs]
+  (let [{:keys [object-name description]} saved-configs]
+    {:vendor-name "HVAC.IO"
+     :vendor-identifier 697
+     :model-name "Wacnet"
+     :object-name (or object-name "Wacnet webserver")
+     :application-software-version (version/get-version "wacnet" "wacnet")
+     :description (or description
+                     (str "Wacnet: BACnet webserver and toolkit. "
+                          "Access the web interface at "
+                          "http://" (bacure.network/get-any-ip) ":47800, "
+                          "or use the Clojure nREPL on port 47999"
+                          "."))}))
+
+(defn boot-up!
+  "Boot the local BACnet device from the saved configs."
+  []
+  (bacure.core/boot-up! (boot-up-configs (ls/get-configs))
+                        boot-up-runtime-options))
+
 (defn initialize!
   "Initialize the local BACnet device." []
-  (let [saved-configs (ls/get-configs)
-        {:keys [object-name description]} saved-configs]
-    (bacure.core/boot-up!
-     {:vendor-name "HVAC.IO"
-      :vendor-identifier 697
-      :model-name "Wacnet"
-      :object-name (or object-name "Wacnet webserver")
-      :application-software-version (version/get-version "wacnet" "wacnet")
-      :description (or description
-                       (str "Wacnet: BACnet webserver and toolkit. "
-                            "Access the web interface at "
-                            "http://"(bacure.network/get-any-ip)":47800, "
-                            "or use the Clojure nREPL on port 47999"
-                            "."))}
-     ;; While logging, only fetch on our own the identity of the
-     ;; devices we log. Must be in place before the network discovery.
-     {:auto-fetch-filter timed/auto-fetch-filter}))
+  (boot-up!)
   (future
     (Thread/sleep 3000)
     (timed/maybe-start-logging)))
