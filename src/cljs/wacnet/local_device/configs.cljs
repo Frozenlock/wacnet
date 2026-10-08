@@ -41,15 +41,21 @@
             [:div "Broadcast address : " (:broadcast-address interface)]])])})))
 
 
+(def integer-configs
+  [:device-id :port :apdu-timeout :apdu-segment-timeout :number-of-apdu-retries
+   :extended-information-retry-ms :extended-information-max-retry-ms])
+
 (defn parse-configs
-  "Parse some config fields into integers."
+  "Parse the integer config fields (edited as strings) into integers."
   [configs-map]
   (let [parse-maybe (fn [str-or-num]
                       (if (number? str-or-num) str-or-num
-                          (js/parseInt str-or-num)))]
-    (-> configs-map
-        (update-in [:device-id] parse-maybe)
-        (update-in [:port] parse-maybe)
+                          (js/parseInt str-or-num)))
+        parse-key (fn [cm k]
+                    (if (some? (get cm k))
+                      (update cm k parse-maybe)
+                      cm))]
+    (-> (reduce parse-key configs-map integer-configs)
         ((fn [cm]
            (cond-> cm
              (get-in cm [:foreign-device-target :port])
@@ -87,8 +93,12 @@
        [:button.btn.btn-primary
         {:on-click #(update-configs! (-> @configs-a
                                          (select-keys [:description :broadcast-address :device-id :port
+                                                       :object-name
                                                        :apdu-timeout
+                                                       :apdu-segment-timeout
                                                        :number-of-apdu-retries
+                                                       :extended-information-retry-ms
+                                                       :extended-information-max-retry-ms
                                                        :foreign-device-target])))}
         "Update / Reboot device"]])))
 

@@ -4,6 +4,7 @@
             [bacure.remote-device :as rd]
             [bacure.local-device :as ld]
             [bacure.network :as net]
+            [vigilia-logger.timed :as timed]
             [yada.resource :refer [resource]]
             [bidi.bidi :refer [path-for]]
             [clojure.walk :as w]
@@ -17,8 +18,11 @@
 (def allowed-configs-keys
   #{:broadcast-address :device-id :port
     :apdu-timeout
+    :apdu-segment-timeout
     :number-of-apdu-retries :description
     :object-name
+    :extended-information-retry-ms
+    :extended-information-max-retry-ms
     :foreign-device-target})
 
 (defn get-current-configs
@@ -36,7 +40,8 @@
   (let [current-configs (ld/local-device-backup)]
     (ld/clear-all!) ;; remove all local devices
     ;; boot the local device
-    (b/boot-up! (merge current-configs configs))
+    (b/boot-up! (merge current-configs configs)
+                {:auto-fetch-filter timed/auto-fetch-filter})
     ;; create a config backup and save it locally
     (select-keys (ld/save-local-device-backup!)
                  allowed-configs-keys)))
@@ -53,6 +58,10 @@
    (s/optional-key :apdu-timeout) s/Int
    (s/optional-key :apdu-segment-timeout) s/Int
    (s/optional-key :number-of-apdu-retries) s/Int
+   ;; Delay before asking again (on I-Am) for the identity of a device
+   ;; that didn't answer; grows with consecutive failures up to the max.
+   (s/optional-key :extended-information-retry-ms) s/Int
+   (s/optional-key :extended-information-max-retry-ms) s/Int
    (s/optional-key :object-name) s/Str
    (s/optional-key :foreign-device-target) (s/maybe ForeignDevice)})
 

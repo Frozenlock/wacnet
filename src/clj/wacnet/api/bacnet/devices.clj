@@ -69,14 +69,20 @@
   (if @mock/use-mock-data?
     (-> (get mock/device-summaries (str device-id))
         (assoc :device-id (str device-id)))
-    (-> (b/remote-object-properties local-device-id device-id [:device device-id]
-                                    [:description :vendor-identifier
-                                     :vendor-name :object-name :model-name])
-        (first)
-        (dissoc :object-identifier)
-        (cs/rename-keys {:object-name :device-name})
-        (assoc :device-id (str device-id))
-        (assoc :_network (rd/routing-info local-device-id device-id)))))
+    (do
+      ;; The user is looking at this device: make sure we have its
+      ;; identity (name in the devices list, services supported...),
+      ;; even if the logger's filter excludes it.
+      (try (rd/extended-information local-device-id device-id)
+           (catch Exception _))
+      (-> (b/remote-object-properties local-device-id device-id [:device device-id]
+                                      [:description :vendor-identifier
+                                       :vendor-name :object-name :model-name])
+          (first)
+          (dissoc :object-identifier)
+          (cs/rename-keys {:object-name :device-name})
+          (assoc :device-id (str device-id))
+          (assoc :_network (rd/routing-info local-device-id device-id))))))
 
 (defn- get-device-response [ctx]
   (let [device-id (some-> ctx :parameters :path :device-id)]

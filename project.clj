@@ -9,9 +9,9 @@
                  [org.clojure/tools.cli "1.1.230"]
 
                  ;; BACnet
-                 [bacure "1.3.2"]
+                 [bacure "1.3.3"]
 
-                 [io.hvac.vigilia/vigilia-logger "1.3.1"]
+                 [io.hvac.vigilia/vigilia-logger "1.3.2"]
 
                  ;; webserver stuff
                  [bidi "2.1.6"] ; routing

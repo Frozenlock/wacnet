@@ -20,8 +20,11 @@
                        (str "Wacnet: BACnet webserver and toolkit. "
                             "Access the web interface at "
                             "http://"(bacure.network/get-any-ip)":47800, "
-                            "or use the Clojure nREPL on port 47999" 
-                            "."))}))
+                            "or use the Clojure nREPL on port 47999"
+                            "."))}
+     ;; While logging, only fetch on our own the identity of the
+     ;; devices we log. Must be in place before the network discovery.
+     {:auto-fetch-filter timed/auto-fetch-filter}))
   (future
     (Thread/sleep 3000)
     (timed/maybe-start-logging)))

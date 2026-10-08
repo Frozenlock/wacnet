@@ -70,6 +70,7 @@
    (s/optional-key :id-to-remove)             [s/Int]
    (s/optional-key :id-to-keep)               [s/Int]
    (s/optional-key :time-interval)            s/Int
+   (s/optional-key :discovery-interval)       s/Int
    (s/optional-key :object-delay)             s/Int
    (s/optional-key :target-objects)           TargetObjects
    (s/optional-key :parallel-device-scan-qty) s/Int

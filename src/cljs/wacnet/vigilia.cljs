@@ -74,6 +74,24 @@
                             (reset! value-a))))}
      parse-fn]))
 
+(defn discovery-interval-form [logger-config-a]
+  (let [parse-fn (fn [value] (when-not (empty? value)
+                               (js/parseInt value)))
+        value-a (r/cursor logger-config-a [:discovery-interval])]
+    [form-group value-a
+     "Discovery interval (minutes)"
+     (str "How often a Who-Is is broadcast to find new devices on the network. "
+          "60 minutes (default) is enough for most networks: devices that announce themselves "
+          "are picked up anyway. Use 0 to disable the periodic Who-Is, for example if "
+          "another supervisor already does it frequently.")
+     {:type :number :min 0
+      :on-blur (fn [evt]
+                 (let [v (-> evt .-target .-value parse-fn)]
+                   (some->> v
+                            (max 0)
+                            (reset! value-a))))}
+     parse-fn]))
+
 (defn- maybe-parse-int
   [v]
   (when-not (empty? v)
@@ -471,6 +489,7 @@
         :children [[logger-id-form temp-config-a]
                    [logger-logs-path-form temp-config-a]
                    [interval-form temp-config-a]
+                   [discovery-interval-form temp-config-a]
                    [range-form temp-config-a]
                    [id-filter-form temp-config-a]]]]
       [:div.col-md-6
