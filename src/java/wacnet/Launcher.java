@@ -1,6 +1,7 @@
 package wacnet;
 
 import java.awt.GraphicsEnvironment;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -50,7 +51,13 @@ public class Launcher {
     private static void printHelp() {
         try (InputStream is = Launcher.class.getClassLoader().getResourceAsStream("help.txt")) {
             if (is != null) {
-                System.out.println(new String(is.readAllBytes(), StandardCharsets.UTF_8));
+                ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                byte[] chunk = new byte[4096];
+                int n;
+                while ((n = is.read(chunk)) != -1) {
+                    buf.write(chunk, 0, n);
+                }
+                System.out.println(new String(buf.toByteArray(), StandardCharsets.UTF_8));
                 return;
             }
         } catch (Exception e) {
